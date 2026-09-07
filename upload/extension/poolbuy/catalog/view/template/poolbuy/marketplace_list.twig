@@ -1,0 +1,100 @@
+{% if pools %}
+  <div class="pb-grid pb-grid-cards pb-mb-xl">
+    {% for pool in pools %}
+      <article class="pb-card pb-card--interactive">
+        <div class="pb-card__media">
+          <img src="{{ pool.thumb }}" alt="{{ pool.title|escape }}" width="600" height="440" loading="lazy"/>
+          <div class="pb-card__badges">
+            {% if pool.verified_seller %}
+              <span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_verified }}</span>
+            {% endif %}
+            {% if pool.gst_verified %}
+              <span class="pb-badge pb-badge--gst">{{ text_gst }}</span>
+            {% endif %}
+            {% if pool.is_complete %}
+              <span class="pb-badge pb-badge--primary">{{ text_complete }}</span>
+            {% elseif pool.is_urgent %}
+              <span class="pb-badge pb-badge--urgent"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ text_closing }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-xs">
+            <a class="pb-link" href="{{ pool.href }}" style="color: var(--pb-on-surface);">{{ pool.title|escape }}</a>
+          </h2>
+          <p class="pb-label-md pb-muted pb-flex pb-items-center pb-gap-xs pb-mb-md">
+            <i class="fa-solid fa-industry" aria-hidden="true"></i>
+            <span>{{ pool.seller_name|escape }}</span>
+            {% if pool.seller_location %}<span class="pb-muted">&middot; {{ pool.seller_location|escape }}</span>{% endif %}
+          </p>
+
+          <div class="pb-grid pb-grid-2 pb-mb-md" style="gap: var(--pb-md);">
+            <div class="pb-figure">
+              <span class="pb-figure__label">{{ text_moq }}</span>
+              <span class="pb-figure__value pb-primary-text pb-tnum">{{ pool.moq_target }} <span class="pb-body-md" style="font-weight: 400;">{{ pool.unit_label|escape }}</span></span>
+            </div>
+            <div class="pb-figure">
+              <span class="pb-figure__label">{{ text_unit_price }}</span>
+              <span class="pb-figure__value pb-tnum">{{ pool.unit_price_text }} <span class="pb-body-md pb-muted" style="font-weight: 400;">{{ text_per_unit }}</span></span>
+            </div>
+          </div>
+
+          <div class="pb-pool-status pb-mb-md">
+            <div class="pb-pool-meta">
+              <span class="pb-label-md pb-uppercase">{{ text_pool_status }}</span>
+              <span class="pb-mono-sm pb-primary-text pb-tnum">{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}</span>
+            </div>
+            <div class="pb-progress pb-progress--sm{% if pool.is_open %} pb-progress--pulse{% endif %}"
+                 role="progressbar"
+                 aria-label="{{ text_pool_status }}: {{ pool.title|escape }}"
+                 aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="pb-progress__bar{% if pool.progress_modifier %} pb-progress__bar--{{ pool.progress_modifier }}{% endif %}" style="width: {{ pool.fill }}%;"></div>
+            </div>
+            <p class="pb-pool-hint">{{ pool.hint|escape }}</p>
+          </div>
+
+          <div class="pb-flex pb-justify-between pb-items-center pb-label-md pb-mb-md">
+            {% if pool.seconds_left > 0 %}
+              <span class="pb-tertiary-text pb-tnum" data-pb-countdown="{{ pool.end_timestamp }}" data-pb-ended="{{ text_ended }}">{{ text_time_left|format(pool.time_left) }}</span>
+            {% else %}
+              <span class="pb-muted">{{ text_ended }}</span>
+            {% endif %}
+            {% if pool.has_retail_saving %}
+              <span class="pb-muted pb-strike pb-tnum">{{ pool.retail_price_text }}</span>
+            {% endif %}
+          </div>
+
+          {# The CTA is anchored to the bottom of the card, per the design #}
+          <div class="pb-flex pb-gap-sm" style="margin-top: auto;">
+            {% if pool.is_open %}
+              <a class="pb-btn pb-btn--primary pb-grow" href="{{ pool.join }}">{{ button_join_pool }}</a>
+              {% if pool.allow_full_moq_buy %}
+                <a class="pb-btn pb-btn--ghost pb-grow" href="{{ pool.buy_all }}">{{ button_buy_moq }}</a>
+              {% endif %}
+            {% else %}
+              <a class="pb-btn pb-btn--light pb-btn--block" href="{{ pool.href }}">{{ button_view_pool }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md">
+    <div>{{ pagination }}</div>
+    <div class="pb-label-md pb-muted pb-tnum">{{ results }}</div>
+  </div>
+{% else %}
+  <div class="pb-empty">
+    <div class="pb-empty__icon"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></div>
+    {% if has_filters %}
+      <p class="pb-headline-sm pb-mb-sm">{{ text_empty }}</p>
+      <p class="pb-body-md pb-mb-md">{{ text_empty_body }}</p>
+      <a class="pb-btn pb-btn--ghost" href="{{ clear_href }}">{{ text_clear }}</a>
+    {% else %}
+      <p class="pb-headline-sm pb-mb-sm">{{ text_empty_none }}</p>
+      <p class="pb-body-md pb-mb-0">{{ text_empty_none_body }}</p>
+    {% endif %}
+  </div>
+{% endif %}

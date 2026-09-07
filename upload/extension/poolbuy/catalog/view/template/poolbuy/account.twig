@@ -1,0 +1,238 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}
+            <a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}
+            <span aria-current="page">{{ breadcrumb.text }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {% if success %}
+    <div class="pb-alert pb-alert--success pb-mb-lg" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <span>{{ success }}</span></div>
+  {% endif %}
+  {% if error %}
+    <div class="pb-alert pb-alert--error pb-mb-lg" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <span>{{ error }}</span></div>
+  {% endif %}
+
+  <div class="pb-flex pb-justify-between pb-items-end pb-wrap pb-gap-md pb-mb-xl">
+    <div>
+      <h1 class="pb-display-lg pb-mb-xs">{{ heading_title }}</h1>
+      <p class="pb-body-lg pb-muted pb-mb-0">{{ text_subtitle }}</p>
+    </div>
+    <a class="pb-btn pb-btn--ghost" href="{{ marketplace }}"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> {{ button_browse }}</a>
+  </div>
+
+  {# ---- Statistics ---- #}
+  <div class="pb-grid pb-grid-3 pb-mb-xl">
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_stat_active }}</p>
+      <p class="pb-stat__value pb-primary-text pb-tnum pb-mb-0">{{ stats.active_pools }}</p>
+      <p class="pb-stat__meta pb-tertiary-text"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i> {{ text_stat_week|format(stats.joined_this_week) }}</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_stat_completed }}</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">{{ stats.completed_pools }}</p>
+      <p class="pb-stat__meta">{{ text_stat_rate|format(stats.fulfilment_rate) }}</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_stat_spend }}</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">{{ stats.spend_text }}</p>
+      <p class="pb-stat__meta">
+        {% if stats.has_saving %}{{ text_stat_saving|format(stats.saving_text) }}{% else %}{{ text_no_saving }}{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div class="pb-grid" style="grid-template-columns: minmax(0, 1fr); gap: var(--pb-gutter);">
+    <div class="pb-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--pb-gutter); align-items: start;">
+
+      {# ---- Commitments ---- #}
+      <div>
+        <div class="pb-flex pb-gap-sm pb-wrap pb-mb-md" role="tablist" aria-label="{{ heading_title }}">
+          {% for tab in tabs %}
+            <a class="pb-btn {{ tab.active ? 'pb-btn--primary' : 'pb-btn--light' }} pb-btn--sm" href="{{ tab.href }}" role="tab" aria-selected="{{ tab.active ? 'true' : 'false' }}">{{ tab.text }}</a>
+          {% endfor %}
+        </div>
+
+        {% if reservations %}
+          <div class="pb-flex pb-flex-col pb-gap-md">
+            {% for row in reservations %}
+              <article class="pb-card pb-card--interactive">
+                <div class="pb-card__body">
+                  <div class="pb-flex pb-gap-md pb-wrap pb-items-start">
+                    <img src="{{ row.thumb }}" alt="{{ row.title|escape }}" width="80" height="80" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--pb-radius); flex: 0 0 80px;"/>
+
+                    <div class="pb-grow">
+                      <div class="pb-flex pb-justify-between pb-wrap pb-gap-sm pb-mb-xs">
+                        <h2 class="pb-headline-sm pb-mb-0"><a class="pb-link" href="{{ row.href }}" style="color: var(--pb-on-surface);">{{ row.title|escape }}</a></h2>
+                        <div class="pb-flex pb-gap-xs pb-wrap">
+                          <span class="pb-badge pb-badge--muted">{{ row.status_text }}</span>
+                          <span class="pb-badge {{ row.is_complete ? 'pb-badge--primary' : (row.is_urgent ? 'pb-badge--urgent' : 'pb-badge--soft') }}">{{ row.pool_status_text }}</span>
+                        </div>
+                      </div>
+
+                      <p class="pb-label-md pb-muted pb-mb-md">
+                        <i class="fa-solid fa-industry" aria-hidden="true"></i> {{ row.seller_name|escape }}
+                        &middot; {{ row.reference|escape }}
+                      </p>
+
+                      <div class="pb-grid pb-grid-3 pb-mb-md" style="gap: var(--pb-sm);">
+                        <div class="pb-figure">
+                          <span class="pb-figure__label">{{ text_your_commitment }}</span>
+                          <span class="pb-figure__value pb-tnum">{{ row.quantity }} <span class="pb-body-md" style="font-weight: 400;">{{ row.unit_label|escape }}</span></span>
+                        </div>
+                        <div class="pb-figure">
+                          <span class="pb-figure__label">{{ text_unit_price }}</span>
+                          <span class="pb-figure__value pb-tnum">
+                            {% if row.has_price %}{{ row.unit_price_text }}{% else %}<span class="pb-body-md pb-muted" style="font-weight: 400;">{{ text_price_pending }}</span>{% endif %}
+                          </span>
+                        </div>
+                        <div class="pb-figure">
+                          <span class="pb-figure__label">{{ text_committed }}</span>
+                          <span class="pb-figure__value pb-tnum">
+                            {% if row.has_price %}{{ row.committed_text }}{% else %}&mdash;{% endif %}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="pb-pool-meta">
+                        <span class="pb-label-md pb-muted">{{ text_filled|format(row.reserved_qty, row.moq_target, row.unit_label|escape) }}</span>
+                        <span class="pb-mono-sm pb-primary-text pb-tnum">{{ row.fill }}%</span>
+                      </div>
+                      <div class="pb-progress pb-progress--sm{% if row.is_open %} pb-progress--pulse{% endif %}"
+                           role="progressbar" aria-label="{{ row.title|escape }}"
+                           aria-valuenow="{{ row.fill }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="pb-progress__bar{% if row.progress_modifier %} pb-progress__bar--{{ row.progress_modifier }}{% endif %}" style="width: {{ row.fill }}%;"></div>
+                      </div>
+
+                      <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-sm pb-mt-md">
+                        {% if row.seconds_left > 0 %}
+                          <span class="pb-label-md pb-tertiary-text pb-tnum" data-pb-countdown="{{ row.end_timestamp }}" data-pb-ended="{{ text_ended }}">{{ text_time_left|format(row.time_left) }}</span>
+                        {% else %}
+                          <span class="pb-label-md pb-muted">{{ text_ended }}</span>
+                        {% endif %}
+
+                        {% if row.can_cancel %}
+                          <a class="pb-btn pb-btn--danger pb-btn--sm" href="{{ row.cancel }}" onclick="return confirm('{{ text_withdraw_confirm }}');">{{ button_withdraw }}</a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md pb-mt-lg">
+            <div>{{ pagination }}</div>
+            <div class="pb-label-md pb-muted pb-tnum">{{ results }}</div>
+          </div>
+        {% else %}
+          <div class="pb-empty">
+            <div class="pb-empty__icon"><i class="fa-solid fa-users-rectangle" aria-hidden="true"></i></div>
+            {% if filter_status == 'completed' %}
+              <p class="pb-headline-sm pb-mb-sm">{{ text_empty_completed }}</p>
+              <p class="pb-body-md pb-mb-md">{{ text_empty_completed_body }}</p>
+            {% elseif filter_status == 'cancelled' %}
+              <p class="pb-headline-sm pb-mb-sm">{{ text_empty_cancelled }}</p>
+              <p class="pb-body-md pb-mb-md">{{ text_empty_cancelled_body }}</p>
+            {% else %}
+              <p class="pb-headline-sm pb-mb-sm">{{ text_empty_active }}</p>
+              <p class="pb-body-md pb-mb-md">{{ text_empty_active_body }}</p>
+            {% endif %}
+            <a class="pb-btn pb-btn--primary" href="{{ marketplace }}">{{ button_browse }}</a>
+          </div>
+        {% endif %}
+      </div>
+
+      {# ---- Sidebar ---- #}
+      <aside class="pb-flex pb-flex-col pb-gap-md">
+        {% if recommendations %}
+          <div class="pb-card">
+            <div class="pb-card__body">
+              <h2 class="pb-headline-sm pb-mb-xs">{{ text_recommended }}</h2>
+              <p class="pb-body-md pb-muted pb-mb-md">{{ text_recommended_help }}</p>
+
+              <div class="pb-flex pb-flex-col pb-gap-md">
+                {% for rec in recommendations %}
+                  <div style="border: 1px solid var(--pb-outline-variant); border-radius: var(--pb-radius); overflow: hidden;">
+                    <img src="{{ rec.thumb }}" alt="{{ rec.title|escape }}" loading="lazy" style="width: 100%; height: 110px; object-fit: cover; display: block;"/>
+                    <div style="padding: var(--pb-md);">
+                      <h3 class="pb-body-md pb-mb-xs" style="font-weight: 600;"><a class="pb-link" href="{{ rec.href }}" style="color: var(--pb-on-surface);">{{ rec.title|escape }}</a></h3>
+                      <div class="pb-flex pb-justify-between pb-items-end pb-gap-sm">
+                        <div>
+                          <span class="pb-headline-sm pb-primary-text pb-tnum">{{ rec.unit_price_text }}</span>
+                          {% if rec.has_retail_saving %}<span class="pb-muted pb-strike pb-tnum" style="font-size: 11px;">{{ rec.retail_price_text }}</span>{% endif %}
+                        </div>
+                        <a class="pb-btn pb-btn--primary pb-btn--sm" href="{{ rec.join }}">{{ button_join }}</a>
+                      </div>
+                      <div class="pb-progress pb-progress--sm pb-mt-sm" role="progressbar" aria-label="{{ rec.title|escape }}" aria-valuenow="{{ rec.fill }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="pb-progress__bar" style="width: {{ rec.fill }}%;"></div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="pb-card">
+          <div class="pb-card__body">
+            <div class="pb-flex pb-justify-between pb-items-center pb-gap-sm pb-mb-xs">
+              <h2 class="pb-headline-sm pb-mb-0">{{ text_orders }}</h2>
+              <a class="pb-btn pb-btn--light pb-btn--sm" href="{{ export }}"><i class="fa-solid fa-file-csv" aria-hidden="true"></i> {{ button_export }}</a>
+            </div>
+            <p class="pb-body-md pb-muted pb-mb-md">{{ text_orders_help }}</p>
+
+            {% if pool_orders %}
+              <div class="pb-table-wrap">
+                <table class="pb-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ column_pool }}</th>
+                      <th scope="col" class="pb-text-end">{{ column_committed }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for order in pool_orders %}
+                      <tr>
+                        <td>
+                          <span style="font-weight: 600;">{{ order.title|escape }}</span>
+                          <div class="pb-muted" style="font-size: 11px;">{{ order.reference|escape }} &middot; {{ order.quantity }} {{ order.unit_label|escape }}</div>
+                        </td>
+                        <td class="pb-text-end pb-tnum">
+                          {{ order.amount_text }}
+                          {% if order.href %}<div><a class="pb-link" style="font-size: 11px;" href="{{ order.href }}">{{ button_view_order }}</a></div>{% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <p class="pb-mt-md pb-mb-0"><a class="pb-link pb-label-md" href="{{ orders }}">{{ button_all_orders }}</a></p>
+            {% else %}
+              <p class="pb-body-md pb-muted pb-mb-0">{{ text_no_orders }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+{# Request a pool. In this phase it opens the contact form rather than pretending
+   a self-service pool builder exists. #}
+<a class="pb-fab" href="{{ contact }}" title="{{ text_start_pool }}">
+  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+  <span class="pb-visually-hidden">{{ text_start_pool }}</span>
+</a>
+{{ footer }}

@@ -1,0 +1,111 @@
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label for="filter-name" class="form-label">{{ entry_name }}</label>
+    <input type="text" name="filter_name" value="{{ filter_name }}" placeholder="{{ entry_name }}" id="filter-name" class="form-control"/>
+  </div>
+  <div class="col-md-3">
+    <label for="filter-gst-verified" class="form-label">{{ entry_gst_verified }}</label>
+    <select name="filter_gst_verified" id="filter-gst-verified" class="form-select">
+      <option value="">{{ text_all }}</option>
+      <option value="1"{% if filter_gst_verified == '1' %} selected{% endif %}>{{ text_yes }}</option>
+      <option value="0"{% if filter_gst_verified == '0' %} selected{% endif %}>{{ text_no }}</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label for="filter-status" class="form-label">{{ entry_status }}</label>
+    <select name="filter_status" id="filter-status" class="form-select">
+      <option value="">{{ text_all }}</option>
+      <option value="1"{% if filter_status == '1' %} selected{% endif %}>{{ text_enabled }}</option>
+      <option value="0"{% if filter_status == '0' %} selected{% endif %}>{{ text_disabled }}</option>
+    </select>
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <button type="button" id="button-filter" class="btn btn-light w-100"><i class="fa-solid fa-filter" aria-hidden="true"></i> {{ button_filter }}</button>
+  </div>
+</div>
+<form id="form-seller" method="post" data-oc-toggle="ajax" data-oc-load="{{ user_token ? '' : '' }}" data-oc-target="#seller">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <td style="width: 1px;" class="text-center"><input type="checkbox" onchange="$('input[name^=\'selected\']').prop('checked', this.checked);" class="form-check-input"/></td>
+          <td class="text-start">{% if sort == 'name' %}<a href="{{ sort_name }}" class="{{ order|lower }}">{{ column_name }}</a>{% else %}<a href="{{ sort_name }}">{{ column_name }}</a>{% endif %}</td>
+          <td class="text-start">{% if sort == 'location' %}<a href="{{ sort_location }}" class="{{ order|lower }}">{{ column_location }}</a>{% else %}<a href="{{ sort_location }}">{{ column_location }}</a>{% endif %}</td>
+          <td class="text-start">{{ column_gst }}</td>
+          <td class="text-end">{% if sort == 'rating' %}<a href="{{ sort_rating }}" class="{{ order|lower }}">{{ column_rating }}</a>{% else %}<a href="{{ sort_rating }}">{{ column_rating }}</a>{% endif %}</td>
+          <td class="text-end">{{ column_pools }}</td>
+          <td class="text-start">{% if sort == 'status' %}<a href="{{ sort_status }}" class="{{ order|lower }}">{{ column_status }}</a>{% else %}<a href="{{ sort_status }}">{{ column_status }}</a>{% endif %}</td>
+          <td class="text-end">{{ column_action }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% if sellers %}
+          {% for seller in sellers %}
+            <tr>
+              <td class="text-center"><input type="checkbox" name="selected[]" value="{{ seller.seller_id }}" class="form-check-input"/></td>
+              <td class="text-start">
+                {{ seller.name }}
+                {% if seller.verified_seller %}<span class="badge bg-success ms-1"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified</span>{% endif %}
+              </td>
+              <td class="text-start">{{ seller.location }}</td>
+              <td class="text-start">
+                {% if seller.gst_number %}
+                  <code>{{ seller.gst_number }}</code>
+                  {% if seller.gst_verified %}<span class="badge bg-secondary ms-1">GST Verified</span>{% endif %}
+                {% else %}
+                  <span class="text-muted">&mdash;</span>
+                {% endif %}
+              </td>
+              <td class="text-end">{{ seller.rating }} <small class="text-muted">({{ seller.rating_count }})</small></td>
+              <td class="text-end">{{ seller.pool_total }}</td>
+              <td class="text-start">
+                {% if seller.status %}
+                  <span class="badge bg-success">{{ text_enabled }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ text_disabled }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end"><a href="{{ seller.edit }}" data-bs-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a></td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="8">{{ text_no_results }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text-start">{{ pagination }}</div>
+    <div class="col-sm-6 text-end">{{ results }}</div>
+  </div>
+</form>
+<script type="text/javascript"><!--
+$('#button-filter').on('click', function() {
+    var url = 'index.php?route=extension/poolbuy/poolbuy/seller.list&user_token={{ user_token }}';
+
+    var name = $('#filter-name').val();
+    if (name) {
+        url += '&filter_name=' + encodeURIComponent(name);
+    }
+
+    var gst = $('#filter-gst-verified').val();
+    if (gst !== '') {
+        url += '&filter_gst_verified=' + encodeURIComponent(gst);
+    }
+
+    var status = $('#filter-status').val();
+    if (status !== '') {
+        url += '&filter_status=' + encodeURIComponent(status);
+    }
+
+    $('#seller').load(url);
+});
+
+$('#seller').on('click', '.pagination a, thead a', function(e) {
+    e.preventDefault();
+
+    $('#seller').load(this.href);
+});
+//--></script>

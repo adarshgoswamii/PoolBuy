@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PoolBuy Wholesale | Buyer Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f0fb",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-variant": "#e1e2ed",
+                    "surface-dim": "#d9d9e5",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "tertiary": "#943700",
+                    "tertiary-container": "#bc4800",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-tint": "#0053db",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#191b23",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "outline-variant": "#c3c6d7",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-tertiary-fixed": "#360f00",
+                    "on-primary-fixed": "#00174b",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2e3039",
+                    "inverse-primary": "#b4c5ff",
+                    "surface-container-highest": "#e1e2ed",
+                    "surface-container-high": "#e7e7f3",
+                    "on-tertiary-container": "#ffede6",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f3fe",
+                    "on-surface-variant": "#434655",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "outline": "#737686",
+                    "background": "#faf8ff",
+                    "secondary-container": "#dae2fd",
+                    "surface-container": "#ededf9",
+                    "secondary": "#565e74",
+                    "on-primary-container": "#eeefff",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "secondary-fixed": "#dae2fd",
+                    "on-secondary-container": "#5c647a",
+                    "on-primary": "#ffffff",
+                    "primary": "#004ac6",
+                    "on-error-container": "#93000a",
+                    "primary-container": "#2563eb",
+                    "surface": "#faf8ff",
+                    "on-background": "#191b23"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "margin": "32px",
+                    "gutter": "24px",
+                    "md": "16px",
+                    "2xl": "48px",
+                    "base": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "mono-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "mono-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-header { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        @keyframes pulse-progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .progress-pulse::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: pulse-progress 2s infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-72 fixed left-0 top-0 z-40 bg-surface-container-low border-r border-outline-variant hidden md:flex flex-col gap-sm p-md">
+<div class="px-md py-lg mb-lg">
+<span class="font-display-lg text-display-lg font-bold text-primary tracking-tight">PoolBuy</span>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active State: Dashboard -->
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-xl px-md py-sm transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Marketplace</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl px-md py-sm" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">My Pools</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl px-md py-sm" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label-md text-label-md">Messages</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl px-md py-sm" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl px-md py-sm" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-md px-md py-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">WP</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Wholesale Pro</span>
+<span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">GST Verified</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-72 min-h-screen pb-24 md:pb-12">
+<!-- Top App Bar -->
+<header class="docked full-width top-0 sticky z-30 bg-surface/80 glass-header border-b border-outline-variant">
+<div class="flex justify-between items-center w-full px-margin py-md max-w-[1280px] mx-auto">
+<div class="flex items-center gap-md md:hidden">
+<span class="material-symbols-outlined text-primary" data-icon="hub">hub</span>
+<span class="font-display-lg text-[20px] font-bold text-primary tracking-tight">PoolBuy</span>
+</div>
+<h1 class="hidden md:block font-headline-lg text-headline-lg text-on-surface">Buyer Dashboard</h1>
+<div class="flex items-center gap-lg">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all w-64" placeholder="Search orders, pools..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings">settings</button>
+</div>
+</div>
+</header>
+<div class="max-w-[1280px] mx-auto px-margin py-xl space-y-xl">
+<!-- Quick Stats Widgets -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex items-start justify-between">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md mb-xs">POOLS JOINED (ACTIVE)</p>
+<h2 class="text-primary font-display-lg text-display-lg">12</h2>
+<p class="text-[12px] text-tertiary font-medium mt-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+                            +3 this week
+                        </p>
+</div>
+<div class="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="group_work">group_work</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex items-start justify-between">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md mb-xs">POOLS COMPLETED</p>
+<h2 class="text-on-surface font-display-lg text-display-lg">84</h2>
+<p class="text-[12px] text-on-surface-variant font-medium mt-sm">98% fulfillment rate</p>
+</div>
+<div class="w-12 h-12 bg-secondary-container/20 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex items-start justify-between">
+<div>
+<p class="text-on-surface-variant font-label-md text-label-md mb-xs">TOTAL SPEND (YTD)</p>
+<h2 class="text-on-surface font-display-lg text-display-lg">$42.8k</h2>
+<p class="text-[12px] text-on-surface-variant font-medium mt-sm flex items-center gap-1">
+                            Save $4.2k vs Retail
+                        </p>
+</div>
+<div class="w-12 h-12 bg-tertiary-fixed/30 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
+</div>
+</div>
+</section>
+<!-- Recent Pools & Recommendations Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Recent Pools List -->
+<section class="lg:col-span-2 space-y-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Active Procurement Pools</h3>
+<a class="text-primary font-label-md text-label-md hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-sm">
+<!-- Pool Item 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col md:flex-row gap-md items-center group hover:border-primary transition-colors cursor-pointer">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution product shot of industrial grade lithium-ion batteries stacked neatly in a clean, brightly lit corporate warehouse. The lighting is cold and precise, emphasizing a modern light-mode tech aesthetic with deep blue shadows and crisp white highlights. The image quality is sharp and premium, suitable for a B2B marketplace dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGIjLMcB4ZOPgh1JgMnsbJjN2b4awOSpsYc7y6QV7Tfv3f71ZmMU627n74aTGCJTXbIGvi6723PJ8N5ZYNpCnbORe3GyTotkpnPKvI7D6l2JigXEqY4VMFByAbGoC-SkNoh7W6nlggA5ovKHRPk0QKj3U0q2zfaUB_4onCPoCgpafX2QTQF5LhYQz8W7ZHPs-YjQYORDPf-8JhvmFY87qMsix_nDscE8MygVwLkG1lz0ymCRbuDrQHCg"/>
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-xs">
+<div>
+<h4 class="font-headline-sm text-[16px] text-on-surface">Li-Ion Enterprise Cells (Batch 42)</h4>
+<span class="text-on-surface-variant font-body-md text-[12px]">Supplier: VoltaGlobal Industrial</span>
+</div>
+<div class="text-right">
+<p class="text-tertiary font-bold text-body-md">22h 14m left</p>
+<span class="bg-tertiary/10 text-tertiary px-2 py-0.5 rounded text-[10px] font-bold uppercase">High Urgency</span>
+</div>
+</div>
+<div class="space-y-1 mt-md">
+<div class="flex justify-between text-[11px] font-bold text-on-surface-variant">
+<span>780/1000 Units</span>
+<span>78% Filled</span>
+</div>
+<div class="w-full h-2.5 bg-secondary-container rounded-full overflow-hidden relative">
+<div class="h-full bg-primary progress-pulse" style="width: 78%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pool Item 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col md:flex-row gap-md items-center group hover:border-primary transition-colors cursor-pointer">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close-up macro photography of high-quality brushed aluminum casing parts for electronics, arranged in a repeating pattern. The lighting is soft and diffused, creating a professional metallic sheen with subtle gradients of gray and white. The background is a clean white to match a premium corporate UI design. Atmosphere is focused, industrial, and high-trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrm2XHbu0JxHe2oLiXTwg8PsjZTb_IIw9rgKrjNgvmrSEFtb3T-w3yjzn5px-efmSPMr0LWk7akwE0hGkMXux6yKE0poifc5NoebhXp_kHQMpOG0ifxNZvtV4lHFtZpdHfFUNOaDC9DBbV_F13zZF9Q95J5MSXsCNigX6R0LQUeD3ImzJTKEVY2tFCz-gHaypT2_Ve2FUzBR04Z6pFJhJhbXUMhHlmIqziZSjA_Moo4znAIQ97XdjUXg"/>
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-xs">
+<div>
+<h4 class="font-headline-sm text-[16px] text-on-surface">Brushed Al-Chassis (Model X-5)</h4>
+<span class="text-on-surface-variant font-body-md text-[12px]">Supplier: Precision Moldings Co.</span>
+</div>
+<div class="text-right">
+<p class="text-on-surface-variant font-medium text-body-md">3d 08h left</p>
+<span class="bg-outline-variant/30 text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase">Steady</span>
+</div>
+</div>
+<div class="space-y-1 mt-md">
+<div class="flex justify-between text-[11px] font-bold text-on-surface-variant">
+<span>420/500 Units</span>
+<span>84% Filled</span>
+</div>
+<div class="w-full h-2.5 bg-secondary-container rounded-full overflow-hidden relative">
+<div class="h-full bg-primary" style="width: 84%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pool Item 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col md:flex-row gap-md items-center group hover:border-primary transition-colors cursor-pointer opacity-70">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 grayscale">
+<img class="w-full h-full object-cover" data-alt="Sleek, minimalist matte black packaging boxes stacked in a minimalist white-lit studio. The lighting creates subtle depth and sharp edges, embodying a high-end commercial procurement aesthetic. The composition is clean and organized, conveying professional logistics and wholesale efficiency. Subtle blue-tinted shadows add to the modern corporate feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQTuxnjWkt2IltvORqAjsv3ohxqIwMWTLkJ-fgecuuHMVNchgAOQ67sCA_01V0UwcdK-49itIw8FzkX2NixPuf33jkhngH2pRUQ2pXd2DUSCvkop-v19wNObzhVpoj76E5Ir0ltc3HLoliB375lfUsiGc_SHEfi3BZApQu3M4eGN_Iowz_WtJw1mOar2FO2y6zWKldtjWBj_ScE3CzFJrf-pzG7a9YnZ53-YrveSZ-wQ5EuQXJKQqN1w"/>
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-xs">
+<div>
+<h4 class="font-headline-sm text-[16px] text-on-surface">Retail Packaging (Eco-Matte)</h4>
+<span class="text-on-surface-variant font-body-md text-[12px]">Supplier: GreenPack Logistics</span>
+</div>
+<div class="text-right">
+<p class="text-error font-bold text-body-md">Completed</p>
+<span class="bg-error/10 text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase">Processing</span>
+</div>
+</div>
+<div class="space-y-1 mt-md">
+<div class="flex justify-between text-[11px] font-bold text-on-surface-variant">
+<span>2500/2500 Units</span>
+<span>100% Filled</span>
+</div>
+<div class="w-full h-2.5 bg-secondary-container rounded-full overflow-hidden relative">
+<div class="h-full bg-secondary" style="width: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recommended Products Sidebar Section -->
+<aside class="space-y-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recommended</h3>
+<span class="material-symbols-outlined text-outline cursor-help" title="Based on your order history">info</span>
+</div>
+<div class="grid grid-cols-1 gap-md">
+<!-- Rec Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm group">
+<div class="h-32 relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A macro detailed image of high-quality copper wiring coils, glowing with a rich metallic orange hue under bright, clean white studio lights. The focus is sharp on the texture of the copper, with a shallow depth of field blurring the background. The aesthetic is clean, industrial, and high-end, perfectly fitting a modern B2B procurement platform style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDACrIg7Q69-It3zD-lN3VQw4pIMs1kIp6g7wT1pjTqIIC8nC3xJ2z5t-qc_aDW1fm_dp7lbr4qQgMTNaA4l-eXBy_jucYdGn80RMHEbJKc4PT7DriWDTgpWJcq9fQSVlQG4SjBn7Ue7JD3jsUTg_EwdrbuzC4QDJ1GzDbBXZXduLH_tfgsYnz-hdv6i2XRPRn9jAFyHf36AfXJj8iGZMY28yFrU3HRJ6bSU8q6fHqlkcjtM1KMuR-ddQ"/>
+<div class="absolute top-2 right-2 bg-primary-container text-on-primary-container px-2 py-1 rounded-lg text-[10px] font-bold">15% POOL DISCOUNT</div>
+</div>
+<div class="p-md">
+<h5 class="font-headline-sm text-[14px] text-on-surface mb-xs">Copper Conductors (200m)</h5>
+<div class="flex justify-between items-end">
+<div>
+<span class="text-primary font-bold text-headline-sm">$1,240</span>
+<span class="text-on-surface-variant line-through text-[11px] ml-1">$1,450</span>
+</div>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-3 py-1.5 rounded-lg transition-colors">Join Pool</button>
+</div>
+</div>
+</div>
+<!-- Rec Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm group">
+<div class="h-32 relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Clear pharmaceutical grade glass vials arranged in a neat grid on a reflective white surface. The lighting is clinical and bright, creating a high-key, modern aesthetic. Subtle shadows and reflections enhance the three-dimensional quality of the glass. The color palette is dominated by pristine whites and cool grays, evoking trust and professional purity in a B2B wholesale context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGuhJ-FsFvfcGnqlpwHrUtYFKGWy_6nhaxepHI-2hW53orvuLu3D2vKsjwghKr5TgMwb3zxaEQszcFfUPZsLk-vCCwscYwbJ6ESqzBs59bDL2dBXKh2m3aHyDvwKPOza8hFHHsk4fK62iumbtCbUP1ciSWLwAaWwJKwcvVDQR2MPBiLHPUj9NnPp0XYKD_E7Eu-2BDqM0kuF10vFTUcbEY7SCpPE6aTqYVdOK41GQzxup-RgPrdRnfDg"/>
+<div class="absolute top-2 right-2 bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-lg text-[10px] font-bold">LIMITED STOCK</div>
+</div>
+<div class="p-md">
+<h5 class="font-headline-sm text-[14px] text-on-surface mb-xs">Medical Grade Vials (Case)</h5>
+<div class="flex justify-between items-end">
+<div>
+<span class="text-primary font-bold text-headline-sm">$890</span>
+</div>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-3 py-1.5 rounded-lg transition-colors">Join Pool</button>
+</div>
+</div>
+</div>
+<!-- Empty Placeholder for Analytics/Upsell -->
+<div class="bg-primary/5 border-2 border-dashed border-primary/20 rounded-xl p-lg flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-primary mb-sm text-[32px]" data-icon="auto_awesome">auto_awesome</span>
+<p class="font-headline-sm text-[14px] text-primary">Discover New Markets</p>
+<p class="text-body-md text-on-surface-variant text-[12px] mt-xs">Analysis suggests you might be interested in high-capacity solar arrays.</p>
+<button class="mt-md text-primary font-bold text-[12px] hover:underline">Explore More →</button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Transaction Table / Bottom Section -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
+<div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recent Orders &amp; Transactions</h3>
+<div class="flex gap-sm">
+<button class="px-3 py-1 text-[12px] font-bold rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">Export CSV</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-lg py-3 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Order ID</th>
+<th class="px-lg py-3 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Pool Name</th>
+<th class="px-lg py-3 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Amount</th>
+<th class="px-lg py-3 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-lg py-3 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-lg py-4 font-mono-sm text-mono-sm text-on-surface">PB-882103</td>
+<td class="px-lg py-4">
+<div class="flex flex-col">
+<span class="text-body-md font-medium text-on-surface">Micro-Controller Units v2</span>
+<span class="text-[11px] text-on-surface-variant">250 units</span>
+</div>
+</td>
+<td class="px-lg py-4 font-bold text-on-surface">$5,400.00</td>
+<td class="px-lg py-4">
+<span class="bg-secondary-container/50 text-on-secondary-container px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">In Transit</span>
+</td>
+<td class="px-lg py-4 text-right">
+<button class="text-primary hover:text-primary-container material-symbols-outlined" data-icon="open_in_new">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/50 transition-colors">
+<td class="px-lg py-4 font-mono-sm text-mono-sm text-on-surface">PB-882102</td>
+<td class="px-lg py-4">
+<div class="flex flex-col">
+<span class="text-body-md font-medium text-on-surface">Steel Rods Grade 4</span>
+<span class="text-[11px] text-on-surface-variant">50 bundles</span>
+</div>
+</td>
+<td class="px-lg py-4 font-bold text-on-surface">$2,150.00</td>
+<td class="px-lg py-4">
+<span class="bg-surface-container-highest text-on-surface-variant px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Delivered</span>
+</td>
+<td class="px-lg py-4 text-right">
+<button class="text-primary hover:text-primary-container material-symbols-outlined" data-icon="open_in_new">open_in_new</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full py-2xl mt-auto">
+<div class="max-w-[1280px] mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-lg">
+<div class="flex flex-col gap-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">PoolBuy B2B</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 PoolBuy B2B Marketplace. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap gap-md">
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">GST Compliance</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Seller Support</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Mobile Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe h-16 bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-[10px]">Market</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="group_work">group_work</span>
+<span class="font-label-md text-[10px]">Pools</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-label-md text-[10px]">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-[10px]">Account</span>
+</a>
+</nav>
+<!-- Floating Action Button - Active on Home/Dashboard -->
+<button class="fixed bottom-20 right-6 md:bottom-8 md:right-8 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center z-40 group">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+<span class="absolute right-16 bg-inverse-surface text-inverse-on-surface px-3 py-1 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Start a Pool</span>
+</button>
+<script>
+        // Micro-interaction for search focus
+        const searchInput = document.querySelector('input[type="text"]');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('w-80');
+                searchInput.classList.add('w-80');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('w-80');
+                searchInput.classList.remove('w-80');
+            });
+        }
+
+        // Tonal Layer Shift on scroll for Header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>

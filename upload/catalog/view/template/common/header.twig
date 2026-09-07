@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ title }}</title>
+  <base href="{{ base }}"/>
+  {% if description %}
+    <meta name="description" content="{{ description }}"/>
+  {% endif %}
+  {% if keywords %}
+    <meta name="keywords" content="{{ keywords }}"/>
+  {% endif %}
+  <script src="{{ jquery }}" type="text/javascript"></script>
+  <link href="{{ bootstrap }}" type="text/css" rel="stylesheet" media="screen"/>
+  <link href="{{ icons }}" rel="stylesheet" type="text/css"/>
+  <link href="{{ stylesheet }}" type="text/css" rel="stylesheet"/>
+  {# PoolBuy design system. Inter is self hosted, so no external font request is
+     made at runtime. Both files load after bootstrap so they win on specificity. #}
+  <link href="catalog/view/stylesheet/poolbuy-fonts.css" type="text/css" rel="stylesheet"/>
+  <link href="catalog/view/stylesheet/poolbuy.css" type="text/css" rel="stylesheet"/>
+  <script src="catalog/view/javascript/common.js" type="text/javascript"></script>
+  {% if icon %}
+    <link rel="icon" href="{{ icon }}" type="image/png">
+  {% endif %}
+  {% for style in styles %}
+    <link href="{{ style.href }}" type="text/css" rel="{{ style.rel }}" media="{{ style.media }}"/>
+  {% endfor %}
+  {% for script in scripts %}
+    <script src="{{ script.href }}" type="text/javascript"></script>
+  {% endfor %}
+  {% for link in links %}
+    <link href="{{ link.href }}" rel="{{ link.rel }}"/>
+  {% endfor %}
+  {% for analytic in analytics %}
+    {{ analytic }}
+  {% endfor %}
+</head>
+<body class="pb">
+<a class="pb-skip-link" href="#pb-main">Skip to main content</a>
+<div id="container">
+  <div id="alert"></div>
+
+  <header class="pb-header">
+    <div class="pb-container pb-header__inner">
+      <a class="pb-brand" href="{{ home }}">
+        <i class="fa-solid fa-diagram-project pb-brand__mark" aria-hidden="true"></i>
+        <span>{{ name }}</span>
+      </a>
+
+      <nav class="pb-nav" aria-label="Primary">
+        <a class="pb-nav__link{% if pb_active == 'marketplace' %} pb-nav__link--active{% endif %}" href="index.php?route=extension/poolbuy/pool&amp;language={{ lang }}">Marketplace</a>
+        <a class="pb-nav__link{% if pb_active == 'pools' %} pb-nav__link--active{% endif %}" href="index.php?route=extension/poolbuy/account&amp;language={{ lang }}">My Pools</a>
+        <a class="pb-nav__link{% if pb_active == 'orders' %} pb-nav__link--active{% endif %}" href="{{ order }}">Inventory</a>
+        {% if poolbuy_seller %}
+          <a class="pb-nav__link{% if pb_active == 'seller' %} pb-nav__link--active{% endif %}" href="{{ poolbuy_seller }}">Sell</a>
+        {% endif %}
+        <a class="pb-nav__link" href="{{ contact }}">Support</a>
+      </nav>
+
+      <div class="pb-header__actions">
+        {# Currency and language selectors stay available, collapsed on small screens #}
+        <div class="d-none d-xl-flex align-items-center gap-2">{{ currency }}{{ language }}</div>
+
+        {# Search lives on the marketplace page in this design; this keeps it
+           reachable from every other page without crowding the bar. #}
+        <a class="pb-icon-btn" href="index.php?route=extension/poolbuy/pool&amp;language={{ lang }}" title="Search products">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <span class="pb-visually-hidden">Search products</span>
+        </a>
+
+        <a class="pb-icon-btn pb-relative" href="{{ wishlist }}" id="wishlist-total" title="{{ text_wishlist }}">
+          <i class="fa-solid fa-heart" aria-hidden="true"></i>
+          <span class="pb-visually-hidden">{{ text_wishlist }}</span>
+        </a>
+
+        <div class="pb-relative">{{ cart }}</div>
+
+        <div class="dropdown">
+          <button type="button" class="pb-avatar" data-bs-toggle="dropdown" aria-expanded="false" title="{{ text_account }}">
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span class="pb-visually-hidden">{{ text_account }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            {% if not logged %}
+              <li><a href="{{ register }}" class="dropdown-item">{{ text_register }}</a></li>
+              <li><a href="{{ login }}" class="dropdown-item">{{ text_login }}</a></li>
+            {% else %}
+              <li><a href="index.php?route=extension/poolbuy/account&amp;language={{ lang }}" class="dropdown-item">My Pools</a></li>
+              {% if poolbuy_seller %}
+                <li><a href="{{ poolbuy_seller }}" class="dropdown-item"><i class="fa-solid fa-store" aria-hidden="true"></i> Seller Portal</a></li>
+              {% endif %}
+              <li><a href="{{ account }}" class="dropdown-item">{{ text_account }}</a></li>
+              <li><a href="{{ order }}" class="dropdown-item">{{ text_order }}</a></li>
+              <li><a href="{{ transaction }}" class="dropdown-item">{{ text_transaction }}</a></li>
+              <li><a href="{{ logout }}" class="dropdown-item">{{ text_logout }}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="pb-main">
+    {{ menu }}

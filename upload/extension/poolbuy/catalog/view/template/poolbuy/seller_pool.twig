@@ -1,0 +1,102 @@
+{{ header }}
+<div class="pb-container pb-section">
+  {% if success %}<div class="pb-alert pb-alert--success pb-mb-lg" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <span>{{ success }}</span></div>{% endif %}
+  {% if error %}<div class="pb-alert pb-alert--error pb-mb-lg" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <span>{{ error }}</span></div>{% endif %}
+
+  <p class="pb-mb-md"><a class="pb-link" href="{{ back }}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> {{ button_back }}</a></p>
+
+  <div class="pb-flex pb-justify-between pb-items-start pb-wrap pb-gap-md pb-mb-xl">
+    <div>
+      <span class="pb-label-md pb-muted pb-uppercase">{{ text_reference }} {{ pool.reference|escape }}</span>
+      <h1 class="pb-headline-lg pb-mt-xs pb-mb-xs">{{ pool.title|escape }}</h1>
+      <span class="pb-badge {{ pool.is_complete ? 'pb-badge--primary' : 'pb-badge--soft' }}">{{ pool.status_text }}</span>
+    </div>
+    <a class="pb-btn pb-btn--primary" href="{{ pool.edit }}">{{ button_edit }}</a>
+  </div>
+
+  <div class="pb-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--pb-gutter); align-items: start;">
+    <div>
+      {# ---- Reservation map ---- #}
+      <div class="pb-card pb-card--tinted pb-mb-lg">
+        <div class="pb-card__body">
+          <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-sm pb-mb-md">
+            <h2 class="pb-headline-sm pb-mb-0">{{ text_reservation_map }}</h2>
+            <span class="pb-primary-text pb-tnum" style="font-weight: 600;">{{ pool.reserved_qty }} / {{ pool.moq_target }} {{ pool.unit_label|escape }}</span>
+          </div>
+
+          <div class="pb-unit-map pb-mb-sm" role="img" aria-label="{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}">
+            {% for i in 1..map.cells %}
+              <span class="pb-unit-map__cell{% if i > map.filled %} pb-unit-map__cell--empty{% endif %}"></span>
+            {% endfor %}
+          </div>
+
+          {% if map.scaled %}<p class="pb-muted pb-mb-xs" style="font-size: 11px;">{{ text_map_scaled|format(map.unit_per_cell) }}</p>{% endif %}
+          <p class="pb-pool-hint pb-mb-0">{{ hint|escape }}</p>
+        </div>
+      </div>
+
+      {# ---- Commitments, anonymised ---- #}
+      <h2 class="pb-headline-sm pb-mb-md">{{ text_commitments }} <span class="pb-muted" style="font-weight: 400;">({{ reservations|length }})</span></h2>
+
+      {% if reservations %}
+        <div class="pb-flex pb-flex-col pb-gap-sm">
+          {% for row in reservations %}
+            <div class="pb-card">
+              <div class="pb-card__body pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md" style="padding: var(--pb-md) var(--pb-lg);">
+                <div class="pb-flex pb-items-center pb-gap-md">
+                  <span class="pb-avatar" style="background: var(--pb-surface-container); color: var(--pb-primary);"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
+                  <div>
+                    <p class="pb-body-md pb-mb-0" style="font-weight: 600;">{{ row.handle }}</p>
+                    <p class="pb-muted pb-mb-0" style="font-size: 11px;">{{ row.tier }} &middot; {{ text_orders_completed|format(row.order_total) }}</p>
+                  </div>
+                </div>
+                <div class="pb-text-end">
+                  <p class="pb-body-md pb-mb-0 pb-tnum" style="font-weight: 600;">{{ row.quantity }} {{ pool.unit_label|escape }}</p>
+                  <p class="pb-muted pb-mb-0 pb-tnum" style="font-size: 11px;">
+                    {% if row.has_price %}{{ row.value_text }}{% else %}{{ text_price_pending }}{% endif %} &middot; {{ row.status_text }} &middot; {{ row.ago }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <p class="pb-muted pb-mt-md pb-mb-0" style="font-size: 11px;">{{ text_buyer_privacy }}</p>
+      {% else %}
+        <p class="pb-body-md pb-muted">{{ text_no_commitments }}</p>
+      {% endif %}
+    </div>
+
+    {# ---- Tiers and terms ---- #}
+    <aside>
+      <div class="pb-card pb-mb-md">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_tiers }}</h2>
+          <div class="pb-flex pb-flex-col pb-gap-sm">
+            {% for tier in tiers %}
+              <div class="pb-flex pb-justify-between pb-items-center" style="padding: var(--pb-sm) var(--pb-md); border: 1px solid var(--pb-outline-variant); border-radius: var(--pb-radius); {% if tier.active %}border-color: var(--pb-primary); background: var(--pb-secondary-container);{% elseif not tier.unlocked %}opacity: 0.6;{% endif %}">
+                <span class="pb-body-md">
+                  {% if tier.max_qty %}{{ text_tier_range|format(tier.min_qty, tier.max_qty) }}{% else %}{{ text_tier_open|format(tier.min_qty) }}{% endif %}
+                </span>
+                <span class="pb-tnum" style="font-weight: 600;">
+                  {{ tier.price_text }}
+                  {% if tier.active %}<span class="pb-badge pb-badge--primary" style="margin-left: 6px;">{{ text_tier_active }}</span>{% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="pb-card">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_logistics }}</h2>
+          <div class="pb-flex pb-justify-between pb-body-md pb-mb-sm"><span class="pb-muted">{{ entry_lead_time }}</span><span>{{ pool.lead_time ? pool.lead_time|escape : '—' }}</span></div>
+          <div class="pb-flex pb-justify-between pb-body-md pb-mb-sm"><span class="pb-muted">{{ entry_shipping_terms }}</span><span>{{ pool.shipping_terms ? pool.shipping_terms|escape : '—' }}</span></div>
+          <div class="pb-flex pb-justify-between pb-body-md pb-mb-sm"><span class="pb-muted">{{ entry_min_qty }}</span><span class="pb-tnum">{{ pool.min_qty_per_buyer }}</span></div>
+          <div class="pb-flex pb-justify-between pb-body-md pb-mb-0"><span class="pb-muted">{{ entry_max_qty }}</span><span class="pb-tnum">{{ pool.max_qty_per_buyer ?: '—' }}</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+{{ footer }}

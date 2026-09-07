@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Marketplace | PoolBuy Wholesale</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pool-progress-pulse {
+            position: relative;
+            overflow: hidden;
+        }
+        .pool-progress-pulse::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 30px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#f0f0fb",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#131b2e",
+                      "surface-variant": "#e1e2ed",
+                      "surface-dim": "#d9d9e5",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "tertiary": "#943700",
+                      "tertiary-container": "#bc4800",
+                      "surface-bright": "#faf8ff",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "surface-tint": "#0053db",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#191b23",
+                      "secondary-fixed-dim": "#bec6e0",
+                      "outline-variant": "#c3c6d7",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-tertiary-fixed": "#360f00",
+                      "on-primary-fixed": "#00174b",
+                      "primary-fixed": "#dbe1ff",
+                      "on-secondary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2e3039",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-container-highest": "#e1e2ed",
+                      "surface-container-high": "#e7e7f3",
+                      "on-tertiary-container": "#ffede6",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-low": "#f3f3fe",
+                      "on-surface-variant": "#434655",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "outline": "#737686",
+                      "background": "#faf8ff",
+                      "secondary-container": "#dae2fd",
+                      "surface-container": "#ededf9",
+                      "secondary": "#565e74",
+                      "on-primary-container": "#eeefff",
+                      "on-error": "#ffffff",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "secondary-fixed": "#dae2fd",
+                      "on-secondary-container": "#5c647a",
+                      "on-primary": "#ffffff",
+                      "primary": "#004ac6",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#2563eb",
+                      "surface": "#faf8ff",
+                      "on-background": "#191b23"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "margin": "32px",
+                      "gutter": "24px",
+                      "md": "16px",
+                      "2xl": "48px",
+                      "base": "4px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "mono-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "mono-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin py-md max-w-[1280px] mx-auto">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">hub</span>
+<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed-dim tracking-tight">PoolBuy Wholesale</h1>
+</div>
+<div class="hidden md:flex gap-lg items-center">
+<nav class="flex gap-md">
+<a class="text-primary dark:text-inverse-primary font-semibold border-b-2 border-primary hover:text-primary transition-colors duration-200 py-sm" href="#">Marketplace</a>
+<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200 py-sm" href="#">My Pools</a>
+<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200 py-sm" href="#">Messages</a>
+<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200 py-sm" href="#">Analytics</a>
+</nav>
+<div class="h-6 w-px bg-outline-variant"></div>
+<button class="material-symbols-outlined text-on-surface-variant">notifications</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-label-md">WP</div>
+</div>
+<button class="md:hidden material-symbols-outlined text-primary">menu</button>
+</div>
+</header>
+<div class="flex flex-1 max-w-[1280px] mx-auto w-full relative">
+<!-- NavigationDrawer (Sidebar Desktop) -->
+<aside class="hidden lg:flex flex-col gap-sm p-md w-72 bg-surface-container-low dark:bg-surface-container-lowest sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto">
+<div class="flex flex-col gap-xs mb-lg">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest px-md">Categories</p>
+<div class="flex items-center gap-md bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed rounded-xl px-md py-sm translate-x-1 transition-transform cursor-pointer">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-md text-label-md">Marketplace</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">My Pools</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-label-md">Messages</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant dark:text-on-secondary-fixed-variant px-md py-sm hover:bg-surface-container-high transition-colors cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</div>
+</div>
+<div class="mt-auto border-t border-outline-variant pt-md px-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">WP</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-on-surface">Wholesale Pro</p>
+<p class="font-label-md text-label-md text-on-surface-variant">GST Verified Buyer</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 px-margin py-xl">
+<!-- Search & Filter Header -->
+<section class="mb-2xl flex flex-col gap-lg">
+<div class="flex flex-col md:flex-row gap-md items-end">
+<div class="flex-1 w-full">
+<label class="font-label-md text-label-md text-on-surface-variant mb-xs block">Search Products</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-xl pr-md py-md bg-surface-container border border-outline-variant rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md" placeholder="Search by SKU, Product Name, or Category..." type="text"/>
+</div>
+</div>
+<button class="flex items-center gap-sm px-lg py-md bg-surface border border-outline-variant rounded-xl hover:bg-surface-container-high transition-colors font-label-md text-label-md" onclick="toggleMobileFilter()">
+<span class="material-symbols-outlined">tune</span>
+                        Filters
+                    </button>
+<button class="px-lg py-md bg-primary-container text-on-primary-container rounded-xl font-label-md text-label-md shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                        Search Results
+                    </button>
+</div>
+<div class="flex gap-sm flex-wrap">
+<span class="px-md py-xs bg-secondary-container text-on-secondary-container rounded-full text-label-md flex items-center gap-xs">
+                        Industrial Chemicals <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+<span class="px-md py-xs bg-secondary-container text-on-secondary-container rounded-full text-label-md flex items-center gap-xs">
+                        Verified Sellers <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+<button class="text-primary font-label-md text-label-md underline">Clear all filters</button>
+</div>
+</section>
+<!-- Product Feed -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="A clean, minimalist product photo of high-quality industrial pool filtration systems stacked in a bright, modern warehouse setting. The lighting is soft and even, highlighting the sleek metallic finish of the equipment. The aesthetic is corporate and professional, with a shallow depth of field focusing on the primary unit in the foreground. Subtle blue and white tones dominate the scene." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBxMmNjcZfZCN3574a8z4BEI8HN8Hf_F5EkaOCdwC2750c1tty2jhpygRylUXsOBa5FHPJbteqkHVgVj9CMKMs8j_GU2-bfu3ZiMUIf7sYZeHAqw-x-MZwajmZD3T0ZRRP5bII1liY8GwRiQQLsVV_Ygw9XyKmKnOPpHFIHk1nYpe0AukPTESJn2SWDS3y7UthCwsBDx1kaUXzzEeuOfGebJyUlzOuDTTyxFOFwd-h7ZbrWhKjbpozoNg')"></div>
+<div class="absolute top-md left-md flex gap-sm">
+<span class="bg-success/90 bg-[#15803d] text-white px-md py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span> Verified
+                            </span>
+<span class="bg-tertiary-container text-on-tertiary-container px-md py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                GST Compliant
+                            </span>
+</div>
+</div>
+<div class="p-lg flex flex-col flex-1">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">EliteFlow Filtration Pro-7</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">factory</span> AquaGlobal Industrial Ltd.
+                                </p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">MOQ</p>
+<p class="font-headline-sm text-headline-sm text-primary">200 Units</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Wholesale Price</p>
+<p class="font-headline-sm text-headline-sm text-on-surface">$145.00 <span class="text-[12px] font-normal">/ unit</span></p>
+</div>
+</div>
+<!-- Pool Progress Section -->
+<div class="bg-surface-container p-md rounded-xl mb-lg border border-outline-variant/30">
+<div class="flex justify-between items-center mb-sm">
+<p class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-tight">Pool Status</p>
+<p class="font-mono-sm text-mono-sm text-primary font-bold">150 / 200 Units Filled</p>
+</div>
+<div class="w-full h-3 bg-white rounded-full overflow-hidden mb-sm border border-outline-variant/20">
+<div class="h-full bg-primary-container pool-progress-pulse" style="width: 75%"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant italic">Only 50 units left to unlock bulk pricing.</p>
+</div>
+<div class="flex gap-sm mt-auto">
+<button class="flex-1 bg-primary text-on-primary py-md rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-lg active:scale-95">
+                                Join Pool
+                            </button>
+<button class="flex-1 border border-outline-variant text-on-surface py-md rounded-xl font-label-md text-label-md hover:bg-surface-container-high transition-colors active:scale-95">
+                                Buy Entire MOQ
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="A macro photograph of high-purity pool chlorine granules in bulk packaging. The texture is crystal-sharp under bright, high-key studio lighting. The setting is clean and industrial, evoking a sense of pharmaceutical-grade quality. Color palette is dominated by whites and soft grays with deep blue shadows for a professional B2B catalog appearance." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBi2OmHWc19O7Hm8m2MszFPh3enXGgklE7Er8o6LBwDbNVRhaOKQkJufsut2ZTxuSp-q84271AOxee9Ri7zrLqppAzxMzxHs5gz6xZTeNm4IcqzYnnSg5offXoPrWzlDq271vgTwRenqilA22KJMa6BR6ZDA1kzZBNZ8NRg9-d3XfedLkHvOS9izVut91XQAHKyjlaQUDxKc-bNpgwATOKV68EvAeJ8TGlYHG1yHqkaJSHoQ91Wt1ipuw')"></div>
+<div class="absolute top-md left-md flex gap-sm">
+<span class="bg-success/90 bg-[#15803d] text-white px-md py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span> Verified
+                            </span>
+</div>
+</div>
+<div class="p-lg flex flex-col flex-1">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">CrystalPure Chlorine Tablets (25kg)</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">factory</span> ChemBulk Logistics
+                                </p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">MOQ</p>
+<p class="font-headline-sm text-headline-sm text-primary">500 Buckets</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Wholesale Price</p>
+<p class="font-headline-sm text-headline-sm text-on-surface">$82.00 <span class="text-[12px] font-normal">/ bucket</span></p>
+</div>
+</div>
+<!-- Pool Progress Section -->
+<div class="bg-surface-container p-md rounded-xl mb-lg border border-outline-variant/30">
+<div class="flex justify-between items-center mb-sm">
+<p class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-tight">Pool Status</p>
+<p class="font-mono-sm text-mono-sm text-primary font-bold">420 / 500 Buckets Filled</p>
+</div>
+<div class="w-full h-3 bg-white rounded-full overflow-hidden mb-sm border border-outline-variant/20">
+<div class="h-full bg-primary-container pool-progress-pulse" style="width: 84%"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant italic">Highly Active: 80 buckets remaining.</p>
+</div>
+<div class="flex gap-sm mt-auto">
+<button class="flex-1 bg-primary text-on-primary py-md rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-lg active:scale-95">
+                                Join Pool
+                            </button>
+<button class="flex-1 border border-outline-variant text-on-surface py-md rounded-xl font-label-md text-label-md hover:bg-surface-container-high transition-colors active:scale-95">
+                                Buy Entire MOQ
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="relative h-64 overflow-hidden">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="An artistic high-angle shot of professional underwater LED pool lights displayed on a reflective black surface. The lights emit a vibrant, cool blue glow. The atmosphere is tech-forward and sophisticated, following a clean B2B software dashboard aesthetic. Strong geometric shapes and professional studio lighting create a high-value product perception." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhLVQ1eZsw1QAVqqiDcaRNVgh7OX86Quc8AOjYw-9A_sQUqjFr1N1V0NtCG7wDtu5_OUztn9RVJM7b5h9JlwpTXRZvAbE8R691Y7xfRDhImLCy9L_5l1CY1wIXYWH7JNi2PPNqn3bzxgUfq9x5FzwviNjYIt4FfKhsFEPEOSr2qZYZbjSfztGNvstojagvBRFIW88aprNVJwk6B5xJEPEgevNz6DJbGHXUUESktPnKM7hR9ORNYpeklA')"></div>
+<div class="absolute top-md left-md flex gap-sm">
+<span class="bg-success/90 bg-[#15803d] text-white px-md py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span> Verified
+                            </span>
+</div>
+</div>
+<div class="p-lg flex flex-col flex-1">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">LumiPool RGB Smart LED Kits</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">factory</span> BrightTech Solutions
+                                </p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">MOQ</p>
+<p class="font-headline-sm text-headline-sm text-primary">100 Kits</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-lg">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Wholesale Price</p>
+<p class="font-headline-sm text-headline-sm text-on-surface">$210.00 <span class="text-[12px] font-normal">/ kit</span></p>
+</div>
+</div>
+<!-- Pool Progress Section -->
+<div class="bg-surface-container p-md rounded-xl mb-lg border border-outline-variant/30">
+<div class="flex justify-between items-center mb-sm">
+<p class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-tight">Pool Status</p>
+<p class="font-mono-sm text-mono-sm text-primary font-bold">12 / 100 Kits Filled</p>
+</div>
+<div class="w-full h-3 bg-white rounded-full overflow-hidden mb-sm border border-outline-variant/20">
+<div class="h-full bg-primary-container pool-progress-pulse" style="width: 12%"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant italic">New Pool: Be one of the first participants.</p>
+</div>
+<div class="flex gap-sm mt-auto">
+<button class="flex-1 bg-primary text-on-primary py-md rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-lg active:scale-95">
+                                Join Pool
+                            </button>
+<button class="flex-1 border border-outline-variant text-on-surface py-md rounded-xl font-label-md text-label-md hover:bg-surface-container-high transition-colors active:scale-95">
+                                Buy Entire MOQ
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe h-16 border-t border-outline-variant dark:border-outline bg-surface dark:bg-surface-dim shadow-lg">
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-full px-4 py-1 scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-label-md text-label-md">Market</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined">group_work</span>
+<span class="font-label-md text-label-md">Pools</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-label-md text-label-md">Chat</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Account</span>
+</div>
+</nav>
+<!-- Filter Mobile Drawer Overlay (Hidden by default) -->
+<div class="fixed inset-0 z-[60] bg-black/50 hidden opacity-0 transition-opacity duration-300" id="mobileFilter">
+<div class="absolute right-0 top-0 h-full w-[80%] max-w-sm bg-white shadow-2xl p-xl flex flex-col translate-x-full transition-transform duration-300" id="filterDrawer">
+<div class="flex justify-between items-center mb-xl">
+<h2 class="font-headline-lg text-headline-lg">Filters</h2>
+<button class="material-symbols-outlined" onclick="toggleMobileFilter()">close</button>
+</div>
+<div class="space-y-xl overflow-y-auto flex-1">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase mb-md">Category</p>
+<select class="w-full border-outline-variant rounded-lg p-md">
+<option>All Categories</option>
+<option>Chemicals</option>
+<option>Filtration</option>
+<option>Lighting</option>
+</select>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase mb-md">Location</p>
+<input class="w-full border-outline-variant rounded-lg p-md" placeholder="Enter city or state" type="text"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase mb-md">Min. Units (MOQ)</p>
+<input class="w-full accent-primary" type="range"/>
+</div>
+<div class="space-y-md">
+<label class="flex items-center gap-md">
+<input checked="" class="rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-md">Pools Available</span>
+</label>
+<label class="flex items-center gap-md">
+<input checked="" class="rounded text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-md">GST Verified Sellers</span>
+</label>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-lg rounded-xl font-headline-sm mt-xl">Apply Filters</button>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full py-2xl mt-auto">
+<div class="max-w-[1280px] mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-lg">
+<div class="flex flex-col items-center md:items-start gap-sm">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">PoolBuy B2B</h2>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-on-secondary-fixed-variant">© 2024 PoolBuy B2B Marketplace. All rights reserved.</p>
+</div>
+<div class="flex gap-lg flex-wrap justify-center">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">GST Compliance</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Seller Support</a>
+</div>
+</div>
+</footer>
+<script>
+        function toggleMobileFilter() {
+            const overlay = document.getElementById('mobileFilter');
+            const drawer = document.getElementById('filterDrawer');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('opacity-100');
+                    drawer.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.remove('opacity-100');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+    </script>
+</body></html>

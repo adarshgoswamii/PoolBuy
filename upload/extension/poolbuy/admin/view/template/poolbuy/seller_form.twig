@@ -1,0 +1,262 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-seller" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save" aria-hidden="true"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply" aria-hidden="true"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ text_form }}</div>
+      <div class="card-body">
+        <form id="form-seller" action="{{ save }}" method="post" data-oc-toggle="ajax">
+          <ul class="nav nav-tabs">
+            <li class="nav-item"><a href="#tab-general" data-bs-toggle="tab" class="nav-link active">{{ text_general }}</a></li>
+            <li class="nav-item"><a href="#tab-trust" data-bs-toggle="tab" class="nav-link">{{ text_trust }}</a></li>
+            <li class="nav-item"><a href="#tab-media" data-bs-toggle="tab" class="nav-link">{{ text_media }}</a></li>
+            <li class="nav-item"><a href="#tab-products" data-bs-toggle="tab" class="nav-link">{{ text_products }}</a></li>
+          </ul>
+          <div class="tab-content">
+
+            <div id="tab-general" class="tab-pane active">
+              <div class="row mb-3 required">
+                <label for="input-name" class="col-sm-2 col-form-label">{{ entry_name }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="name" value="{{ name }}" placeholder="{{ entry_name }}" id="input-name" class="form-control"/>
+                  <div id="error-name" class="invalid-feedback"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-slug" class="col-sm-2 col-form-label">{{ entry_slug }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="slug" value="{{ slug }}" placeholder="{{ entry_slug }}" id="input-slug" class="form-control"/>
+                  <div class="form-text">{{ help_slug }}</div>
+                  <div id="error-slug" class="invalid-feedback"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-location" class="col-sm-2 col-form-label">{{ entry_location }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="location" value="{{ location }}" placeholder="{{ entry_location }}" id="input-location" class="form-control"/>
+                  <div id="error-location" class="invalid-feedback"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-description" class="col-sm-2 col-form-label">{{ entry_description }}</label>
+                <div class="col-sm-10">
+                  <textarea name="description" rows="5" placeholder="{{ entry_description }}" id="input-description" class="form-control">{{ description }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_status }}</label>
+                <div class="col-sm-10">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="status" value="0"/>
+                    <input type="checkbox" name="status" value="1" id="input-status" class="form-check-input"{% if status %} checked{% endif %}/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-trust" class="tab-pane">
+              <div class="row mb-3">
+                <label for="input-gst-number" class="col-sm-2 col-form-label">{{ entry_gst_number }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="gst_number" value="{{ gst_number }}" placeholder="29ABCDE1234F1Z5" id="input-gst-number" maxlength="15" class="form-control text-uppercase"/>
+                  <div class="form-text">{{ help_gst_number }}</div>
+                  <div id="error-gst-number" class="invalid-feedback"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_gst_verified }}</label>
+                <div class="col-sm-10">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="gst_verified" value="0"/>
+                    <input type="checkbox" name="gst_verified" value="1" id="input-gst-verified" class="form-check-input"{% if gst_verified %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_gst_verified }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_verified_seller }}</label>
+                <div class="col-sm-10">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="verified_seller" value="0"/>
+                    <input type="checkbox" name="verified_seller" value="1" id="input-verified-seller" class="form-check-input"{% if verified_seller %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_verified_seller }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-rating" class="col-sm-2 col-form-label">{{ entry_rating }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="rating" value="{{ rating }}" placeholder="4.8" id="input-rating" class="form-control"/>
+                  <div class="form-text">{{ help_rating }}</div>
+                  <div id="error-rating" class="invalid-feedback"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-rating-count" class="col-sm-2 col-form-label">{{ entry_rating_count }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="rating_count" value="{{ rating_count }}" placeholder="240" id="input-rating-count" class="form-control"/>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-customer" class="col-sm-2 col-form-label">{{ entry_customer }}</label>
+                <div class="col-sm-10">
+                  <input type="text" value="{{ customer_name }}" placeholder="{{ entry_customer }}" id="input-customer" class="form-control" autocomplete="off"/>
+                  <input type="hidden" name="customer_id" value="{{ customer_id }}" id="input-customer-id"/>
+                  <div class="form-text">{{ help_customer }}</div>
+                  <div id="error-customer" class="invalid-feedback d-block"></div>
+                  <button type="button" id="button-unlink-customer" class="btn btn-light btn-sm mt-2">{{ button_unlink }}</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-media" class="tab-pane">
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_logo }}</label>
+                <div class="col-sm-10">
+                  <div class="d-inline-block">
+                    <a href="{{ logo_thumb }}" id="thumb-logo" data-oc-toggle="image" data-oc-target="input-logo" class="img-thumbnail d-block"><img src="{{ logo_thumb }}" alt="" title="" id="image-logo"/></a>
+                    <input type="hidden" name="logo" value="{{ logo }}" id="input-logo"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_images }}</label>
+                <div class="col-sm-10">
+                  <div class="form-text mb-2">{{ help_images }}</div>
+                  <div id="seller-gallery" class="d-flex flex-wrap gap-2">
+                    {% for row in image_rows %}
+                      <div class="text-center" data-oc-gallery-item>
+                        <a href="{{ row.thumb }}" data-oc-toggle="image" data-oc-target="gallery-image-{{ loop.index0 }}" class="img-thumbnail d-block"><img src="{{ row.thumb }}" alt="" title=""/></a>
+                        <input type="hidden" name="images[]" value="{{ row.image }}" id="gallery-image-{{ loop.index0 }}"/>
+                        <button type="button" class="btn btn-danger btn-sm mt-1" data-oc-gallery-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <button type="button" id="button-add-image" class="btn btn-light mt-2"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ text_add_image }}</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-products" class="tab-pane">
+              <div class="row mb-3">
+                <label for="input-product" class="col-sm-2 col-form-label">{{ entry_product }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="product_autocomplete" value="" placeholder="{{ entry_product }}" id="input-product" class="form-control" autocomplete="off"/>
+                  <div class="form-text">{{ help_product }}</div>
+                  <div id="product-list" class="list-group mt-2">
+                    {% for product in products %}
+                      <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ product.name }}</span>
+                        <input type="hidden" name="product[]" value="{{ product.product_id }}"/>
+                        <button type="button" class="btn btn-danger btn-sm" data-oc-product-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
+                      </div>
+                    {% endfor %}
+                    {% if not products %}
+                      <div class="list-group-item text-muted" data-oc-empty>{{ text_no_products }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <input type="hidden" name="seller_id" value="{{ seller_id }}"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+// Factory gallery: rows are added client side and named images[] so the server
+// simply receives the final list.
+var galleryIndex = {{ image_rows|length }};
+
+$('#button-add-image').on('click', function() {
+    var id = 'gallery-image-new-' + (galleryIndex++);
+
+    $('#seller-gallery').append(
+        '<div class="text-center" data-oc-gallery-item>' +
+        '<a href="{{ placeholder }}" data-oc-toggle="image" data-oc-target="' + id + '" class="img-thumbnail d-block"><img src="{{ placeholder }}" alt="" title=""/></a>' +
+        '<input type="hidden" name="images[]" value="" id="' + id + '"/>' +
+        '<button type="button" class="btn btn-danger btn-sm mt-1" data-oc-gallery-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>' +
+        '</div>'
+    );
+});
+
+$('#seller-gallery').on('click', '[data-oc-gallery-remove]', function() {
+    $(this).closest('[data-oc-gallery-item]').remove();
+});
+
+// Product assignment via OpenCart's product autocomplete endpoint
+$('#input-product').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=catalog/product.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return { label: item['name'], value: item['product_id'] };
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        $('#input-product').val('');
+
+        $('#product-list [data-oc-empty]').remove();
+
+        if ($('#product-list input[value="' + item['value'] + '"]').length) {
+            return;
+        }
+
+        $('#product-list').append(
+            '<div class="list-group-item d-flex justify-content-between align-items-center">' +
+            '<span>' + item['label'] + '</span>' +
+            '<input type="hidden" name="product[]" value="' + item['value'] + '"/>' +
+            '<button type="button" class="btn btn-danger btn-sm" data-oc-product-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>' +
+            '</div>'
+        );
+    }
+});
+
+$('#product-list').on('click', '[data-oc-product-remove]', function() {
+    $(this).closest('.list-group-item').remove();
+});
+
+// Link a storefront account so this seller can sign in to the seller portal
+$('#input-customer').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=customer/customer.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return { label: item['name'] + ' (' + item['email'] + ')', value: item['customer_id'] };
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        $('#input-customer').val(item['label']);
+        $('#input-customer-id').val(item['value']);
+    }
+});
+
+$('#button-unlink-customer').on('click', function() {
+    $('#input-customer').val('');
+    $('#input-customer-id').val('0');
+});
+//--></script>
+{{ footer }}

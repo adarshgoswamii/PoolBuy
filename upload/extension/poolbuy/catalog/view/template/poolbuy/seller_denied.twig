@@ -1,0 +1,19 @@
+{{ header }}
+{# A signed-in shopper reaching the seller portal is not an error - being a buyer
+   is perfectly legitimate - so this explains the situation instead of throwing
+   a permission page at them. #}
+<div class="pb-container pb-section">
+  <div class="pb-card" style="max-width: 44rem; margin-inline: auto;">
+    <div class="pb-card__body pb-text-center">
+      <div class="pb-empty__icon" style="font-size: 40px;"><i class="fa-solid fa-industry" aria-hidden="true"></i></div>
+      <h1 class="pb-headline-lg pb-mb-sm">{{ text_not_seller }}</h1>
+      <p class="pb-body-lg pb-muted pb-mb-lg">{{ text_not_seller_body }}</p>
+      <div class="pb-flex pb-gap-sm pb-justify-center pb-wrap">
+        <a class="pb-btn pb-btn--primary" href="{{ contact }}">{{ button_become_seller }}</a>
+        <a class="pb-btn pb-btn--ghost" href="{{ marketplace }}">{{ button_browse }}</a>
+        <a class="pb-btn pb-btn--light" href="{{ account }}">{{ button_account }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

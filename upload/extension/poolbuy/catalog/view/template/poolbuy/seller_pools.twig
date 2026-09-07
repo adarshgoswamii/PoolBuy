@@ -1,0 +1,131 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {% if success %}<div class="pb-alert pb-alert--success pb-mb-lg" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <span>{{ success }}</span></div>{% endif %}
+  {% if error %}<div class="pb-alert pb-alert--error pb-mb-lg" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> <span>{{ error }}</span></div>{% endif %}
+
+  {% if not is_approved %}
+    <div class="pb-alert pb-alert--warning pb-mb-lg" role="status">
+      <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+      <div>
+        <p class="pb-body-md pb-mb-xs" style="font-weight: 600;">{{ text_pending_approval }}</p>
+        <p class="pb-mb-0">{{ text_pending_body }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="pb-flex pb-justify-between pb-items-end pb-wrap pb-gap-md pb-mb-xl">
+    <div>
+      <h1 class="pb-display-lg pb-mb-xs">{{ heading_title }}</h1>
+      <p class="pb-body-lg pb-muted pb-mb-0">{{ seller_name|escape }} &middot; {{ text_subtitle }}</p>
+    </div>
+    <a class="pb-btn pb-btn--primary" href="{{ add }}"><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> {{ button_add_pool }}</a>
+  </div>
+
+  <div class="pb-grid pb-grid-3 pb-mb-xl">
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_total_volume }}</p>
+      <p class="pb-stat__value pb-primary-text pb-tnum pb-mb-0">{{ stats.total_volume }}</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_active_pools }}</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">{{ stats.active_pools }}</p>
+      <p class="pb-stat__meta"><i class="fa-regular fa-hourglass" aria-hidden="true"></i> {{ text_closing_soon|format(stats.closing_soon) }}</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">{{ text_average_fill }}</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">{{ stats.average_fill }}%</p>
+    </div>
+  </div>
+
+  <div class="pb-flex pb-gap-sm pb-wrap pb-mb-md">
+    <a class="pb-btn pb-btn--sm {{ filter_status ? 'pb-btn--light' : 'pb-btn--primary' }}" href="{{ all_href }}">{{ text_all }}</a>
+    {% for status in statuses %}
+      <a class="pb-btn pb-btn--sm {{ status.active ? 'pb-btn--primary' : 'pb-btn--light' }}" href="{{ status.href }}">{{ status.text }}</a>
+    {% endfor %}
+  </div>
+
+  <h2 class="pb-headline-sm pb-mb-md">{{ text_campaigns }}</h2>
+
+  {% if pools %}
+    <div class="pb-card">
+      <div class="pb-table-wrap">
+        <table class="pb-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ entry_product }}</th>
+              <th scope="col" class="pb-text-end">{{ entry_moq_target }}</th>
+              <th scope="col" class="pb-text-end">{{ text_reserved }}</th>
+              <th scope="col" style="width: 200px;">{{ text_average_fill }}</th>
+              <th scope="col">{{ text_time_left|format('') }}</th>
+              <th scope="col">{{ entry_status }}</th>
+              <th scope="col" class="pb-text-end">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pool in pools %}
+              <tr>
+                <td>
+                  <div class="pb-flex pb-items-center pb-gap-sm">
+                    <img src="{{ pool.thumb }}" alt="{{ pool.title|escape }}" width="44" height="44" loading="lazy" style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--pb-radius-sm);"/>
+                    <div>
+                      <a class="pb-link" href="{{ pool.view }}">{{ pool.title|escape }}</a>
+                      <div class="pb-muted" style="font-size: 11px;">{{ pool.reference|escape }}{% if pool.product_model %} &middot; {{ pool.product_model }}{% endif %}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="pb-text-end pb-tnum">{{ pool.moq_target }} <span class="pb-muted">{{ pool.unit_label|escape }}</span></td>
+                <td class="pb-text-end pb-tnum" style="font-weight: 600;">{{ pool.reserved_qty }}</td>
+                <td>
+                  <div class="pb-flex pb-justify-between pb-label-md pb-mb-xs">
+                    <span class="pb-primary-text pb-tnum">{{ pool.fill }}%</span>
+                    <span class="pb-muted pb-tnum">{{ text_left|format(pool.remaining) }}</span>
+                  </div>
+                  <div class="pb-progress pb-progress--sm" role="progressbar" aria-label="{{ pool.title|escape }}" aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pb-progress__bar{% if pool.progress_modifier %} pb-progress__bar--{{ pool.progress_modifier }}{% endif %}" style="width: {{ pool.fill }}%;"></div>
+                  </div>
+                </td>
+                <td class="pb-tnum">
+                  {% if pool.seconds_left > 0 %}
+                    <span class="{{ pool.is_urgent ? 'pb-tertiary-text' : 'pb-muted' }}" data-pb-countdown="{{ pool.end_timestamp }}" data-pb-ended="{{ text_ended }}">{{ pool.time_left }}</span>
+                  {% else %}
+                    <span class="pb-muted">{{ text_ended }}</span>
+                  {% endif %}
+                </td>
+                <td><span class="pb-badge {{ pool.is_complete ? 'pb-badge--primary' : (pool.status == 'active' ? 'pb-badge--verified' : 'pb-badge--muted') }}">{{ pool.status_text }}</span></td>
+                <td class="pb-text-end">
+                  <a class="pb-btn pb-btn--light pb-btn--sm" href="{{ pool.view }}">{{ button_view }}</a>
+                  <a class="pb-btn pb-btn--ghost pb-btn--sm" href="{{ pool.edit }}">{{ button_edit }}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md pb-mt-lg">
+      <div>{{ pagination }}</div>
+      <div class="pb-label-md pb-muted pb-tnum">{{ results }}</div>
+    </div>
+  {% else %}
+    <div class="pb-empty">
+      <div class="pb-empty__icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></div>
+      <p class="pb-headline-sm pb-mb-sm">{{ text_no_pools }}</p>
+      <p class="pb-body-md pb-mb-md">{{ text_no_pools_body }}</p>
+      <a class="pb-btn pb-btn--primary" href="{{ add }}">{{ button_add_pool }}</a>
+    </div>
+  {% endif %}
+</div>
+{{ footer }}

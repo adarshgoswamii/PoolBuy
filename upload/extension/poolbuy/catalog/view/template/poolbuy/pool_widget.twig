@@ -1,0 +1,192 @@
+{#
+  Pool status widget for the product page.
+  All operator supplied values are escaped, since Twig autoescape is off.
+#}
+<section class="pb-mb-xl" aria-labelledby="pb-pool-heading">
+  <h2 id="pb-pool-heading" class="pb-visually-hidden">{{ text_pool_progress }}</h2>
+
+  {# ---- Hero: live progress and the primary call to action ---- #}
+  <div class="pb-pool-hero pb-mb-lg">
+    <div class="pb-flex pb-justify-between pb-items-start pb-wrap pb-gap-md pb-mb-md">
+      <div>
+        <span class="pb-label-md pb-uppercase" style="opacity: 0.85;">{{ text_pool_progress }}</span>
+        <div class="pb-flex pb-items-end pb-gap-xs">
+          <span class="pb-display-lg pb-tnum">{{ pool.reserved_qty }} / {{ pool.moq_target }}</span>
+          <span class="pb-headline-sm" style="opacity: 0.9;">{{ pool.unit_label|escape }}</span>
+        </div>
+        <span class="pb-label-md pb-mono-sm" style="opacity: 0.8;">{{ text_pool_ref }} {{ pool.reference|escape }}</span>
+      </div>
+
+      <div class="pb-text-end">
+        {% if pool.seconds_left > 0 %}
+          <span class="pb-badge" style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.25); color: #fff;">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+            <span data-pb-countdown="{{ pool.end_timestamp }}" data-pb-ended="{{ text_ended }}">{{ text_ends_in|format(pool.time_left) }}</span>
+          </span>
+        {% else %}
+          <span class="pb-badge pb-badge--muted">{{ text_ended }}</span>
+        {% endif %}
+        <div class="pb-headline-lg pb-mt-xs pb-tnum">{{ text_full|format(pool.fill) }}</div>
+      </div>
+    </div>
+
+    <div class="pb-progress pb-progress--lg{% if pool.is_open %} pb-progress--pulse{% endif %} pb-mb-md"
+         role="progressbar"
+         aria-label="{{ text_pool_progress }}"
+         aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="pb-progress__bar pb-progress__bar--on-primary" style="width: {{ pool.fill }}%;"></div>
+    </div>
+
+    <div class="pb-pool-hero__inset pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md">
+      <div class="pb-flex pb-items-center pb-gap-md">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span class="pb-body-md">{{ hint|escape }}</span>
+      </div>
+
+      {% if pool.is_open %}
+        <div class="pb-flex pb-gap-sm pb-wrap">
+          <a class="pb-btn pb-btn--on-primary" href="{{ join }}">{{ button_join_pool }}</a>
+          {% if pool.allow_full_moq_buy %}
+            <a class="pb-btn" href="{{ buy_all }}" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3);">{{ button_buy_moq }}</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="pb-flex pb-gap-sm pb-items-center pb-wrap">
+          <span class="pb-badge pb-badge--muted">{{ status_text }}</span>
+          <a class="pb-btn pb-btn--on-primary pb-btn--sm" href="{{ marketplace }}">{{ button_view_marketplace }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ---- Price tier ladder ---- #}
+  <h3 class="pb-headline-sm pb-mb-xs">{{ text_tiers_title }}</h3>
+  <p class="pb-body-md pb-muted pb-mb-md">{{ text_tiers_help }}</p>
+
+  <div class="pb-grid pb-grid-3 pb-mb-xl">
+    {% for tier in tiers %}
+      <div class="pb-tier{% if tier.active %} pb-tier--active{% elseif not tier.unlocked %} pb-tier--locked{% endif %}">
+        {% if tier.active %}<span class="pb-tier__flag">{{ text_tier_current }}</span>{% endif %}
+        <p class="pb-tier__label pb-mb-xs">{{ tier.range }}</p>
+        <p class="pb-tier__price pb-tnum pb-mb-xs{% if tier.active %} pb-primary-text{% endif %}">{{ tier.price_text }}</p>
+        <span class="pb-tier__state pb-tier__state--{{ tier.state_class }}">{{ tier.state }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="pb-grid pb-grid-2" style="align-items: start;">
+    {# ---- Seller card ---- #}
+    <div class="pb-card">
+      <div class="pb-card__header pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md">
+        <div class="pb-flex pb-items-center pb-gap-md">
+          <span class="pb-avatar" style="width: 56px; height: 56px; border-radius: var(--pb-radius); background: var(--pb-surface-container); color: var(--pb-primary); font-size: 18px;">{{ seller.initials|escape }}</span>
+          <div>
+            <p class="pb-label-md pb-muted pb-uppercase pb-mb-xs">{{ text_seller_title }}</p>
+            <h3 class="pb-headline-sm pb-mb-xs">{{ seller.name|escape }}</h3>
+            <div class="pb-flex pb-items-center pb-gap-xs pb-label-md pb-muted">
+              {% if seller.rating_count %}
+                <span class="pb-tertiary-text" aria-hidden="true">
+                  {% for i in 1..seller.stars_full %}<i class="fa-solid fa-star" aria-hidden="true"></i>{% endfor %}
+                  {% if seller.star_half %}<i class="fa-solid fa-star-half-stroke" aria-hidden="true"></i>{% endif %}
+                  {% if seller.stars_empty > 0 %}{% for i in 1..seller.stars_empty %}<i class="fa-regular fa-star" aria-hidden="true"></i>{% endfor %}{% endif %}
+                </span>
+                <span>{{ text_ratings|format(seller.rating, seller.rating_count) }}</span>
+              {% else %}
+                <span>{{ text_no_ratings }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <a class="pb-btn pb-btn--light pb-btn--sm" href="{{ contact }}">{{ button_contact_seller }}</a>
+      </div>
+
+      <div class="pb-card__body">
+        <div class="pb-flex pb-wrap pb-gap-sm pb-mb-md">
+          {% if seller.verified %}
+            <span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_verified_seller }}</span>
+          {% endif %}
+          {% if seller.gst_verified %}
+            <span class="pb-badge pb-badge--gst"><i class="fa-solid fa-gavel" aria-hidden="true"></i> {{ text_gst_verified }}</span>
+          {% endif %}
+          {% if seller.location %}
+            <span class="pb-badge pb-badge--muted"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ seller.location|escape }}</span>
+          {% endif %}
+        </div>
+
+        {% if seller.description %}
+          <p class="pb-body-md pb-muted">{{ seller.description|escape }}</p>
+        {% endif %}
+
+        {% if seller.gallery %}
+          <div class="pb-grid pb-grid-3 pb-mt-md" style="gap: var(--pb-sm);">
+            {% for image in seller.gallery %}
+              <img src="{{ image }}" alt="{{ seller.name|escape }}" loading="lazy" style="width: 100%; height: 90px; object-fit: cover; border-radius: var(--pb-radius); border: 1px solid var(--pb-outline-variant);"/>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div>
+      {# ---- Anonymised participant feed ---- #}
+      <div class="pb-card pb-mb-md">
+        <div class="pb-card__body">
+          <div class="pb-flex pb-justify-between pb-items-center pb-mb-md">
+            <h3 class="pb-headline-sm pb-mb-0">{{ text_participants_title }}</h3>
+            {% if pool.is_open %}<span class="pb-badge pb-badge--live">{{ text_live }}</span>{% endif %}
+          </div>
+
+          {% if participants %}
+            <div class="pb-flex pb-flex-col pb-gap-sm">
+              {% for participant in participants %}
+                <div class="pb-flex pb-items-center pb-gap-md" style="background: var(--pb-surface-container-low); border: 1px solid var(--pb-outline-variant); border-radius: var(--pb-radius); padding: var(--pb-sm) var(--pb-md);">
+                  <span class="pb-avatar" style="background: var(--pb-secondary-container); color: var(--pb-secondary);"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
+                  <div class="pb-grow">
+                    <p class="pb-label-md pb-mb-0 pb-tnum">{{ text_reserved_units|format(participant.quantity, pool.unit_label|escape) }}</p>
+                    <p class="pb-muted pb-mb-0" style="font-size: 11px;">{{ participant.label }} &middot; {{ participant.ago }}</p>
+                  </div>
+                  <i class="fa-solid fa-circle-check pb-primary-text" aria-hidden="true"></i>
+                </div>
+              {% endfor %}
+            </div>
+            <p class="pb-label-md pb-muted pb-mt-md pb-mb-xs">{{ text_all_participants|format(participant_total) }}</p>
+            <p class="pb-muted pb-mb-0" style="font-size: 11px;">{{ text_privacy_note }}</p>
+          {% else %}
+            <p class="pb-body-md pb-muted pb-mb-0">{{ text_no_participants }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      {# ---- Logistics ---- #}
+      <div class="pb-card pb-card--tinted">
+        <div class="pb-card__body">
+          <h3 class="pb-headline-sm pb-mb-md"><i class="fa-solid fa-truck" aria-hidden="true"></i> {{ text_logistics_title }}</h3>
+
+          <div class="pb-flex pb-items-start pb-gap-md pb-mb-md">
+            <i class="fa-solid fa-box-open pb-muted pb-mt-xs" aria-hidden="true"></i>
+            <div>
+              <p class="pb-body-md pb-mb-0" style="font-weight: 600;">{{ text_min_order }}</p>
+              <p class="pb-body-md pb-muted pb-mb-0">{{ text_min_order_body|format(logistics.min_qty, logistics.unit_label|escape) }}</p>
+            </div>
+          </div>
+
+          <div class="pb-flex pb-items-start pb-gap-md pb-mb-md">
+            <i class="fa-regular fa-clock pb-muted pb-mt-xs" aria-hidden="true"></i>
+            <div>
+              <p class="pb-body-md pb-mb-0" style="font-weight: 600;">{{ text_lead_time }}: {{ logistics.lead_time ? logistics.lead_time|escape : text_not_specified }}</p>
+              <p class="pb-body-md pb-muted pb-mb-0">{{ text_lead_time_body }}</p>
+            </div>
+          </div>
+
+          <div class="pb-flex pb-items-start pb-gap-md">
+            <i class="fa-solid fa-location-dot pb-muted pb-mt-xs" aria-hidden="true"></i>
+            <div>
+              <p class="pb-body-md pb-mb-0" style="font-weight: 600;">{{ text_shipping }}: {{ logistics.shipping_terms ? logistics.shipping_terms|escape : text_not_specified }}</p>
+              <p class="pb-body-md pb-muted pb-mb-0">{{ text_shipping_body }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

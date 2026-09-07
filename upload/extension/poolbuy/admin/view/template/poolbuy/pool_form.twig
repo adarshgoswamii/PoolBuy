@@ -1,0 +1,282 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-pool" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save" aria-hidden="true"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply" aria-hidden="true"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ text_form }}</div>
+      <div class="card-body">
+        <form id="form-pool" action="{{ save }}" method="post" data-oc-toggle="ajax">
+          <ul class="nav nav-tabs">
+            <li class="nav-item"><a href="#tab-general" data-bs-toggle="tab" class="nav-link active">{{ text_general }}</a></li>
+            <li class="nav-item"><a href="#tab-schedule" data-bs-toggle="tab" class="nav-link">{{ text_schedule }}</a></li>
+            <li class="nav-item"><a href="#tab-tiers" data-bs-toggle="tab" class="nav-link">{{ text_tiers }}</a></li>
+            <li class="nav-item"><a href="#tab-logistics" data-bs-toggle="tab" class="nav-link">{{ text_logistics }}</a></li>
+          </ul>
+          <div class="tab-content">
+
+            <div id="tab-general" class="tab-pane active">
+              <div class="row mb-3 required">
+                <label for="input-product" class="col-sm-3 col-form-label">{{ entry_product }}</label>
+                <div class="col-sm-9">
+                  <input type="text" value="{{ product_name }}" placeholder="{{ entry_product }}" id="input-product" class="form-control" autocomplete="off"/>
+                  <input type="hidden" name="product_id" value="{{ product_id }}" id="input-product-id"/>
+                  <div id="error-product" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3 required">
+                <label for="input-seller" class="col-sm-3 col-form-label">{{ entry_seller }}</label>
+                <div class="col-sm-9">
+                  <input type="text" value="{{ seller_name }}" placeholder="{{ entry_seller }}" id="input-seller" class="form-control" autocomplete="off"/>
+                  <input type="hidden" name="seller_id" value="{{ seller_id }}" id="input-seller-id"/>
+                  <div id="error-seller" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-title" class="col-sm-3 col-form-label">{{ entry_title }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="title" value="{{ title }}" placeholder="{{ entry_title }}" id="input-title" class="form-control"/>
+                  <div class="form-text">{{ help_title }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-reference" class="col-sm-3 col-form-label">{{ entry_reference }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="reference" value="{{ reference }}" placeholder="PB-4F2A19" id="input-reference" class="form-control text-uppercase"/>
+                  <div class="form-text">{{ help_reference }}</div>
+                  <div id="error-reference" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3 required">
+                <label for="input-moq-target" class="col-sm-3 col-form-label">{{ entry_moq_target }}</label>
+                <div class="col-sm-9">
+                  <div class="input-group">
+                    <input type="text" name="moq_target" value="{{ moq_target }}" placeholder="200" id="input-moq-target" class="form-control"/>
+                    <input type="text" name="unit_label" value="{{ unit_label }}" placeholder="{{ entry_unit_label }}" id="input-unit-label" class="form-control" style="max-width: 160px;"/>
+                  </div>
+                  <div class="form-text">{{ help_unit_label }}</div>
+                  <div id="error-moq-target" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">{{ column_reserved }}</label>
+                <div class="col-sm-9">
+                  <input type="text" value="{{ reserved_qty }}" class="form-control" disabled/>
+                  <div class="form-text">{{ text_reserved_locked }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-currency-code" class="col-sm-3 col-form-label">{{ entry_currency_code }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="currency_code" value="{{ currency_code }}" maxlength="3" id="input-currency-code" class="form-control text-uppercase" style="max-width: 120px;"/>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-status" class="col-sm-3 col-form-label">{{ entry_status }}</label>
+                <div class="col-sm-9">
+                  <select name="status" id="input-status" class="form-select">
+                    {% for value, text in statuses %}
+                      <option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                  </select>
+                  <div id="error-status" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-schedule" class="tab-pane">
+              <div class="row mb-3 required">
+                <label for="input-date-start" class="col-sm-3 col-form-label">{{ entry_date_start }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="date_start" value="{{ date_start }}" placeholder="YYYY-MM-DD HH:MM:SS" id="input-date-start" class="form-control"/>
+                  <div id="error-date-start" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3 required">
+                <label for="input-date-end" class="col-sm-3 col-form-label">{{ entry_date_end }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="date_end" value="{{ date_end }}" placeholder="YYYY-MM-DD HH:MM:SS" id="input-date-end" class="form-control"/>
+                  <div id="error-date-end" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-min-qty" class="col-sm-3 col-form-label">{{ entry_min_qty }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="min_qty_per_buyer" value="{{ min_qty_per_buyer }}" id="input-min-qty" class="form-control"/>
+                  <div id="error-min-qty-per-buyer" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-max-qty" class="col-sm-3 col-form-label">{{ entry_max_qty }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="max_qty_per_buyer" value="{{ max_qty_per_buyer }}" id="input-max-qty" class="form-control"/>
+                  <div class="form-text">{{ help_max_qty }}</div>
+                  <div id="error-max-qty-per-buyer" class="invalid-feedback d-block"></div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">{{ entry_retro_pricing }}</label>
+                <div class="col-sm-9">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="retro_pricing" value="0"/>
+                    <input type="checkbox" name="retro_pricing" value="1" id="input-retro-pricing" class="form-check-input"{% if retro_pricing %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_retro_pricing }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">{{ entry_allow_full_moq }}</label>
+                <div class="col-sm-9">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="allow_full_moq_buy" value="0"/>
+                    <input type="checkbox" name="allow_full_moq_buy" value="1" id="input-allow-full-moq" class="form-check-input"{% if allow_full_moq_buy %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_allow_full_moq }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-tiers" class="tab-pane">
+              <div class="alert alert-info">{{ help_tiers }}</div>
+              <div id="error-pool-tier" class="alert alert-danger d-none"></div>
+              <table class="table table-bordered" id="tier-table">
+                <thead>
+                  <tr>
+                    <td class="text-end" style="width: 25%;">{{ entry_tier_min }}</td>
+                    <td class="text-end" style="width: 25%;">{{ entry_tier_max }}</td>
+                    <td class="text-end" style="width: 35%;">{{ entry_tier_price }}</td>
+                    <td style="width: 15%;"></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tier in pool_tiers %}
+                    <tr>
+                      <td><input type="text" name="pool_tier[{{ loop.index0 }}][min_qty]" value="{{ tier.min_qty }}" class="form-control text-end"/></td>
+                      <td><input type="text" name="pool_tier[{{ loop.index0 }}][max_qty]" value="{{ tier.max_qty }}" placeholder="{{ text_open_ended }}" class="form-control text-end"/></td>
+                      <td><input type="text" name="pool_tier[{{ loop.index0 }}][price]" value="{{ tier.price }}" class="form-control text-end"/></td>
+                      <td class="text-end"><button type="button" class="btn btn-danger" data-oc-tier-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-end"><button type="button" id="button-add-tier" class="btn btn-primary"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ text_add_tier }}</button></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div id="tab-logistics" class="tab-pane">
+              <div class="row mb-3">
+                <label for="input-lead-time" class="col-sm-3 col-form-label">{{ entry_lead_time }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="lead_time" value="{{ lead_time }}" placeholder="15-20 Days" id="input-lead-time" class="form-control"/>
+                  <div class="form-text">{{ help_lead_time }}</div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="input-shipping-terms" class="col-sm-3 col-form-label">{{ entry_shipping_terms }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="shipping_terms" value="{{ shipping_terms }}" placeholder="FOB Shanghai" id="input-shipping-terms" class="form-control"/>
+                  <div class="form-text">{{ help_shipping_terms }}</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <input type="hidden" name="pool_id" value="{{ pool_id }}"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+// Price ladder editor. Row indexes only need to be unique, so a monotonic
+// counter is enough; the server re-sorts by minimum quantity anyway.
+var tierRow = {{ pool_tiers|length }};
+
+$('#button-add-tier').on('click', function() {
+    var html = '<tr>' +
+        '<td><input type="text" name="pool_tier[' + tierRow + '][min_qty]" value="" class="form-control text-end"/></td>' +
+        '<td><input type="text" name="pool_tier[' + tierRow + '][max_qty]" value="" placeholder="{{ text_open_ended }}" class="form-control text-end"/></td>' +
+        '<td><input type="text" name="pool_tier[' + tierRow + '][price]" value="" class="form-control text-end"/></td>' +
+        '<td class="text-end"><button type="button" class="btn btn-danger" data-oc-tier-remove><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></td>' +
+        '</tr>';
+
+    $('#tier-table tbody').append(html);
+
+    tierRow++;
+});
+
+$('#tier-table').on('click', '[data-oc-tier-remove]', function() {
+    $(this).closest('tr').remove();
+});
+
+// Tier errors arrive as a single sentence list rather than per-field, so they are
+// surfaced in a dedicated alert above the table.
+$('#form-pool').on('submit', function() {
+    $('#error-pool-tier').addClass('d-none').text('');
+});
+
+$(document).ajaxComplete(function(event, xhr, settings) {
+    if (settings.url && settings.url.indexOf('poolbuy/pool.save') !== -1) {
+        try {
+            var json = JSON.parse(xhr.responseText);
+
+            if (json['error'] && json['error']['pool_tier']) {
+                $('#error-pool-tier').removeClass('d-none').text(json['error']['pool_tier']);
+            }
+        } catch (e) {
+            // A non-JSON response is already surfaced by OpenCart's own handler.
+        }
+    }
+});
+
+$('#input-product').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=catalog/product.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return { label: item['name'], value: item['product_id'] };
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        $('#input-product').val(item['label']);
+        $('#input-product-id').val(item['value']);
+    }
+});
+
+$('#input-seller').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=extension/poolbuy/poolbuy/seller.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return { label: item['name'], value: item['seller_id'] };
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        $('#input-seller').val(item['label']);
+        $('#input-seller-id').val(item['value']);
+    }
+});
+//--></script>
+{{ footer }}

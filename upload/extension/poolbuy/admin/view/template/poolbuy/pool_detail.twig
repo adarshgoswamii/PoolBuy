@@ -1,0 +1,165 @@
+{% if pool %}
+  <div class="card border-primary mb-3">
+    <div class="card-header d-flex justify-content-between align-items-start flex-wrap gap-2">
+      <div>
+        <h5 class="mb-1">{{ pool.title }}</h5>
+        <div class="small text-muted">
+          <code>{{ pool.reference }}</code>
+          {% if pool.seller_name %} &middot; <i class="fa-solid fa-industry" aria-hidden="true"></i> {{ pool.seller_name }}{% endif %}
+          {% if pool.location %} &middot; <i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ pool.location }}{% endif %}
+        </div>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <span class="badge bg-secondary">{{ pool.status_text }}</span>
+        <button type="button" class="btn-close" aria-label="{{ button_close_panel }}" data-oc-detail-close></button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row g-3">
+        {# ---- Reservation map ---- #}
+        <div class="col-lg-8">
+          <div class="p-3 rounded" style="background: #f3f3fe;">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <strong>{{ text_reservation_map }}</strong>
+              <span class="text-primary fw-semibold">{{ pool.reserved_qty }} / {{ pool.moq_target }} {{ pool.unit_label }}</span>
+            </div>
+
+            <div class="d-grid mb-2" style="grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px;">
+              {% for i in 1..map.cells %}
+                {% if i <= map.filled %}
+                  <div style="height: 22px; border-radius: 3px; background: #004ac6;" title="{{ text_cell_filled }}"></div>
+                {% else %}
+                  <div style="height: 22px; border-radius: 3px; background: #dae2fd; border: 2px dashed #c3c6d7;" title="{{ text_cell_empty }}"></div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            {% if map.scaled %}
+              <p class="small text-muted mb-1">{{ text_map_scaled|format(map.unit_per_cell) }}</p>
+            {% endif %}
+
+            <p class="small text-muted mb-0">
+              {% if pool.units_to_next %}
+                {{ text_slots_remaining|format(pool.units_to_next, pool.next_tier_text) }}
+              {% else %}
+                {{ text_current_price|format(pool.unit_price_text) }}
+              {% endif %}
+            </p>
+          </div>
+
+          {# ---- Recent commitments ---- #}
+          <h6 class="mt-4 mb-2">{{ text_recent_reservations }} <span class="text-muted fw-normal">({{ reservation_total }})</span></h6>
+
+          {% if reservations %}
+            <div class="list-group">
+              {% for reservation in reservations %}
+                <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-primary" style="width: 40px; height: 40px; background: #ededf9;">{{ reservation.initials }}</span>
+                    <div>
+                      <div class="fw-semibold">{{ reservation.handle }}</div>
+                      <div class="small text-muted">{{ reservation.tier }} &middot; {{ text_orders_completed|format(reservation.order_total) }}</div>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="fw-semibold">{{ reservation.quantity }} {{ pool.unit_label }}</div>
+                    <div class="small text-muted">
+                      {% if reservation.has_price %}{{ reservation.value_text }} &middot; {% endif %}{{ reservation.status_text }} &middot; {{ reservation.ago }}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <p class="small text-muted mt-2 mb-0">{{ text_buyer_privacy }}</p>
+          {% else %}
+            <p class="text-muted mb-0">{{ text_no_reservations }}</p>
+          {% endif %}
+        </div>
+
+        {# ---- Quick actions ---- #}
+        <div class="col-lg-4">
+          <div class="p-3 rounded mb-3" style="background: #ededf9;">
+            <h6 class="mb-3">{{ text_quick_actions }}</h6>
+
+            <a href="{{ pool.edit }}" class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2">
+              <span><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ button_edit_pool }}</span>
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+            <a href="{{ product }}" class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2">
+              <span><i class="fa-solid fa-box" aria-hidden="true"></i> {{ button_edit_product }}</span>
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+            <a href="{{ seller }}" class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2">
+              <span><i class="fa-solid fa-industry" aria-hidden="true"></i> {{ button_edit_seller }}</span>
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+            <a href="{{ orders }}" class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2">
+              <span><i class="fa-solid fa-truck" aria-hidden="true"></i> {{ button_view_orders }}</span>
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+
+            {% if can_close %}
+              <hr/>
+              <button type="button" class="btn btn-outline-danger w-100" id="button-close-pool" data-oc-close-url="{{ close }}">
+                {{ button_close_early }}
+              </button>
+              <p class="small text-muted mt-2 mb-0">{{ help_close_early }}</p>
+            {% endif %}
+          </div>
+
+          {% if is_ready %}
+            <div class="alert alert-warning mb-0">
+              <strong><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ text_order_readiness }}</strong>
+              <p class="mb-0 mt-1 small">{{ text_readiness_body|format(pool.fill) }}</p>
+            </div>
+          {% endif %}
+
+          <div class="mt-3 small">
+            <div class="d-flex justify-content-between"><span class="text-muted">{{ column_time }}</span><span>{{ pool.time_left ?: text_ended }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">{{ entry_lead_time }}</span><span>{{ pool.lead_time ?: '&mdash;' }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">{{ entry_shipping_terms }}</span><span>{{ pool.shipping_terms ?: '&mdash;' }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-muted">{{ entry_tier_price }}</span><span>{{ pool.unit_price_text }}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript"><!--
+  $('[data-oc-detail-close]').on('click', function() {
+      $('#pool-detail').html('');
+  });
+
+  $('#button-close-pool').on('click', function() {
+      if (!confirm('{{ text_confirm_close }}')) {
+          return;
+      }
+
+      var button = this;
+
+      $.ajax({
+          url: $(button).attr('data-oc-close-url'),
+          dataType: 'json',
+          success: function(json) {
+              $('.alert-dismissible').remove();
+
+              if (json['error']) {
+                  $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+              }
+
+              if (json['success']) {
+                  $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+                  // Refresh both the list and this panel so the new status is visible
+                  $('#pool').load('index.php?route=extension/poolbuy/poolbuy/pool.list&user_token={{ user_token }}');
+                  $('#pool-detail').load('index.php?route=extension/poolbuy/poolbuy/pool.detail&user_token={{ user_token }}&pool_id={{ pool.pool_id }}');
+              }
+          },
+          error: function(xhr) {
+              console.log(xhr.responseText);
+          }
+      });
+  });
+  //--></script>
+{% endif %}

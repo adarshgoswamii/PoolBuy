@@ -1,0 +1,124 @@
+{% set status_class = {
+  'draft': 'bg-secondary',
+  'active': 'bg-success',
+  'reached': 'bg-primary',
+  'closed': 'bg-info',
+  'expired': 'bg-dark',
+  'fulfilled': 'bg-success',
+  'cancelled': 'bg-danger'
+} %}
+<div class="row mb-3">
+  <div class="col-md-5">
+    <label for="filter-product" class="form-label">{{ entry_filter_product }}</label>
+    <input type="text" name="filter_product" value="{{ filter_product }}" placeholder="{{ entry_filter_product }}" id="filter-product" class="form-control"/>
+  </div>
+  <div class="col-md-5">
+    <label for="filter-status" class="form-label">{{ entry_filter_status }}</label>
+    <select name="filter_status" id="filter-status" class="form-select">
+      <option value="">{{ text_all }}</option>
+      {% for value, text in statuses %}
+        <option value="{{ value }}"{% if filter_status == value %} selected{% endif %}>{{ text }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <button type="button" id="button-filter" class="btn btn-light w-100"><i class="fa-solid fa-filter" aria-hidden="true"></i> {{ button_filter }}</button>
+  </div>
+</div>
+<form id="form-pool" method="post" data-oc-toggle="ajax" data-oc-target="#pool">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead>
+        <tr>
+          <td style="width: 1px;" class="text-center"><input type="checkbox" onchange="$('input[name^=\'selected\']').prop('checked', this.checked);" class="form-check-input"/></td>
+          <td class="text-start"><a href="{{ sort_title }}"{% if sort == 'title' %} class="{{ order|lower }}"{% endif %}>{{ column_product }}</a></td>
+          <td class="text-start"><a href="{{ sort_seller_name }}"{% if sort == 'seller_name' %} class="{{ order|lower }}"{% endif %}>{{ column_seller }}</a></td>
+          <td class="text-end"><a href="{{ sort_moq_target }}"{% if sort == 'moq_target' %} class="{{ order|lower }}"{% endif %}>{{ column_moq }}</a></td>
+          <td class="text-end"><a href="{{ sort_reserved_qty }}"{% if sort == 'reserved_qty' %} class="{{ order|lower }}"{% endif %}>{{ column_reserved }}</a></td>
+          <td class="text-start" style="width: 220px;">{{ column_progress }}</td>
+          <td class="text-start"><a href="{{ sort_date_end }}"{% if sort == 'date_end' %} class="{{ order|lower }}"{% endif %}>{{ column_time }}</a></td>
+          <td class="text-start"><a href="{{ sort_status }}"{% if sort == 'status' %} class="{{ order|lower }}"{% endif %}>{{ column_status }}</a></td>
+          <td class="text-end">{{ column_action }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% if pools %}
+          {% for pool in pools %}
+            <tr>
+              <td class="text-center"><input type="checkbox" name="selected[]" value="{{ pool.pool_id }}" class="form-check-input"/></td>
+              <td class="text-start">
+                <a href="{{ pool.edit }}" class="fw-semibold">{{ pool.title }}</a>
+                <div class="small text-muted">{{ pool.reference }}{% if pool.product_model %} &middot; SKU: {{ pool.product_model }}{% endif %}</div>
+              </td>
+              <td class="text-start">{{ pool.seller_name }}</td>
+              <td class="text-end">{{ pool.moq_target }} <small class="text-muted">{{ pool.unit_label }}</small></td>
+              <td class="text-end fw-semibold">{{ pool.reserved_qty }}</td>
+              <td class="text-start">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="fw-semibold">{{ pool.fill }}%</span>
+                  <span class="text-muted">{{ pool.remaining }} left</span>
+                </div>
+                <div class="progress" style="height: 8px;" role="progressbar" aria-label="{{ column_progress }}" aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar" style="width: {{ pool.fill }}%;"></div>
+                </div>
+              </td>
+              <td class="text-start">{{ pool.time_left }}</td>
+              <td class="text-start"><span class="badge {{ status_class[pool.status]|default('bg-secondary') }}">{{ pool.status_text }}</span></td>
+              <td class="text-end">
+                <button type="button" class="btn btn-light" data-oc-pool-detail="{{ pool.pool_id }}" data-bs-toggle="tooltip" title="{{ button_view }}"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+                <a href="{{ pool.edit }}" data-bs-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="9">{{ text_no_results }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <button type="submit" formaction="{{ delete }}" class="btn btn-danger btn-sm" data-oc-toggle="confirm" data-oc-confirm="{{ text_confirm }}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i> {{ button_delete }}</button>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text-start">{{ pagination }}</div>
+    <div class="col-sm-6 text-end">{{ results }}</div>
+  </div>
+</form>
+<script type="text/javascript"><!--
+$('#button-filter').on('click', function() {
+    var url = 'index.php?route=extension/poolbuy/poolbuy/pool.list&user_token={{ user_token }}';
+
+    var product = $('#filter-product').val();
+    if (product) {
+        url += '&filter_product=' + encodeURIComponent(product);
+    }
+
+    var status = $('#filter-status').val();
+    if (status !== '') {
+        url += '&filter_status=' + encodeURIComponent(status);
+    }
+
+    $('#pool').load(url);
+});
+
+$('#pool').on('click', '.pagination a, thead a', function(e) {
+    e.preventDefault();
+
+    $('#pool').load(this.href);
+});
+
+// Load the detail panel for a campaign and bring it into view
+$('#pool').on('click', '[data-oc-pool-detail]', function() {
+    var poolId = $(this).attr('data-oc-pool-detail');
+
+    $('#pool-detail').load('index.php?route=extension/poolbuy/poolbuy/pool.detail&user_token={{ user_token }}&pool_id=' + encodeURIComponent(poolId), function() {
+        var panel = document.getElementById('pool-detail');
+
+        if (panel) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+//--></script>

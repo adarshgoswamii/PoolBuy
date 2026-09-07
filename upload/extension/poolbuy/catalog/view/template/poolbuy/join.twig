@@ -1,0 +1,287 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}
+            <a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}
+            <span aria-current="page">{{ breadcrumb.text }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <div class="pb-grid" style="grid-template-columns: minmax(0, 1fr); gap: var(--pb-gutter);">
+    <div class="pb-grid pb-grid-2" style="align-items: start;">
+
+      {# ---------------- Pool context, always visible ---------------- #}
+      <aside class="pb-card">
+        <div class="pb-card__body">
+          <span class="pb-label-md pb-muted pb-uppercase">{{ text_pool_ref }} {{ pool.reference|escape }}</span>
+          <h1 class="pb-headline-lg pb-mt-xs pb-mb-md">{{ pool.title|escape }}</h1>
+
+          <div class="pb-flex pb-wrap pb-gap-sm pb-mb-md">
+            {% if pool.verified_seller %}<span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified</span>{% endif %}
+            {% if pool.gst_verified %}<span class="pb-badge pb-badge--gst">GST Verified</span>{% endif %}
+            {% if pool.is_urgent %}<span class="pb-badge pb-badge--urgent"><i class="fa-regular fa-clock" aria-hidden="true"></i> Closing soon</span>{% endif %}
+          </div>
+
+          <p class="pb-body-md pb-muted pb-mb-md">
+            <i class="fa-solid fa-industry" aria-hidden="true"></i> {{ pool.seller_name|escape }}
+            {% if pool.seller_location %} &middot; {{ pool.seller_location|escape }}{% endif %}
+          </p>
+
+          <div class="pb-pool-meta">
+            <span class="pb-label-md pb-uppercase pb-muted">{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}</span>
+            <span class="pb-mono-sm pb-primary-text pb-tnum">{{ pool.fill }}%</span>
+          </div>
+          <div class="pb-progress" role="progressbar" aria-label="{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}" aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="pb-progress__bar{% if progress_modifier %} pb-progress__bar--{{ progress_modifier }}{% endif %}" style="width: {{ pool.fill }}%;"></div>
+          </div>
+          <p class="pb-pool-hint">{{ hint|escape }}</p>
+
+          {% if pool.seconds_left > 0 %}
+            <p class="pb-label-md pb-tertiary-text pb-tnum pb-mt-md pb-mb-0">
+              <i class="fa-regular fa-clock" aria-hidden="true"></i>
+              <span data-pb-countdown="{{ pool.end_timestamp }}" data-pb-ended="{{ text_ended }}">{{ text_time_left|format(pool.time_left) }}</span>
+            </p>
+          {% endif %}
+
+          <a class="pb-link pb-label-md pb-mt-md" href="{{ product_href }}" style="display: inline-block;">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> {{ pool.title|escape }}
+          </a>
+        </div>
+      </aside>
+
+      {# ---------------- The flow ---------------- #}
+      <div>
+        {% if blocked %}
+          {# A pool that cannot be joined explains why, rather than showing a form
+             that would fail on submit. #}
+          <div class="pb-card">
+            <div class="pb-card__body pb-text-center">
+              <div class="pb-empty__icon">
+                {% if blocked == 'already_joined' %}<i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                {% elseif blocked == 'complete' %}<i class="fa-solid fa-flag-checkered" aria-hidden="true"></i>
+                {% else %}<i class="fa-solid fa-lock" aria-hidden="true"></i>{% endif %}
+              </div>
+
+              {% if blocked == 'already_joined' %}
+                <h2 class="pb-headline-lg pb-mb-sm">{{ text_blocked_already }}</h2>
+                <p class="pb-body-md pb-muted pb-mb-lg">{{ text_blocked_already_body|format(existing_quantity, pool.unit_label|escape, existing_reference|escape) }}</p>
+              {% elseif blocked == 'complete' %}
+                <h2 class="pb-headline-lg pb-mb-sm">{{ text_blocked_complete }}</h2>
+                <p class="pb-body-md pb-muted pb-mb-lg">{{ text_blocked_complete_body }}</p>
+              {% elseif blocked == 'full' %}
+                <h2 class="pb-headline-lg pb-mb-sm">{{ text_blocked_full }}</h2>
+                <p class="pb-body-md pb-muted pb-mb-lg">{{ text_blocked_full_body }}</p>
+              {% else %}
+                <h2 class="pb-headline-lg pb-mb-sm">{{ text_blocked_closed }}</h2>
+                <p class="pb-body-md pb-muted pb-mb-lg">{{ text_blocked_closed_body }}</p>
+              {% endif %}
+
+              <div class="pb-flex pb-gap-sm pb-justify-center pb-wrap">
+                <a class="pb-btn pb-btn--primary" href="{{ account }}">{{ text_view_pools }}</a>
+                <a class="pb-btn pb-btn--ghost" href="{{ marketplace }}">{{ text_keep_browsing }}</a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="pb-modal__panel pb-modal__panel--inline" style="max-width: none; box-shadow: var(--pb-elevation-2);">
+            <div class="pb-modal__header">
+              <div>
+                <h2 class="pb-headline-lg pb-mb-0">{{ step_title }}</h2>
+                <p class="pb-modal__step-label">{{ text_step_of|format(step, step_total) }}</p>
+              </div>
+              <span class="pb-badge pb-badge--soft pb-tnum">{{ step }} / {{ step_total }}</span>
+            </div>
+
+            <div class="pb-modal__body">
+              {% if error %}
+                <div class="pb-alert pb-alert--error pb-mb-md" role="alert">
+                  <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  <span>{{ error }}</span>
+                </div>
+              {% endif %}
+
+              {# ---- Step 1: quantity ---- #}
+              {% if step == 1 %}
+                <form action="{{ action }}" method="post">
+                  <div class="pb-field">
+                    <label class="pb-label" for="pb-quantity">{{ text_units_reserve }}</label>
+                    <div class="pb-stepper">
+                      <button class="pb-stepper__btn" type="button" data-pb-step="-{{ quantity_step }}" aria-label="{{ text_decrease }}"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                      <input class="pb-stepper__input pb-tnum" type="number" id="pb-quantity" name="quantity" value="{{ quantity }}" min="{{ quantity_min }}" max="{{ quantity_max }}" step="1" required/>
+                      <button class="pb-stepper__btn" type="button" data-pb-step="{{ quantity_step }}" aria-label="{{ text_increase }}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                    </div>
+                    <p class="pb-body-md pb-muted pb-mt-sm pb-mb-0">{{ text_qty_help|format(quantity_min, quantity_max, pool.unit_label|escape) }}</p>
+                  </div>
+
+                  <div class="pb-note pb-mb-md">
+                    <i class="fa-solid fa-tag" aria-hidden="true"></i>
+                    <span class="pb-grow">{{ text_live_price }}</span>
+                    <strong class="pb-headline-sm pb-primary-text pb-tnum">{{ unit_price_text }}</strong>
+                  </div>
+
+                  <input type="hidden" name="step" value="1"/>
+                  <div class="pb-flex pb-justify-between pb-items-center">
+                    <a class="pb-link" href="{{ product_href }}">{{ button_back }}</a>
+                    <button class="pb-btn pb-btn--primary" type="submit">{{ button_continue }} <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+                  </div>
+                </form>
+              {% endif %}
+
+              {# ---- Step 2: price breakdown ---- #}
+              {% if step == 2 %}
+                <form action="{{ action }}" method="post">
+                  <div class="pb-summary-row">
+                    <span>{{ text_subtotal|format(breakdown.quantity, breakdown.unit_price_text) }}</span>
+                    <strong class="pb-tnum">{{ breakdown.subtotal_text }}</strong>
+                  </div>
+                  <div class="pb-summary-row">
+                    <span>{{ text_gst|format(breakdown.gst_rate) }}</span>
+                    <strong class="pb-tnum">{{ breakdown.gst_text }}</strong>
+                  </div>
+                  <div class="pb-summary-row">
+                    <span>{{ text_platform_fee|format(breakdown.fee_rate) }}</span>
+                    <strong class="pb-tnum">{{ breakdown.fee_text }}</strong>
+                  </div>
+                  <div class="pb-summary-row pb-summary-row--total">
+                    <span>{{ text_total }}</span>
+                    <strong class="pb-tnum">{{ breakdown.total_text }}</strong>
+                  </div>
+
+                  <div class="pb-note pb-mt-md pb-mb-md">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    <span>{{ text_price_note }}</span>
+                  </div>
+
+                  <input type="hidden" name="quantity" value="{{ quantity }}"/>
+                  <input type="hidden" name="step" value="2"/>
+                  <div class="pb-flex pb-justify-between pb-items-center">
+                    <button class="pb-btn pb-btn--light" type="submit" name="step" value="0">{{ button_back }}</button>
+                    <button class="pb-btn pb-btn--primary" type="submit" name="step" value="2">{{ button_continue }} <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+                  </div>
+                </form>
+              {% endif %}
+
+              {# ---- Step 3: shipping and confirm ---- #}
+              {% if step == 3 %}
+                <form action="{{ action }}" method="post">
+                  <div class="pb-note pb-mb-md">
+                    <i class="fa-solid fa-truck" aria-hidden="true"></i>
+                    <div>
+                      <p class="pb-body-md pb-mb-xs" style="font-weight: 600;">{{ text_freight_title }}</p>
+                      <p class="pb-mb-0">{{ text_freight_note }}</p>
+                    </div>
+                  </div>
+
+                  <div class="pb-grid pb-grid-2 pb-mb-md">
+                    <div>
+                      <span class="pb-label-md">{{ text_lead_time }}</span>
+                      <p class="pb-body-md pb-mb-0">{{ pool.lead_time ? pool.lead_time|escape : text_not_specified }}</p>
+                    </div>
+                    <div>
+                      <span class="pb-label-md">{{ text_shipping_terms }}</span>
+                      <p class="pb-body-md pb-mb-0">{{ pool.shipping_terms ? pool.shipping_terms|escape : text_not_specified }}</p>
+                    </div>
+                  </div>
+
+                  <div class="pb-field">
+                    <label class="pb-label" for="pb-address">{{ text_destination }}</label>
+                    {% if addresses %}
+                      <select class="pb-select{% if errors.address %} pb-input--invalid{% endif %}" id="pb-address" name="address_id" required>
+                        {% for address in addresses %}
+                          <option value="{{ address.address_id }}"{% if address.selected %} selected{% endif %}>{{ address.label|escape }}</option>
+                        {% endfor %}
+                      </select>
+                      {% if errors.address %}<p class="pb-error-text">{{ errors.address }}</p>{% endif %}
+                      <p class="pb-body-md pb-mt-sm pb-mb-0"><a class="pb-link" href="{{ address_add }}">{{ text_add_address }}</a></p>
+                    {% else %}
+                      <div class="pb-alert pb-alert--warning" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                        <span>{{ error_no_address }}</span>
+                      </div>
+                      <p class="pb-mt-sm pb-mb-0"><a class="pb-btn pb-btn--ghost pb-btn--sm" href="{{ address_add }}">{{ text_add_address }}</a></p>
+                    {% endif %}
+                  </div>
+
+                  <div class="pb-summary-row pb-summary-row--total">
+                    <span>{{ text_total }}</span>
+                    <strong class="pb-tnum">{{ breakdown.total_text }}</strong>
+                  </div>
+
+                  <p class="pb-body-md pb-muted pb-mt-sm">{{ text_commit_note }}</p>
+
+                  <input type="hidden" name="quantity" value="{{ quantity }}"/>
+                  <div class="pb-flex pb-justify-between pb-items-center">
+                    <button class="pb-btn pb-btn--light" type="submit" name="step" value="1">{{ button_back }}</button>
+                    <button class="pb-btn pb-btn--primary" type="submit" name="step" value="3"{% if not addresses %} disabled{% endif %}>{{ button_confirm }}</button>
+                  </div>
+                </form>
+              {% endif %}
+
+              {# ---- Step 4: confirmed ---- #}
+              {% if step == 4 %}
+                <div class="pb-text-center">
+                  <div class="pb-empty__icon" style="font-size: 44px;"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></div>
+                  <h3 class="pb-headline-lg pb-mb-sm">{{ text_confirmed }}</h3>
+                  <p class="pb-body-lg pb-muted pb-mb-lg">{{ text_confirmed_body|format(confirmed_quantity, pool.unit_label|escape) }}</p>
+
+                  <div class="pb-card pb-card--tinted pb-mb-lg" style="text-align: left;">
+                    <div class="pb-card__body">
+                      <p class="pb-label-md pb-mb-xs"><i class="fa-solid fa-box-open" aria-hidden="true"></i> {{ text_transaction }}: {{ reference|escape }}</p>
+                      <p class="pb-muted pb-mb-0" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">{{ text_waiting }}</p>
+                    </div>
+                  </div>
+
+                  <div class="pb-flex pb-gap-sm pb-justify-center pb-wrap">
+                    <a class="pb-btn pb-btn--primary" href="{{ account }}">{{ text_view_pools }}</a>
+                    <a class="pb-btn pb-btn--ghost" href="{{ marketplace }}">{{ text_keep_browsing }}</a>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+// Quantity stepper. The input is a real number field with min/max, so this is
+// only a convenience; the server re-clamps whatever arrives.
+(function () {
+    var input = document.getElementById('pb-quantity');
+
+    if (!input) {
+        return;
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-pb-step]'), function (button) {
+        button.addEventListener('click', function () {
+            var delta = parseInt(button.getAttribute('data-pb-step'), 10);
+            var min = parseInt(input.getAttribute('min'), 10);
+            var max = parseInt(input.getAttribute('max'), 10);
+            var value = parseInt(input.value, 10);
+
+            if (isNaN(value)) {
+                value = min;
+            }
+
+            value += delta;
+
+            if (value < min) { value = min; }
+            if (value > max) { value = max; }
+
+            input.value = value;
+        });
+    });
+}());
+//--></script>
+{{ footer }}

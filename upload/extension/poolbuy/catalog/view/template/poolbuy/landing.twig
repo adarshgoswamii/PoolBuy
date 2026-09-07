@@ -1,0 +1,162 @@
+{#
+  PoolBuy landing page.
+
+  All PoolBuy values are passed through |escape because OpenCart runs Twig with
+  autoescape disabled, and pool titles / seller names are operator supplied.
+#}
+<section class="pb-container pb-section">
+  <div class="pb-split">
+    <div>
+      <span class="pb-badge pb-badge--soft pb-mb-md">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_hero_badge }}
+      </span>
+
+      <h1 class="pb-display-lg pb-mb-md" style="font-size: clamp(36px, 5vw, 56px); line-height: 1.1;">
+        {{ text_hero_title_1 }}<br/><span class="pb-primary-text">{{ text_hero_title_2 }}</span>
+      </h1>
+
+      <p class="pb-body-lg pb-muted pb-mb-xl" style="max-width: 34rem;">{{ text_hero_body }}</p>
+
+      <div class="pb-flex pb-wrap pb-gap-md pb-mb-xl">
+        <a class="pb-btn pb-btn--primary pb-btn--lg" href="{{ marketplace }}">
+          {{ button_join_buyer }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <a class="pb-btn pb-btn--ghost pb-btn--lg" href="{{ contact }}">{{ button_become_seller }}</a>
+      </div>
+
+      <div class="pb-flex pb-wrap pb-gap-xl pb-tnum">
+        <div>
+          <div class="pb-display-lg">{{ stats.active_products }}</div>
+          <div class="pb-label-md pb-muted pb-uppercase">{{ text_stat_products }}</div>
+        </div>
+        <div>
+          <div class="pb-display-lg">{{ stats.active_sellers }}</div>
+          <div class="pb-label-md pb-muted pb-uppercase">{{ text_stat_suppliers }}</div>
+        </div>
+        <div>
+          <div class="pb-display-lg">{{ stats.units_pooled }}</div>
+          <div class="pb-label-md pb-muted pb-uppercase">{{ text_stat_units }}</div>
+        </div>
+      </div>
+    </div>
+
+    {# Hero pool card. Renders a genuine live pool, or an honest empty state. #}
+    <div class="pb-hero-frame d-none d-lg-block">
+      <div class="pb-hero-card">
+        {% if featured %}
+          <div class="pb-flex pb-justify-between pb-items-center pb-mb-lg">
+            <span class="pb-headline-sm pb-primary-text">{{ text_live_pool }}</span>
+            {% if featured.is_urgent %}
+              <span class="pb-badge pb-badge--urgent">
+                <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                {{ text_urgent }}
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="pb-flex pb-gap-md pb-items-center pb-mb-lg" style="background: var(--pb-surface-container-low); border: 1px solid var(--pb-outline-variant); border-radius: var(--pb-radius-md); padding: var(--pb-md);">
+            <img src="{{ featured.thumb }}" alt="{{ featured.title|escape }}" width="80" height="80" style="width: 80px; height: 80px; border-radius: var(--pb-radius); object-fit: cover;"/>
+            <div class="pb-grow">
+              <h2 class="pb-headline-sm pb-mb-xs"><a class="pb-link" href="{{ featured.href }}">{{ featured.title|escape }}</a></h2>
+              <div class="pb-flex pb-justify-between pb-label-md pb-mb-xs pb-tnum">
+                <span class="pb-muted">{{ text_target }}: {{ featured.moq_target }} {{ featured.unit_label|escape }}</span>
+                <span class="pb-primary-text">{{ text_filled|format(featured.reserved_qty, featured.moq_target) }}</span>
+              </div>
+              <div class="pb-progress pb-progress--sm pb-progress--pulse" role="progressbar" aria-label="{{ featured.title|escape }}" aria-valuenow="{{ featured.fill }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="pb-progress__bar{% if featured.progress_modifier %} pb-progress__bar--{{ featured.progress_modifier }}{% endif %}" style="width: {{ featured.fill }}%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pb-grid pb-grid-2">
+            <div class="pb-figure">
+              <span class="pb-figure__label">{{ text_your_price }}</span>
+              <span class="pb-figure__value pb-tertiary-text pb-tnum">{{ featured.unit_price_text }}</span>
+            </div>
+            {% if featured.has_retail_saving %}
+              <div class="pb-figure" style="background: var(--pb-surface-container-high);">
+                <span class="pb-figure__label">{{ text_retail_price }}</span>
+                <span class="pb-figure__value pb-muted pb-strike pb-tnum">{{ featured.retail_price_text }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <p class="pb-pool-hint">{{ featured.hint|escape }}</p>
+        {% else %}
+          <div class="pb-empty">
+            <div class="pb-empty__icon"><i class="fa-solid fa-users-rectangle" aria-hidden="true"></i></div>
+            <p class="pb-headline-sm pb-mb-sm">{{ text_no_pool }}</p>
+            <p class="pb-body-md pb-mb-0">{{ text_no_pool_body }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Trust strip #}
+<section class="pb-strip pb-reveal">
+  <ul class="pb-container pb-strip__list">
+    <li class="pb-strip__item"><i class="fa-solid fa-users" aria-hidden="true"></i> {{ text_trust_buyers }}</li>
+    <li class="pb-strip__item"><i class="fa-solid fa-truck" aria-hidden="true"></i> {{ text_trust_shipping }}</li>
+    <li class="pb-strip__item"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> {{ text_trust_secure }}</li>
+    <li class="pb-strip__item"><i class="fa-solid fa-headset" aria-hidden="true"></i> {{ text_trust_support }}</li>
+  </ul>
+</section>
+
+{# How it works #}
+<section id="how-it-works" class="pb-container pb-section pb-reveal">
+  <div class="pb-text-center pb-mb-2xl">
+    <h2 class="pb-display-lg pb-mb-md">{{ text_how_title }}</h2>
+    <p class="pb-body-lg pb-muted" style="max-width: 44rem; margin-inline: auto;">{{ text_how_body }}</p>
+  </div>
+
+  <div class="pb-grid pb-grid-4">
+    {% for step in steps %}
+      <div>
+        <div class="pb-step__icon pb-step__icon--{{ loop.index }}"><i class="{{ step.icon }}" aria-hidden="true"></i></div>
+        <h3 class="pb-headline-sm pb-mb-sm">{{ step.title }}</h3>
+        <p class="pb-body-md pb-muted pb-mb-0">{{ step.body }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# Featured categories, only shown when there are live pools to categorise #}
+{% if categories %}
+  <section class="pb-section pb-reveal" style="background: var(--pb-surface-container-low); border-block: 1px solid var(--pb-outline-variant);">
+    <div class="pb-container">
+      <div class="pb-flex pb-justify-between pb-items-end pb-wrap pb-gap-md pb-mb-xl">
+        <div>
+          <h2 class="pb-display-lg pb-mb-xs">{{ text_categories_title }}</h2>
+          <p class="pb-body-lg pb-muted pb-mb-0">{{ text_categories_body }}</p>
+        </div>
+        <a class="pb-link" href="{{ categories_all }}">{{ text_view_all }} <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+      </div>
+
+      <div class="pb-grid pb-grid-3">
+        {% for category in categories %}
+          <a class="pb-tile" href="{{ category.href }}">
+            <span class="pb-tile__image" style="background-image: url('{{ category.image }}');"></span>
+            <span class="pb-tile__body">
+              <span class="pb-badge pb-badge--primary">{{ text_active_pools|format(category.pool_total) }}</span>
+              <span class="pb-tile__title">{{ category.name }}</span>
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# Closing CTA #}
+<section class="pb-container pb-section pb-reveal">
+  <div class="pb-cta">
+    <h2 class="pb-display-lg pb-mb-md">{{ text_cta_title }}</h2>
+    <p class="pb-body-lg pb-cta__lead pb-mb-xl" style="max-width: 44rem; margin-inline: auto;">{{ text_cta_body }}</p>
+    <div class="pb-flex pb-wrap pb-justify-center pb-gap-md">
+      <a class="pb-btn pb-btn--on-primary pb-btn--lg" href="{{ register }}">{{ button_get_started }}</a>
+      <a class="pb-btn pb-btn--lg" href="{{ contact }}" style="background: var(--pb-primary-container); color: #fff; border-color: rgba(180,197,255,0.3);">{{ button_talk_to_us }}</a>
+    </div>
+  </div>
+</section>

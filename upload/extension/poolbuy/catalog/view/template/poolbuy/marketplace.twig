@@ -1,0 +1,124 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}
+            <a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}
+            <span aria-current="page">{{ breadcrumb.text }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <div class="pb-mb-xl">
+    <h1 class="pb-display-lg pb-mb-xs">{{ heading_title }}</h1>
+    <p class="pb-body-lg pb-muted pb-mb-0">{{ text_subtitle }}</p>
+  </div>
+
+  <div class="pb-shell">
+    {# --- Sidebar filters. A plain GET form, so filtering works without JS. --- #}
+    <aside>
+      <button type="button" class="pb-btn pb-btn--light pb-btn--block d-lg-none pb-mb-md" data-pb-drawer-toggle="pb-filters" aria-expanded="false" aria-controls="pb-filters">
+        <i class="fa-solid fa-sliders" aria-hidden="true"></i> {{ text_filters }}
+      </button>
+
+      <div id="pb-filters" class="pb-side">
+        <form action="{{ action }}" method="get">
+          {# Sort is part of the same form so it survives an Apply #}
+          <div class="pb-field">
+            <label class="pb-label" for="pb-search">{{ text_search }}</label>
+            <div class="pb-search">
+              <i class="fa-solid fa-magnifying-glass pb-search__icon" aria-hidden="true"></i>
+              <input class="pb-input" type="search" id="pb-search" name="filter_search" value="{{ filter.filter_search|escape }}" placeholder="{{ text_search_hint }}"/>
+            </div>
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-location">{{ text_location }}</label>
+            <select class="pb-select" id="pb-location" name="filter_location">
+              <option value="">{{ text_any_location }}</option>
+              {% for location in locations %}
+                <option value="{{ location.name|escape }}"{% if location.active %} selected{% endif %}>{{ location.name|escape }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pb-field">
+            <span class="pb-label">{{ text_moq_range }}</span>
+            <div class="pb-flex pb-gap-sm">
+              <label class="pb-visually-hidden" for="pb-moq-min">{{ text_moq_min }}</label>
+              <input class="pb-input" type="number" min="0" id="pb-moq-min" name="filter_moq_min" value="{{ filter.filter_moq_min ?: '' }}" placeholder="{{ text_moq_min }}"/>
+              <label class="pb-visually-hidden" for="pb-moq-max">{{ text_moq_max }}</label>
+              <input class="pb-input" type="number" min="0" id="pb-moq-max" name="filter_moq_max" value="{{ filter.filter_moq_max ?: '' }}" placeholder="{{ text_moq_max }}"/>
+            </div>
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-check">
+              <input type="checkbox" name="filter_available" value="1"{% if filter.filter_available %} checked{% endif %}/>
+              <span class="pb-body-md">{{ text_filter_available }}</span>
+            </label>
+            <label class="pb-check">
+              <input type="checkbox" name="filter_gst_verified" value="1"{% if filter.filter_gst_verified %} checked{% endif %}/>
+              <span class="pb-body-md">{{ text_filter_gst }}</span>
+            </label>
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-sort">{{ text_sort }}</label>
+            <select class="pb-select" id="pb-sort" name="sort">
+              {% for sort in sorts %}
+                <option value="{{ sort.value }}"{% if sort.selected %} selected{% endif %}>{{ sort.text }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          {% if filter.filter_category_id %}
+            <input type="hidden" name="filter_category_id" value="{{ filter.filter_category_id }}"/>
+          {% endif %}
+
+          <button type="submit" class="pb-btn pb-btn--primary pb-btn--block">{{ text_apply }}</button>
+        </form>
+
+        {% if categories %}
+          <hr style="border: 0; border-top: 1px solid var(--pb-outline-variant); margin-block: var(--pb-md);"/>
+          <p class="pb-side__title">{{ text_categories }}</p>
+          <a class="pb-side__link{% if not filter.filter_category_id %} pb-side__link--active{% endif %}" href="{{ all_categories_href }}">
+            <i class="fa-solid fa-store" aria-hidden="true"></i>
+            <span>{{ text_all_categories }}</span>
+          </a>
+          {% for category in categories %}
+            <a class="pb-side__link{% if category.active %} pb-side__link--active{% endif %}" href="{{ category.href }}">
+              <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+              <span class="pb-grow">{{ category.name }}</span>
+              <span class="pb-muted pb-tnum">{{ category.pool_total }}</span>
+            </a>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </aside>
+
+    {# --- Results --- #}
+    <div>
+      {% if chips %}
+        <div class="pb-flex pb-wrap pb-gap-sm pb-items-center pb-mb-lg">
+          {% for chip in chips %}
+            <a class="pb-badge pb-badge--soft" href="{{ chip.href }}" style="text-decoration: none;">
+              {{ chip.text|escape }} <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+              <span class="pb-visually-hidden">Remove filter</span>
+            </a>
+          {% endfor %}
+          <a class="pb-link pb-label-md" href="{{ clear_href }}">{{ text_clear }}</a>
+        </div>
+      {% endif %}
+
+      <div id="pb-pool-list">{{ list }}</div>
+    </div>
+  </div>
+</div>
+{{ footer }}

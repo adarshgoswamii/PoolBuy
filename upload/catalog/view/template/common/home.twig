@@ -1,0 +1,13 @@
+{{ header }}
+{# The PoolBuy landing page renders full width, outside the bootstrap container,
+   so its hero and section bands can span the viewport. Layout module regions are
+   preserved below so anything assigned to the Home layout still appears. #}
+{% if poolbuy_landing %}
+  {{ poolbuy_landing }}
+{% endif %}
+<div id="common-home" class="container">
+  <div class="row">{{ column_left }}
+    <div id="content" class="col">{{ content_top }}{{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+{{ footer }}

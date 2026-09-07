@@ -1,0 +1,295 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <h1 class="pb-display-lg pb-mb-lg">{{ text_form }}</h1>
+
+  <div id="pb-alert" role="status" aria-live="polite"></div>
+
+  {% if not is_approved %}
+    <div class="pb-alert pb-alert--warning pb-mb-lg" role="status">
+      <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+      <span>{{ text_pending_body }}</span>
+    </div>
+  {% endif %}
+
+  {% if locked %}
+    <div class="pb-alert pb-alert--info pb-mb-lg" role="status">
+      <i class="fa-solid fa-lock" aria-hidden="true"></i>
+      <span>{{ help_locked }}</span>
+    </div>
+  {% endif %}
+
+  {% if not products %}
+    <div class="pb-alert pb-alert--warning pb-mb-lg" role="status">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ help_no_products }}</span>
+    </div>
+  {% endif %}
+
+  <form id="pb-pool-form" action="{{ save }}" method="post">
+    <div class="pb-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--pb-gutter); align-items: start;">
+      <div>
+        {# ---- Pool details ---- #}
+        <div class="pb-card pb-mb-lg">
+          <div class="pb-card__body">
+            <h2 class="pb-headline-sm pb-mb-md">{{ text_general }}</h2>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-product">{{ entry_product }}</label>
+              <select class="pb-select" id="pb-product" name="product_id" required{% if locked or not products %} disabled{% endif %}>
+                <option value="">&mdash;</option>
+                {% for product in products %}
+                  <option value="{{ product.product_id }}"{% if product.product_id == product_id %} selected{% endif %}>{{ product.name }}{% if product.model %} ({{ product.model }}){% endif %}</option>
+                {% endfor %}
+              </select>
+              <p class="pb-error-text" id="pb-error-product"></p>
+            </div>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-title">{{ entry_title }}</label>
+              <input class="pb-input" type="text" id="pb-title" name="title" value="{{ title|escape }}"{% if locked %} disabled{% endif %}/>
+              <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0">{{ help_title }}</p>
+            </div>
+
+            <div class="pb-grid pb-grid-2" style="gap: var(--pb-md);">
+              <div class="pb-field">
+                <label class="pb-label" for="pb-moq">{{ entry_moq_target }}</label>
+                <input class="pb-input pb-tnum" type="number" min="1" id="pb-moq" name="moq_target" value="{{ moq_target }}" required{% if locked %} disabled{% endif %}/>
+                <p class="pb-error-text" id="pb-error-moq-target"></p>
+              </div>
+              <div class="pb-field">
+                <label class="pb-label" for="pb-unit">{{ entry_unit_label }}</label>
+                <input class="pb-input" type="text" id="pb-unit" name="unit_label" value="{{ unit_label|escape }}"{% if locked %} disabled{% endif %}/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ---- Schedule ---- #}
+        <div class="pb-card pb-mb-lg">
+          <div class="pb-card__body">
+            <h2 class="pb-headline-sm pb-mb-md">{{ text_schedule }}</h2>
+
+            <div class="pb-grid pb-grid-2" style="gap: var(--pb-md);">
+              <div class="pb-field">
+                <label class="pb-label" for="pb-start">{{ entry_date_start }}</label>
+                <input class="pb-input" type="text" id="pb-start" name="date_start" value="{{ date_start }}" placeholder="YYYY-MM-DD HH:MM:SS"{% if locked %} disabled{% endif %}/>
+                <p class="pb-error-text" id="pb-error-date-start"></p>
+              </div>
+              <div class="pb-field">
+                <label class="pb-label" for="pb-end">{{ entry_date_end }}</label>
+                <input class="pb-input" type="text" id="pb-end" name="date_end" value="{{ date_end }}" placeholder="YYYY-MM-DD HH:MM:SS"{% if locked %} disabled{% endif %}/>
+                <p class="pb-error-text" id="pb-error-date-end"></p>
+              </div>
+            </div>
+
+            <div class="pb-grid pb-grid-2" style="gap: var(--pb-md);">
+              <div class="pb-field">
+                <label class="pb-label" for="pb-min">{{ entry_min_qty }}</label>
+                <input class="pb-input pb-tnum" type="number" min="1" id="pb-min" name="min_qty_per_buyer" value="{{ min_qty_per_buyer }}"{% if locked %} disabled{% endif %}/>
+                <p class="pb-error-text" id="pb-error-min-qty-per-buyer"></p>
+              </div>
+              <div class="pb-field">
+                <label class="pb-label" for="pb-max">{{ entry_max_qty }}</label>
+                <input class="pb-input pb-tnum" type="number" min="0" id="pb-max" name="max_qty_per_buyer" value="{{ max_qty_per_buyer }}"{% if locked %} disabled{% endif %}/>
+                <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0">{{ help_max_qty }}</p>
+                <p class="pb-error-text" id="pb-error-max-qty-per-buyer"></p>
+              </div>
+            </div>
+
+            <label class="pb-check">
+              <input type="hidden" name="retro_pricing" value="0"/>
+              <input type="checkbox" name="retro_pricing" value="1"{% if retro_pricing %} checked{% endif %}{% if locked %} disabled{% endif %}/>
+              <span class="pb-body-md">{{ entry_retro_pricing }}</span>
+            </label>
+            <p class="pb-body-md pb-muted pb-mb-md">{{ help_retro_pricing }}</p>
+
+            <label class="pb-check">
+              <input type="hidden" name="allow_full_moq_buy" value="0"/>
+              <input type="checkbox" name="allow_full_moq_buy" value="1"{% if allow_full_moq_buy %} checked{% endif %}{% if locked %} disabled{% endif %}/>
+              <span class="pb-body-md">{{ entry_allow_full_moq }}</span>
+            </label>
+          </div>
+        </div>
+
+        {# ---- Tiers ---- #}
+        <div class="pb-card pb-mb-lg">
+          <div class="pb-card__body">
+            <h2 class="pb-headline-sm pb-mb-xs">{{ text_price_tiers }}</h2>
+            <p class="pb-body-md pb-muted pb-mb-md">{{ help_tiers }}</p>
+            <div class="pb-alert pb-alert--error pb-mb-md" id="pb-error-pool-tier" role="alert" hidden></div>
+
+            <div class="pb-table-wrap">
+              <table class="pb-table" id="pb-tier-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ entry_tier_min }}</th>
+                    <th scope="col">{{ entry_tier_max }}</th>
+                    <th scope="col">{{ entry_tier_price }}</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tier in pool_tiers %}
+                    <tr>
+                      <td><input class="pb-input pb-tnum" type="number" min="1" name="pool_tier[{{ loop.index0 }}][min_qty]" value="{{ tier.min_qty }}" aria-label="{{ entry_tier_min }} {{ loop.index }}"{% if locked %} disabled{% endif %}/></td>
+                      <td><input class="pb-input pb-tnum" type="number" min="0" name="pool_tier[{{ loop.index0 }}][max_qty]" value="{{ tier.max_qty }}" placeholder="{{ text_open_ended }}" aria-label="{{ entry_tier_max }} {{ loop.index }}"{% if locked %} disabled{% endif %}/></td>
+                      <td><input class="pb-input pb-tnum" type="text" name="pool_tier[{{ loop.index0 }}][price]" value="{{ tier.price }}" aria-label="{{ entry_tier_price }} {{ loop.index }}"{% if locked %} disabled{% endif %}/></td>
+                      <td><button type="button" class="pb-btn pb-btn--danger pb-btn--sm" data-pb-tier-remove aria-label="{{ text_remove_tier }} {{ loop.index }}"{% if locked %} disabled{% endif %}><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            {% if not locked %}
+              <button type="button" class="pb-btn pb-btn--light pb-mt-md" id="pb-add-tier"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ text_add_tier }}</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {# ---- Sidebar ---- #}
+      <aside>
+        <div class="pb-card pb-mb-md">
+          <div class="pb-card__body">
+            <div class="pb-field">
+              <label class="pb-label" for="pb-status">{{ entry_status }}</label>
+              <select class="pb-select" id="pb-status" name="status"{% if locked %} disabled{% endif %}>
+                {% for option in statuses %}
+                  <option value="{{ option.code }}"{% if option.code == status %} selected{% endif %}>{{ option.text }}</option>
+                {% endfor %}
+              </select>
+              <p class="pb-error-text" id="pb-error-status"></p>
+            </div>
+
+            {% if reference %}
+              <div class="pb-flex pb-justify-between pb-body-md pb-mb-sm"><span class="pb-muted">{{ text_reference }}</span><span class="pb-mono-sm">{{ reference|escape }}</span></div>
+            {% endif %}
+            {% if pool_id %}
+              <div class="pb-flex pb-justify-between pb-body-md pb-mb-md"><span class="pb-muted">{{ text_reserved }}</span><span class="pb-tnum">{{ reserved_qty }}</span></div>
+            {% endif %}
+
+            {% if not locked %}
+              <button type="submit" class="pb-btn pb-btn--primary pb-btn--block">{{ button_save }}</button>
+            {% endif %}
+            <a class="pb-btn pb-btn--ghost pb-btn--block pb-mt-sm" href="{{ back }}">{{ button_back }}</a>
+          </div>
+        </div>
+
+        <div class="pb-card pb-card--tinted">
+          <div class="pb-card__body">
+            <h2 class="pb-headline-sm pb-mb-md">{{ text_logistics }}</h2>
+            <div class="pb-field">
+              <label class="pb-label" for="pb-lead">{{ entry_lead_time }}</label>
+              <input class="pb-input" type="text" id="pb-lead" name="lead_time" value="{{ lead_time|escape }}" placeholder="15-20 Days"{% if locked %} disabled{% endif %}/>
+            </div>
+            <div class="pb-field pb-mb-0">
+              <label class="pb-label" for="pb-terms">{{ entry_shipping_terms }}</label>
+              <input class="pb-input" type="text" id="pb-terms" name="shipping_terms" value="{{ shipping_terms|escape }}" placeholder="FOB Shanghai"{% if locked %} disabled{% endif %}/>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </form>
+</div>
+
+<script type="text/javascript"><!--
+(function () {
+    var tierRow = {{ pool_tiers|length }};
+
+    var addTier = document.getElementById('pb-add-tier');
+
+    if (addTier) {
+        addTier.addEventListener('click', function () {
+            var body = document.querySelector('#pb-tier-table tbody');
+            var row = document.createElement('tr');
+
+            row.innerHTML =
+                '<td><input class="pb-input pb-tnum" type="number" min="1" name="pool_tier[' + tierRow + '][min_qty]" value="" aria-label="{{ entry_tier_min }} ' + (tierRow + 1) + '"/></td>' +
+                '<td><input class="pb-input pb-tnum" type="number" min="0" name="pool_tier[' + tierRow + '][max_qty]" value="" placeholder="{{ text_open_ended }}" aria-label="{{ entry_tier_max }} ' + (tierRow + 1) + '"/></td>' +
+                '<td><input class="pb-input pb-tnum" type="text" name="pool_tier[' + tierRow + '][price]" value="" aria-label="{{ entry_tier_price }} ' + (tierRow + 1) + '"/></td>' +
+                '<td><button type="button" class="pb-btn pb-btn--danger pb-btn--sm" data-pb-tier-remove aria-label="{{ text_remove_tier }} ' + (tierRow + 1) + '"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button></td>';
+
+            body.appendChild(row);
+            tierRow++;
+
+            // Move focus into the row that was just added so keyboard users are not
+            // stranded at the button.
+            var firstInput = row.querySelector('input');
+            if (firstInput) { firstInput.focus(); }
+        });
+    }
+
+    document.getElementById('pb-tier-table').addEventListener('click', function (event) {
+        var button = event.target.closest('[data-pb-tier-remove]');
+
+        if (button) {
+            button.closest('tr').remove();
+        }
+    });
+
+    // Submit over fetch so validation messages land next to their fields. The form
+    // still posts normally if JavaScript is unavailable.
+    document.getElementById('pb-pool-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var form = this;
+
+        document.querySelectorAll('.pb-error-text').forEach(function (el) { el.textContent = ''; });
+        var tierError = document.getElementById('pb-error-pool-tier');
+        tierError.hidden = true;
+        tierError.textContent = '';
+        document.getElementById('pb-alert').innerHTML = '';
+
+        fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' })
+            .then(function (response) { return response.json(); })
+            .then(function (json) {
+                if (json.error) {
+                    Object.keys(json.error).forEach(function (key) {
+                        if (key === 'pool_tier') {
+                            tierError.textContent = json.error[key];
+                            tierError.hidden = false;
+                            return;
+                        }
+
+                        if (key === 'warning') {
+                            document.getElementById('pb-alert').innerHTML =
+                                '<div class="pb-alert pb-alert--error" role="alert">' + json.error[key] + '</div>';
+                            return;
+                        }
+
+                        var field = document.getElementById('pb-error-' + key.replace(/_/g, '-'));
+                        if (field) { field.textContent = json.error[key]; }
+                    });
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                if (json.success) {
+                    document.getElementById('pb-alert').innerHTML =
+                        '<div class="pb-alert pb-alert--success" role="status">' + json.success + '</div>';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            })
+            .catch(function () {
+                document.getElementById('pb-alert').innerHTML =
+                    '<div class="pb-alert pb-alert--error" role="alert">Your pool could not be saved. Please try again.</div>';
+            });
+    });
+}());
+//--></script>
+{{ footer }}

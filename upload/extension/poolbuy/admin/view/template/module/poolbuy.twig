@@ -1,0 +1,159 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-poolbuy" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save" aria-hidden="true"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply" aria-hidden="true"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if schema_installed %}
+      <div class="alert alert-success"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_schema_ok }}</div>
+    {% else %}
+      <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ text_schema_missing }}</div>
+    {% endif %}
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ text_edit }}</div>
+      <div class="card-body">
+        <form id="form-poolbuy" action="{{ save }}" method="post" data-oc-toggle="ajax">
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">{{ entry_status }}</label>
+            <div class="col-sm-9">
+              <div class="form-check form-switch form-switch-lg">
+                <input type="hidden" name="module_poolbuy_status" value="0"/>
+                <input type="checkbox" name="module_poolbuy_status" value="1" id="input-status" class="form-check-input"{% if module_poolbuy_status %} checked{% endif %}/>
+              </div>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>{{ text_pricing }}</legend>
+            <div class="row mb-3 required">
+              <label for="input-currency-code" class="col-sm-3 col-form-label">{{ entry_currency_code }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_currency_code" value="{{ module_poolbuy_currency_code }}" placeholder="{{ entry_currency_code }}" id="input-currency-code" maxlength="3" class="form-control"/>
+                <div class="form-text">{{ help_currency_code }}</div>
+                <div id="error-currency-code" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-currency-symbol" class="col-sm-3 col-form-label">{{ entry_currency_symbol }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_currency_symbol" value="{{ module_poolbuy_currency_symbol }}" placeholder="{{ entry_currency_symbol }}" id="input-currency-symbol" maxlength="8" class="form-control"/>
+                <div id="error-currency-symbol" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-gst-rate" class="col-sm-3 col-form-label">{{ entry_gst_rate }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_gst_rate" value="{{ module_poolbuy_gst_rate }}" placeholder="{{ entry_gst_rate }}" id="input-gst-rate" class="form-control"/>
+                <div class="form-text">{{ help_gst_rate }}</div>
+                <div id="error-gst-rate" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-platform-fee" class="col-sm-3 col-form-label">{{ entry_platform_fee }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_platform_fee" value="{{ module_poolbuy_platform_fee }}" placeholder="{{ entry_platform_fee }}" id="input-platform-fee" class="form-control"/>
+                <div class="form-text">{{ help_platform_fee }}</div>
+                <div id="error-platform-fee" class="invalid-feedback"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>{{ text_pools }}</legend>
+            <div class="row mb-3 required">
+              <label for="input-pool-duration" class="col-sm-3 col-form-label">{{ entry_pool_duration }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_pool_duration" value="{{ module_poolbuy_pool_duration }}" placeholder="{{ entry_pool_duration }}" id="input-pool-duration" class="form-control"/>
+                <div class="form-text">{{ help_pool_duration }}</div>
+                <div id="error-pool-duration" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-sm-3 col-form-label">{{ entry_retro_pricing }}</label>
+              <div class="col-sm-9">
+                <div class="form-check form-switch form-switch-lg">
+                  <input type="hidden" name="module_poolbuy_retro_pricing" value="0"/>
+                  <input type="checkbox" name="module_poolbuy_retro_pricing" value="1" id="input-retro-pricing" class="form-check-input"{% if module_poolbuy_retro_pricing %} checked{% endif %}/>
+                </div>
+                <div class="form-text">{{ help_retro_pricing }}</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>{{ text_automation }}</legend>
+            <div class="row mb-3">
+              <label for="input-cron-token" class="col-sm-3 col-form-label">{{ entry_cron_token }}</label>
+              <div class="col-sm-9">
+                <div class="input-group">
+                  <input type="text" name="module_poolbuy_cron_token" value="{{ module_poolbuy_cron_token }}" id="input-cron-token" class="form-control" readonly/>
+                  <button type="button" id="button-regenerate-token" class="btn btn-light">{{ button_regenerate }}</button>
+                </div>
+                <div class="form-text">{{ help_cron_token }}</div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-sm-3 col-form-label">{{ text_run_lifecycle }}</label>
+              <div class="col-sm-9">
+                <button type="button" id="button-run-lifecycle" class="btn btn-outline-primary">
+                  <i class="fa-solid fa-play" aria-hidden="true"></i> {{ button_run_lifecycle }}
+                </button>
+                <div class="form-text">{{ text_run_lifecycle_help }}</div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+document.getElementById('button-regenerate-token').addEventListener('click', function() {
+    // Generated client-side purely for convenience; the server regenerates the
+    // token anyway if the field is ever submitted empty.
+    var bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+
+    document.getElementById('input-cron-token').value = Array.from(bytes).map(function(b) {
+        return b.toString(16).padStart(2, '0');
+    }).join('');
+});
+
+document.getElementById('button-run-lifecycle').addEventListener('click', function() {
+    var button = this;
+    var original = button.innerHTML;
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> ' + button.textContent.trim();
+
+    fetch('index.php?route=extension/poolbuy/module/poolbuy.runLifecycle&user_token={{ user_token }}', {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        // Reuse OpenCart's floating alert stack.
+        if (json.error) {
+            $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json.error + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+        } else if (json.success) {
+            $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json.success + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+        }
+    }).catch(function() {
+        $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> Request failed. <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+    }).finally(function() {
+        button.disabled = false;
+        button.innerHTML = original;
+    });
+});
+//--></script>
+{{ footer }}
