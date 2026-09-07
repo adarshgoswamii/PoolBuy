@@ -13,7 +13,10 @@
 #   3. Waits for MySQL, runs the OpenCart CLI install once (guarded by a lock row),
 #      installs + seeds the PoolBuy extension.
 #   4. Starts Apache in the foreground.
-set -euo pipefail
+set -uo pipefail
+# NOTE: intentionally NOT using `set -e`. The web server must always start so the
+# platform health check passes; DB/install/seed steps are best-effort and must not
+# abort the container if they transiently fail (e.g. MySQL not linked yet).
 
 OC=/var/www/html
 
@@ -33,9 +36,17 @@ PORT="${PORT:-80}"
 
 echo "[entrypoint] DB=${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}  BASE=${BASE_URL}  PORT=${PORT}"
 
-# ---- Apache: listen on $PORT ----
-sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
-sed -i "s#<VirtualHost \*:80>#<VirtualHost *:${PORT}>#" /etc/apache2/sites-available/000-default.conf
+# ---- Apache: listen on $PORT (Railway assigns the port; must match exactly) ----
+echo "Listen ${PORT}" > /etc/apache2/ports.conf
+sed -i "s#<VirtualHost \*:[0-9]*>#<VirtualHost *:${PORT}>#" /etc/apache2/sites-available/000-default.conf
+# Silence the "could not determine FQDN" warning
+echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf
+a2enconf servername >/dev/null 2>&1 || true
+# Ensure exactly ONE MPM is loaded. mod_php needs prefork; a stray event/worker MPM
+# (pulled in by some apt deps) makes Apache refuse to start with
+# "More than one MPM loaded". Force prefork only.
+a2dismod mpm_event mpm_worker >/dev/null 2>&1 || true
+a2enmod mpm_prefork >/dev/null 2>&1 || true
 
 # ---- Write catalog config.php ----
 cat > "${OC}/config.php" <<PHP

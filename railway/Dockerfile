@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
   && docker-php-ext-install -j"$(nproc)" gd zip mysqli curl \
   && docker-php-ext-enable gd zip mysqli curl \
-  && a2enmod rewrite \
+  && a2dismod mpm_event mpm_worker 2>/dev/null || true \
+  && a2enmod mpm_prefork rewrite \
   && rm -rf /var/lib/apt/lists/*
 
 # App code (the real OpenCart + PoolBuy extension from this repo)
