@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PoolBuy Wholesale | Join Pool</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f0fb",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-variant": "#e1e2ed",
+                    "surface-dim": "#d9d9e5",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "tertiary": "#943700",
+                    "tertiary-container": "#bc4800",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-tint": "#0053db",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#191b23",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "outline-variant": "#c3c6d7",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-tertiary-fixed": "#360f00",
+                    "on-primary-fixed": "#00174b",
+                    "primary-fixed": "#dbe1ff",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2e3039",
+                    "inverse-primary": "#b4c5ff",
+                    "surface-container-highest": "#e1e2ed",
+                    "surface-container-high": "#e7e7f3",
+                    "on-tertiary-container": "#ffede6",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f3fe",
+                    "on-surface-variant": "#434655",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "outline": "#737686",
+                    "background": "#faf8ff",
+                    "secondary-container": "#dae2fd",
+                    "surface-container": "#ededf9",
+                    "secondary": "#565e74",
+                    "on-primary-container": "#eeefff",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "secondary-fixed": "#dae2fd",
+                    "on-secondary-container": "#5c647a",
+                    "on-primary": "#ffffff",
+                    "primary": "#004ac6",
+                    "on-error-container": "#93000a",
+                    "primary-container": "#2563eb",
+                    "surface": "#faf8ff",
+                    "on-background": "#191b23"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "margin": "32px",
+                    "gutter": "24px",
+                    "md": "16px",
+                    "2xl": "48px",
+                    "base": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "mono-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "mono-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pool-pulse {
+            animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-border {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+        .step-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Top Navigation Anchor -->
+<header class="docked full-width top-0 sticky z-50 border-b border-outline-variant bg-surface/80 backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-margin py-md max-w-[1280px] mx-auto">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="hub">hub</span>
+<h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tight">PoolBuy Wholesale</h1>
+</div>
+<nav class="hidden md:flex items-center gap-xl">
+<a class="font-body-md text-primary font-semibold border-b-2 border-primary py-xs" href="#">Marketplace</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">My Pools</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Messages</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Inventory</a>
+</nav>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate procurement officer for a wholesale marketplace, looking confident and focused. The background is a blurred high-end office interior with cool blue and grey tones, maintaining a professional B2B SaaS aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYVy1IpabiRKNg6iMmmfJDOzM-PQL9q3QPqf111G0T5LSG29BYzdTNz7qGei5wLVMy7lXS1Lsfz4SdahShHwuS_ps3HsEKrHfy9Twa3YfyQqpWcT4r5Vmj7bjNiQ8kGSjr57iVrQBL9iW83H_gs1vKksxJ99SjD_7jBFS8oUPm7C9_m5gTEEM258XcUrjFMPuLnr8nE73mzqG_y75syojcoc07pej18DGr8clXZkBj9skFrqacs7zfZw"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-margin py-xl min-h-screen">
+<!-- Dashboard Background Content -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<section class="md:col-span-8">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg overflow-hidden relative">
+<div class="flex justify-between items-start mb-lg">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-sm py-1 rounded-full font-label-md text-label-md uppercase tracking-wider">High Demand</span>
+<span class="text-on-surface-variant font-label-md text-label-md">ID: PB-99210</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg mb-sm">Industrial Grade Filtration Units - Q4 Procurement</h2>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Time Remaining</p>
+<p class="font-headline-sm text-headline-sm text-tertiary">14h : 22m : 05s</p>
+</div>
+</div>
+<div class="w-full h-64 bg-cover bg-center rounded-lg mb-lg border border-outline-variant" data-alt="A high-quality product photography shot of a sleek industrial water filtration unit. The lighting is clean and cinematic, with soft shadows and highlights on the metallic surfaces. The background is a minimalist warehouse setting with a soft depth of field, following a premium corporate blue and white color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA9l5ZNofiblaMEUP5OMhxxhPcPaxklqaomtqZFbWQ7aOpoT6AbHqglQinsdRl10kwzH5U7TDnQbQW_N9FCyOyvBsQLCPkhsTVbt4laDz06MI2PtLvm8gLZMBYHvsetEzV_y7YJQVY5jUxhvdRdyXhkCJEBN_cwDQ207Bt51rANAOeIOabkj1p4RELij6XINC62xoh7G3IZ-RW7canVEkdijWQzGNgcx7b7PHZ0CQ9KKPCYqoFwMzpqSw')"></div>
+<!-- Live Progress Bar -->
+<div class="space-y-sm">
+<div class="flex justify-between items-end">
+<span class="font-label-md text-label-md text-on-surface-variant">Pool Completion</span>
+<span class="font-headline-sm text-headline-sm text-primary">82% <span class="font-body-md text-on-surface-variant">(410/500 units)</span></span>
+</div>
+<div class="h-4 w-full bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container relative" id="main-progress-bar" style="width: 82%">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant italic">Next tier discount unlocks at 450 units (Save an additional 5%)</p>
+</div>
+</div>
+</section>
+<aside class="md:col-span-4 space-y-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+<h3 class="font-headline-sm text-headline-sm mb-md">Price Tiers</h3>
+<div class="space-y-sm">
+<div class="flex justify-between items-center p-sm rounded-lg border border-outline-variant bg-surface-container-low">
+<span class="font-body-md">10-49 Units</span>
+<span class="font-headline-sm text-headline-sm">$1,250 <span class="text-xs text-on-surface-variant">/unit</span></span>
+</div>
+<div class="flex justify-between items-center p-sm rounded-lg border-2 border-primary bg-primary-container/10">
+<span class="font-body-md font-semibold text-primary">50-99 Units</span>
+<span class="font-headline-sm text-headline-sm text-primary">$1,100 <span class="text-xs text-on-surface-variant">/unit</span></span>
+</div>
+<div class="flex justify-between items-center p-sm rounded-lg border border-outline-variant opacity-60">
+<span class="font-body-md">100+ Units</span>
+<span class="font-headline-sm text-headline-sm">$950 <span class="text-xs text-on-surface-variant">/unit</span></span>
+</div>
+</div>
+</div>
+<button class="w-full py-md bg-primary text-on-primary font-headline-sm text-headline-sm rounded-xl shadow-lg hover:bg-primary-container transition-all transform active:scale-95 flex items-center justify-center gap-sm" onclick="openModal()">
+                    Join Wholesale Pool
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</aside>
+</div>
+</main>
+<!-- MULTI-STEP MODAL OVERLAY -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center hidden" id="join-pool-modal">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-inverse-surface/40 backdrop-blur-sm" onclick="closeModal()"></div>
+<!-- Modal Content -->
+<div class="relative glass-panel w-full max-w-xl border border-outline-variant shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="modal-container">
+<!-- Modal Header -->
+<div class="p-lg border-b border-outline-variant flex justify-between items-center">
+<div>
+<h2 class="font-headline-lg text-headline-lg" id="step-title">Enter Quantity</h2>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mt-1" id="step-indicator">Step 1 of 4</p>
+</div>
+<button class="p-sm hover:bg-surface-container rounded-full transition-colors" onclick="closeModal()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Steps Container -->
+<div class="p-lg min-h-[320px] flex flex-col justify-center">
+<!-- STEP 1: QUANTITY -->
+<div class="step-transition" id="step-1">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-sm">UNITS TO RESERVE</label>
+<div class="flex items-center gap-md">
+<button class="w-12 h-12 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container transition-colors" onclick="adjustQuantity(-5)">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+<input class="flex-1 h-12 text-center font-headline-lg text-headline-lg border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" id="quantity-input" max="200" min="10" type="number" value="50"/>
+<button class="w-12 h-12 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container transition-colors" onclick="adjustQuantity(5)">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="mt-xl p-md bg-surface-container-low rounded-xl border border-outline-variant">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-on-surface-variant">Live Unit Price:</span>
+<span class="font-headline-sm text-headline-sm text-primary">$1,100.00</span>
+</div>
+</div>
+</div>
+<!-- STEP 2: BREAKDOWN -->
+<div class="step-transition hidden" id="step-2">
+<div class="space-y-md">
+<div class="flex justify-between font-body-md text-on-surface-variant">
+<span>Subtotal (50 x $1,100)</span>
+<span class="text-on-surface font-semibold">$55,000.00</span>
+</div>
+<div class="flex justify-between font-body-md text-on-surface-variant">
+<span>GST / Tax (18%)</span>
+<span class="text-on-surface font-semibold">$9,900.00</span>
+</div>
+<div class="flex justify-between font-body-md text-on-surface-variant border-b border-outline-variant pb-md">
+<span>Platform Fee (2%)</span>
+<span class="text-on-surface font-semibold">$1,100.00</span>
+</div>
+<div class="flex justify-between font-headline-sm text-headline-sm pt-xs">
+<span>Estimated Total</span>
+<span class="text-primary">$66,000.00</span>
+</div>
+</div>
+<div class="mt-lg p-sm rounded-lg bg-surface-variant/30 flex gap-sm items-center">
+<span class="material-symbols-outlined text-outline" data-icon="info">info</span>
+<p class="font-label-md text-label-md text-on-surface-variant">Final unit price may decrease if more members join.</p>
+</div>
+</div>
+<!-- STEP 3: SHIPPING -->
+<div class="step-transition hidden" id="step-3">
+<div class="space-y-lg">
+<div class="p-md border border-primary bg-primary-container/5 rounded-xl flex gap-md">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<div class="flex-1">
+<p class="font-body-md font-bold">Standard Cargo Freight</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Estimated Delivery: Nov 12 - Nov 18</p>
+</div>
+<span class="font-body-md font-bold">$420.00</span>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-sm">DESTINATION ADDRESS</label>
+<div class="p-md border border-outline-variant rounded-xl flex justify-between items-center bg-surface-container-lowest">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="location_on">location_on</span>
+<p class="font-body-md">Warehouse Alpha, Industrial Zone 4, Bangalore</p>
+</div>
+<button class="text-primary font-label-md text-label-md underline">Change</button>
+</div>
+</div>
+</div>
+</div>
+<!-- STEP 4: CONFIRMATION -->
+<div class="step-transition hidden flex flex-col items-center text-center" id="step-4">
+<div class="w-20 h-20 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-lg scale-110 animate-bounce">
+<span class="material-symbols-outlined text-[40px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg mb-sm">Reservation Successful</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">You've reserved <span class="font-bold text-on-surface">50 units</span> in the Industrial Grade Filtration Pool.</p>
+<div class="w-full bg-surface-container-high p-md rounded-xl border border-outline-variant text-left">
+<div class="flex items-center gap-md mb-xs">
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2">inventory_2</span>
+<p class="font-label-md text-label-md font-bold">TRANSACTION: #TX-98012-POOL</p>
+</div>
+<p class="text-[11px] text-on-surface-variant uppercase pl-10">Waiting for pool fulfillment</p>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-lg bg-surface-container-low border-t border-outline-variant flex justify-between items-center" id="modal-footer">
+<button class="font-body-md text-on-surface-variant hover:text-on-surface invisible" id="back-btn" onclick="prevStep()">Back</button>
+<button class="px-xl py-md bg-primary text-on-primary rounded-xl font-body-md font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-sm" id="next-btn" onclick="nextStep()">
+<span>Continue</span>
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<footer class="w-full py-2xl mt-auto bg-surface-container-highest border-t border-outline-variant">
+<div class="max-w-[1280px] mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-lg">
+<div>
+<p class="font-headline-sm text-headline-sm font-bold text-primary">PoolBuy B2B</p>
+<p class="font-body-md text-on-surface-variant mt-xs">© 2024 PoolBuy B2B Marketplace. All rights reserved.</p>
+</div>
+<div class="flex gap-xl">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">GST Compliance</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Seller Support</a>
+</div>
+</div>
+</footer>
+<script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        const modal = document.getElementById('join-pool-modal');
+        const container = document.getElementById('modal-container');
+        const nextBtn = document.getElementById('next-btn');
+        const backBtn = document.getElementById('back-btn');
+        const stepTitle = document.getElementById('step-title');
+        const stepIndicator = document.getElementById('step-indicator');
+        const progressBar = document.getElementById('main-progress-bar');
+
+        const stepTitles = [
+            "Enter Quantity",
+            "Price Breakdown",
+            "Shipping Estimation",
+            "Reservation Confirmed"
+        ];
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                resetSteps();
+            }, 300);
+        }
+
+        function resetSteps() {
+            currentStep = 1;
+            updateStepVisibility();
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepVisibility();
+                if (currentStep === 4) {
+                    // Update main UI progress bar on success
+                    progressBar.style.width = '92%'; // Simulating 50 units added
+                    nextBtn.innerHTML = 'Go to Dashboard <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>';
+                }
+            } else {
+                closeModal();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepVisibility();
+            }
+        }
+
+        function updateStepVisibility() {
+            // Titles & UI
+            stepTitle.innerText = stepTitles[currentStep - 1];
+            stepIndicator.innerText = `Step ${currentStep} of 4`;
+            
+            // Buttons
+            backBtn.classList.toggle('invisible', currentStep === 1 || currentStep === 4);
+            if (currentStep < 4) {
+                nextBtn.innerHTML = '<span>Continue</span><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>';
+            }
+
+            // Steps
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                if (i === currentStep) {
+                    stepEl.classList.remove('hidden');
+                } else {
+                    stepEl.classList.add('hidden');
+                }
+            }
+        }
+
+        function adjustQuantity(amount) {
+            const input = document.getElementById('quantity-input');
+            let val = parseInt(input.value) + amount;
+            if (val < 10) val = 10;
+            if (val > 200) val = 200;
+            input.value = val;
+        }
+
+        // Live progress micro-interaction simulation
+        setInterval(() => {
+            const currentWidth = parseFloat(progressBar.style.width);
+            if (currentWidth < 99 && Math.random() > 0.8) {
+                progressBar.style.width = (currentWidth + 0.1) + '%';
+            }
+        }, 3000);
+    </script>
+</body></html>

@@ -1,0 +1,447 @@
+﻿<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>PoolBuy Wholesale</title>
+  <base href="#"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <link href="/admin/_assets/stylesheet/bootstrap.css" rel="stylesheet" media="screen"/>
+  <link href="/admin/_assets/stylesheet/fonts/fontawesome/css/all.min.css" rel="stylesheet" type="text/css"/>
+  <link href="/admin/_assets/stylesheet/stylesheet.css" rel="stylesheet" type="text/css"/>
+  <script src="/admin/_assets/javascript/jquery/jquery-3.7.1.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="/admin/_assets/javascript/common.js"></script>
+      <link rel="icon" href="#image/catalog/opencart.ico" type="image/png">
+        </head>
+<body><div style="background:#b45309;color:#fff;padding:8px 16px;font:600 13px/1.4 system-ui,sans-serif;text-align:center;">PoolBuy Admin &mdash; static preview (read-only, no live data). The functional admin runs on PHP+MySQL.</div>
+<div id="alert"></div>
+<div id="container">
+  <header id="header" class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid">
+      <a href="#index.php?route=common/dashboard&amp;user_token=PREVIEW" class="navbar-brand d-none d-lg-block"><img src="/admin/_assets/image/logo.png" alt="OpenCart" title="OpenCart"/></a>
+              <button type="button" id="button-menu" class="btn btn-link d-inline-block d-lg-none"><i class="fa-solid fa-bars"></i></button>
+        <ul class="nav navbar-nav">
+          <li id="nav-notification" class="nav-item dropdown">
+            <a href="#" data-bs-toggle="dropdown" class="nav-link dropdown-toggle"><i class="fa-regular fa-bell"></i></a>
+            <div class="dropdown-menu dropdown-menu-end">
+                              <span class="dropdown-item text-center">No results!</span>
+                          </div>
+          </li>
+          <li id="nav-language" class="nav-item dropdown">      <a href="en-gb" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><img src="#catalog/language/en-gb/en-gb.png" alt="English" title="English"/></a>
+  <ul class="dropdown-menu">
+      <li><a href="en-gb" class="dropdown-item"><img src="#catalog/language/en-gb/en-gb.png" alt="English" title="English"/> English</a></li>
+  </ul>
+<input type="hidden" name="redirect" value="#index.php?route=extension/poolbuy/module/poolbuy&amp;user_token=PREVIEW" id="input-redirect"/></li>
+          <li id="nav-profile" class="nav-item dropdown">
+            <a href="#" data-bs-toggle="dropdown" class="nav-link dropdown-toggle"><img src="#image/cache/profile-45x45.png" alt="John Doe" title="John Doe" class="rounded-circle"/><span class="d-none d-md-inline d-lg-inline">&nbsp;&nbsp;&nbsp;John Doe <i class="fa-solid fa-caret-down fa-fw"></i></span></a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a href="#index.php?route=user/profile&amp;user_token=PREVIEW" class="dropdown-item"><i class="fa-solid fa-user-circle fa-fw"></i> Your Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Stores</h6></li>
+                              <a href="#" target="_blank" class="dropdown-item">Your Store</a>
+                            <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Help</h6></li>
+              <li><a href="https://www.opencart.com" target="_blank" class="dropdown-item"><i class="fa-brands fa-opencart fa-fw"></i> OpenCart Homepage</a></li>
+              <li><a href="https://docs.opencart.com" target="_blank" class="dropdown-item"><i class="fa-solid fa-file fa-fw"></i> Documentation</a></li>
+              <li><a href="https://forum.opencart.com" target="_blank" class="dropdown-item"><i class="fa-solid fa-comments fa-fw"></i> Support Forum</a></li>
+            </ul>
+          </li>
+          <li id="nav-logout" class="nav-item"><a href="#index.php?route=common/logout&amp;user_token=PREVIEW" class="nav-link"><i class="fa-solid fa-sign-out"></i> <span class="d-none d-md-inline">Logout</span></a></li>
+        </ul>
+          </div>
+  </header>
+<nav id="column-left">
+	<div id="navigation"><span class="fa-solid fa-bars"></span> Navigation</div>
+	<ul id="menu">
+							<li id="menu-dashboard">
+									<a href="#index.php?route=common/dashboard&amp;user_token=PREVIEW"><i class="fas fa-home"></i> Dashboard</a>
+											</li>
+								<li id="menu-catalog">
+									<a href="#collapse-1" data-bs-toggle="collapse" class="parent collapsed"><i class="fa-solid fa-tag"></i> Catalog</a>
+													<ul id="collapse-1" class="collapse">
+																			<li>									<a href="#index.php?route=catalog/category&amp;user_token=PREVIEW">Categories</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/product&amp;user_token=PREVIEW">Products</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/subscription_plan&amp;user_token=PREVIEW">Subscription Plans</a>
+																							</li>
+																				<li>									<a href="#collapse-1-3" data-bs-toggle="collapse" class="parent collapsed">Filters</a>
+																									<ul id="collapse-1-3" class="collapse">
+																															<li>													<a href="#index.php?route=catalog/filter&amp;user_token=PREVIEW">Filters</a>
+																								</li>
+																																<li>													<a href="#index.php?route=catalog/filter_group&amp;user_token=PREVIEW">Filter Groups</a>
+																								</li>
+																														</ul>
+															</li>
+																				<li>									<a href="#collapse-1-4" data-bs-toggle="collapse" class="parent collapsed">Attributes</a>
+																									<ul id="collapse-1-4" class="collapse">
+																															<li>													<a href="#index.php?route=catalog/attribute&amp;user_token=PREVIEW">Attributes</a>
+																								</li>
+																																<li>													<a href="#index.php?route=catalog/attribute_group&amp;user_token=PREVIEW">Attribute Groups</a>
+																								</li>
+																														</ul>
+															</li>
+																				<li>									<a href="#index.php?route=catalog/option&amp;user_token=PREVIEW">Options</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/manufacturer&amp;user_token=PREVIEW">Manufacturers</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/identifier&amp;user_token=PREVIEW">Identifiers</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/download&amp;user_token=PREVIEW">Downloads</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/review&amp;user_token=PREVIEW">Reviews</a>
+																							</li>
+																				<li>									<a href="#index.php?route=catalog/information&amp;user_token=PREVIEW">Information</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-cms">
+									<a href="#collapse-2" data-bs-toggle="collapse" class="parent collapsed"><i class="fa-regular fa-newspaper"></i> CMS</a>
+													<ul id="collapse-2" class="collapse">
+																			<li>									<a href="#index.php?route=cms/topic&amp;user_token=PREVIEW">Topics</a>
+																							</li>
+																				<li>									<a href="#index.php?route=cms/article&amp;user_token=PREVIEW">Articles</a>
+																							</li>
+																				<li>									<a href="#index.php?route=cms/comment&amp;user_token=PREVIEW">Comments</a>
+																							</li>
+																				<li>									<a href="#index.php?route=cms/antispam&amp;user_token=PREVIEW">Anti-Spam</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-extension">
+									<a href="#collapse-3" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-puzzle-piece"></i> Extensions</a>
+													<ul id="collapse-3" class="collapse">
+																			<li>									<a href="#index.php?route=marketplace/marketplace&amp;user_token=PREVIEW">Marketplace</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/installer&amp;user_token=PREVIEW">Installer</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/extension&amp;user_token=PREVIEW">Extensions</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/modification&amp;user_token=PREVIEW">Modification</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/startup&amp;user_token=PREVIEW">Startup</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/event&amp;user_token=PREVIEW">Events</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketplace/cron&amp;user_token=PREVIEW">Cron Jobs</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-design">
+									<a href="#collapse-4" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-desktop"></i> Design</a>
+													<ul id="collapse-4" class="collapse">
+																			<li>									<a href="#index.php?route=design/layout&amp;user_token=PREVIEW">Layouts</a>
+																							</li>
+																				<li>									<a href="#index.php?route=design/theme&amp;user_token=PREVIEW">Theme Editor</a>
+																							</li>
+																				<li>									<a href="#index.php?route=design/translation&amp;user_token=PREVIEW">Language Editor</a>
+																							</li>
+																				<li>									<a href="#index.php?route=design/banner&amp;user_token=PREVIEW">Banners</a>
+																							</li>
+																				<li>									<a href="#index.php?route=design/seo_url&amp;user_token=PREVIEW">SEO URL</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-sale">
+									<a href="#collapse-5" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-shopping-cart"></i> Sales</a>
+													<ul id="collapse-5" class="collapse">
+																			<li>									<a href="#index.php?route=sale/order&amp;user_token=PREVIEW">Orders</a>
+																							</li>
+																				<li>									<a href="#index.php?route=sale/subscription&amp;user_token=PREVIEW">Subscriptions</a>
+																							</li>
+																				<li>									<a href="#index.php?route=sale/returns&amp;user_token=PREVIEW">Returns</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-customer">
+									<a href="#collapse-6" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-user"></i> Customers</a>
+													<ul id="collapse-6" class="collapse">
+																			<li>									<a href="#index.php?route=customer/customer&amp;user_token=PREVIEW">Customers</a>
+																							</li>
+																				<li>									<a href="#index.php?route=customer/customer_group&amp;user_token=PREVIEW">Customer Groups</a>
+																							</li>
+																				<li>									<a href="#index.php?route=customer/customer_approval&amp;user_token=PREVIEW">Customer Approvals</a>
+																							</li>
+																				<li>									<a href="#index.php?route=customer/gdpr&amp;user_token=PREVIEW">GDPR</a>
+																							</li>
+																				<li>									<a href="#index.php?route=customer/custom_field&amp;user_token=PREVIEW">Custom Fields</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-marketing">
+									<a href="#collapse-7" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-share-alt"></i> Marketing</a>
+													<ul id="collapse-7" class="collapse">
+																			<li>									<a href="#index.php?route=marketing/affiliate&amp;user_token=PREVIEW">Affiliate</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketing/marketing&amp;user_token=PREVIEW">Marketing</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketing/coupon&amp;user_token=PREVIEW">Coupons</a>
+																							</li>
+																				<li>									<a href="#index.php?route=marketing/contact&amp;user_token=PREVIEW">Mail</a>
+																							</li>
+																		</ul>
+							</li>
+								<li id="menu-system">
+									<a href="#collapse-8" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-cog"></i> System</a>
+													<ul id="collapse-8" class="collapse">
+																			<li>									<a href="#index.php?route=setting/store&amp;user_token=PREVIEW">Settings</a>
+																							</li>
+																				<li>									<a href="#collapse-8-1" data-bs-toggle="collapse" class="parent collapsed">Users</a>
+																									<ul id="collapse-8-1" class="collapse">
+																															<li>													<a href="#index.php?route=user/user&amp;user_token=PREVIEW">Users</a>
+																								</li>
+																																<li>													<a href="#index.php?route=user/user_permission&amp;user_token=PREVIEW">User Groups</a>
+																								</li>
+																																<li>													<a href="#index.php?route=user/api&amp;user_token=PREVIEW">API</a>
+																								</li>
+																														</ul>
+															</li>
+																				<li>									<a href="#collapse-8-2" data-bs-toggle="collapse" class="parent collapsed">Localisation</a>
+																									<ul id="collapse-8-2" class="collapse">
+																															<li>													<a href="#index.php?route=localisation/location&amp;user_token=PREVIEW">Store Location</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/language&amp;user_token=PREVIEW">Languages</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/currency&amp;user_token=PREVIEW">Currencies</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/stock_status&amp;user_token=PREVIEW">Stock Statuses</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/order_status&amp;user_token=PREVIEW">Order Statuses</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/subscription_status&amp;user_token=PREVIEW">Subscription Statuses</a>
+																								</li>
+																																<li>													<a href="#collapse-8-2-6" data-bs-toggle="collapse" class="parent collapsed">Returns</a>
+																																					<ul id="collapse-8-2-6" class="collapse">
+																													<li><a href="#index.php?route=localisation/return_status&amp;user_token=PREVIEW">Return Statuses</a></li>
+																													<li><a href="#index.php?route=localisation/return_action&amp;user_token=PREVIEW">Return Actions</a></li>
+																													<li><a href="#index.php?route=localisation/return_reason&amp;user_token=PREVIEW">Return Reasons</a></li>
+																											</ul>
+												</li>
+																																<li>													<a href="#index.php?route=localisation/country&amp;user_token=PREVIEW">Countries</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/zone&amp;user_token=PREVIEW">Zones</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/geo_zone&amp;user_token=PREVIEW">Geo Zones</a>
+																								</li>
+																																<li>													<a href="#collapse-8-2-10" data-bs-toggle="collapse" class="parent collapsed">Taxes</a>
+																																					<ul id="collapse-8-2-10" class="collapse">
+																													<li><a href="#index.php?route=localisation/tax_class&amp;user_token=PREVIEW">Tax Classes</a></li>
+																													<li><a href="#index.php?route=localisation/tax_rate&amp;user_token=PREVIEW">Tax Rates</a></li>
+																											</ul>
+												</li>
+																																<li>													<a href="#index.php?route=localisation/length_class&amp;user_token=PREVIEW">Length Classes</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/weight_class&amp;user_token=PREVIEW">Weight Classes</a>
+																								</li>
+																																<li>													<a href="#index.php?route=localisation/address_format&amp;user_token=PREVIEW">Address Format</a>
+																								</li>
+																														</ul>
+															</li>
+																				<li>									<a href="#collapse-8-3" data-bs-toggle="collapse" class="parent collapsed">Maintenance</a>
+																									<ul id="collapse-8-3" class="collapse">
+																															<li>													<a href="#index.php?route=tool/upgrade&amp;user_token=PREVIEW">Upgrade</a>
+																								</li>
+																																<li>													<a href="#index.php?route=tool/backup&amp;user_token=PREVIEW">Backup / Restore</a>
+																								</li>
+																																<li>													<a href="#index.php?route=tool/upload&amp;user_token=PREVIEW">Uploads</a>
+																								</li>
+																																<li>													<a href="#index.php?route=tool/log&amp;user_token=PREVIEW">Error Logs</a>
+																								</li>
+																														</ul>
+															</li>
+																		</ul>
+							</li>
+								<li id="menu-report">
+									<a href="#collapse-9" data-bs-toggle="collapse" class="parent collapsed"><i class="fas fa-chart-bar"></i> Reports</a>
+													<ul id="collapse-9" class="collapse">
+																			<li>									<a href="#index.php?route=report/report&amp;user_token=PREVIEW">Reports</a>
+																							</li>
+																				<li>									<a href="#index.php?route=report/online&amp;user_token=PREVIEW">Who's Online</a>
+																							</li>
+																				<li>									<a href="#index.php?route=report/statistics&amp;user_token=PREVIEW">Statistics</a>
+																							</li>
+																		</ul>
+							</li>
+						</ul>
+			<div id="stats">
+			<ul>
+				<li>
+					<div>Orders Completed <span class="float-end">0%</span></div>
+					<div class="progress">
+						<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"><span class="sr-only">0%</span></div>
+					</div>
+				</li>
+				<li>
+					<div>Orders Processing <span class="float-end">126%</span></div>
+					<div class="progress">
+						<div class="progress-bar bg-warning" role="progressbar" aria-valuenow="126" aria-valuemin="0" aria-valuemax="100" style="width: 126%"><span class="sr-only">126%</span></div>
+					</div>
+				</li>
+				<li>
+					<div>Other Statuses <span class="float-end">0%</span></div>
+					<div class="progress">
+						<div class="progress-bar bg-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"><span class="sr-only">0%</span></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-poolbuy" data-bs-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa-solid fa-save" aria-hidden="true"></i></button>
+        <a href="#index.php?route=marketplace/extension&amp;user_token=PREVIEW&amp;type=module" data-bs-toggle="tooltip" title="Back" class="btn btn-light"><i class="fa-solid fa-reply" aria-hidden="true"></i></a></div>
+      <h1>PoolBuy Wholesale</h1>
+      <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="#index.php?route=common/dashboard&amp;user_token=PREVIEW">Home</a></li>
+                  <li class="breadcrumb-item"><a href="#index.php?route=marketplace/extension&amp;user_token=PREVIEW&amp;type=module">Extensions</a></li>
+                  <li class="breadcrumb-item"><a href="#index.php?route=extension/poolbuy/module/poolbuy&amp;user_token=PREVIEW">PoolBuy Wholesale</a></li>
+              </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+          <div class="alert alert-success"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Database schema installed.</div>
+        <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> PoolBuy Marketplace Settings</div>
+      <div class="card-body">
+        <form id="form-poolbuy" action="#index.php?route=extension/poolbuy/module/poolbuy.save&amp;user_token=PREVIEW" method="post" data-oc-toggle="ajax">
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Status</label>
+            <div class="col-sm-9">
+              <div class="form-check form-switch form-switch-lg">
+                <input type="hidden" name="module_poolbuy_status" value="0"/>
+                <input type="checkbox" name="module_poolbuy_status" value="1" id="input-status" class="form-check-input" checked/>
+              </div>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>Pricing &amp; Tax</legend>
+            <div class="row mb-3 required">
+              <label for="input-currency-code" class="col-sm-3 col-form-label">Currency Code</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_currency_code" value="INR" placeholder="Currency Code" id="input-currency-code" maxlength="3" class="form-control"/>
+                <div class="form-text">Three-letter ISO code used for pool pricing, e.g. INR or USD.</div>
+                <div id="error-currency-code" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-currency-symbol" class="col-sm-3 col-form-label">Currency Symbol</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_currency_symbol" value="₹" placeholder="Currency Symbol" id="input-currency-symbol" maxlength="8" class="form-control"/>
+                <div id="error-currency-symbol" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-gst-rate" class="col-sm-3 col-form-label">GST / Tax Rate (%)</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_gst_rate" value="18" placeholder="GST / Tax Rate (%)" id="input-gst-rate" class="form-control"/>
+                <div class="form-text">Applied to the pool subtotal when a buyer reserves units.</div>
+                <div id="error-gst-rate" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3 required">
+              <label for="input-platform-fee" class="col-sm-3 col-form-label">Platform Fee (%)</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_platform_fee" value="2" placeholder="Platform Fee (%)" id="input-platform-fee" class="form-control"/>
+                <div class="form-text">Marketplace commission applied to the pool subtotal.</div>
+                <div id="error-platform-fee" class="invalid-feedback"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Pool Defaults</legend>
+            <div class="row mb-3 required">
+              <label for="input-pool-duration" class="col-sm-3 col-form-label">Default Pool Duration (days)</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_pool_duration" value="7" placeholder="Default Pool Duration (days)" id="input-pool-duration" class="form-control"/>
+                <div class="form-text">Pre-fills the end date when creating a new pool.</div>
+                <div id="error-pool-duration" class="invalid-feedback"></div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-sm-3 col-form-label">Retroactive Pricing</label>
+              <div class="col-sm-9">
+                <div class="form-check form-switch form-switch-lg">
+                  <input type="hidden" name="module_poolbuy_retro_pricing" value="0"/>
+                  <input type="checkbox" name="module_poolbuy_retro_pricing" value="1" id="input-retro-pricing" class="form-check-input" checked/>
+                </div>
+                <div class="form-text">When enabled, every participant receives the best price tier unlocked by the pool, not just the tier active when they joined.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Automation</legend>
+            <div class="row mb-3">
+              <label for="input-cron-token" class="col-sm-3 col-form-label">Cron Token</label>
+              <div class="col-sm-9">
+                <div class="input-group">
+                  <input type="text" name="module_poolbuy_cron_token" value="4323258562591f5797964f78ac3824e7" id="input-cron-token" class="form-control" readonly/>
+                  <button type="button" id="button-regenerate-token" class="btn btn-light">Regenerate</button>
+                </div>
+                <div class="form-text">Secret required to trigger the pool lifecycle cron. Keep this private; regenerate it if it leaks.</div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-sm-3 col-form-label">Run Lifecycle Now</label>
+              <div class="col-sm-9">
+                <button type="button" id="button-run-lifecycle" class="btn btn-outline-primary">
+                  <i class="fa-solid fa-play" aria-hidden="true"></i> Run Lifecycle Now
+                </button>
+                <div class="form-text">Process every pool now: activate due pools, lock pools that hit their MOQ, reprice participants, raise orders and expire pools past their window. Safe to run repeatedly. No token needed.</div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+document.getElementById('button-regenerate-token').addEventListener('click', function() {
+    // Generated client-side purely for convenience; the server regenerates the
+    // token anyway if the field is ever submitted empty.
+    var bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+
+    document.getElementById('input-cron-token').value = Array.from(bytes).map(function(b) {
+        return b.toString(16).padStart(2, '0');
+    }).join('');
+});
+
+document.getElementById('button-run-lifecycle').addEventListener('click', function() {
+    var button = this;
+    var original = button.innerHTML;
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> ' + button.textContent.trim();
+
+    fetch('index.php?route=extension/poolbuy/module/poolbuy.runLifecycle&user_token=PREVIEW', {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    }).then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        // Reuse OpenCart's floating alert stack.
+        if (json.error) {
+            $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json.error + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+        } else if (json.success) {
+            $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json.success + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+        }
+    }).catch(function() {
+        $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> Request failed. <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+    }).finally(function() {
+        button.disabled = false;
+        button.innerHTML = original;
+    });
+});
+//--></script>
+<footer id="footer"><a href="https://www.opencart.com">OpenCart</a> &copy; 2009-2026 All Rights Reserved.<br/>Version 4.1.0.4</footer></div>
+<script src="/admin/_assets/javascript/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+</body></html>
+
+
+

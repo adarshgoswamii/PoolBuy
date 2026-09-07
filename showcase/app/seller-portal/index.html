@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Seller Portal</title>
+  <base href="#"/>
+      <script src="/app/_assets/javascript/jquery/jquery-3.7.1.min.js" type="text/javascript"></script>
+  <link href="/app/_assets/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" media="screen"/>
+  <link href="/app/_assets/stylesheet/fonts/fontawesome/css/all.min.css" rel="stylesheet" type="text/css"/>
+  <link href="/app/_assets/stylesheet/stylesheet.css" type="text/css" rel="stylesheet"/>
+    <link href="/app/_assets/stylesheet/poolbuy-fonts.css" type="text/css" rel="stylesheet"/>
+  <link href="/app/_assets/stylesheet/poolbuy.css" type="text/css" rel="stylesheet"/>
+  <script src="/app/_assets/javascript/common.js" type="text/javascript"></script>
+      <link rel="icon" href="#image/catalog/opencart.ico" type="image/png">
+          </head>
+<body class="pb"><div style="background:#b45309;color:#fff;padding:8px 16px;font:600 13px/1.4 Inter,system-ui,sans-serif;text-align:center;">PoolBuy &mdash; static preview (read-only, captured from the live app). Functional version runs on PHP+MySQL.</div>
+<a class="pb-skip-link" href="#pb-main">Skip to main content</a>
+<div id="container">
+  <div id="alert"></div>
+
+  <header class="pb-header">
+    <div class="pb-container pb-header__inner">
+      <a class="pb-brand" href="#?route=common/home&amp;language=en-gb">
+        <i class="fa-solid fa-diagram-project pb-brand__mark" aria-hidden="true"></i>
+        <span>Your Store</span>
+      </a>
+
+      <nav class="pb-nav" aria-label="Primary">
+        <a class="pb-nav__link" href="#">Marketplace</a>
+        <a class="pb-nav__link" href="#">My Pools</a>
+        <a class="pb-nav__link" href="#?route=account/order&amp;language=en-gb&amp;customer_token=PREVIEW">Inventory</a>
+                  <a class="pb-nav__link" href="#?route=extension/poolbuy/seller&amp;language=en-gb">Sell</a>
+                <a class="pb-nav__link" href="#?route=information/contact&amp;language=en-gb">Support</a>
+      </nav>
+
+      <div class="pb-header__actions">
+                <div class="d-none d-xl-flex align-items-center gap-2">  <form id="form-currency" action="#?route=common/currency.save&amp;language=en-gb" method="post" data-oc-toggle="ajax">
+    <div class="dropdown"><span role="button" data-bs-toggle="dropdown" class="dropdown-toggle"><strong>$</strong> <span class="d-none d-md-inline">Currency</span> <i class="fa-solid fa-caret-down"></i></span>
+      <ul class="dropdown-menu">
+                              <li><span role="button" data-code="EUR" class="dropdown-item">€ Euro</span></li>
+                                        <li><span role="button" data-code="GBP" class="dropdown-item">£ Pound Sterling</span></li>
+                                        <li><span role="button" data-code="USD" class="dropdown-item">$ US Dollar</span></li>
+                        </ul>
+    </div>
+    <input type="hidden" name="code" value=""/>
+    <input type="hidden" name="redirect" value="#?route=extension/poolbuy/seller"/>
+  </form>
+</div>
+
+                <a class="pb-icon-btn" href="#" title="Search products">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <span class="pb-visually-hidden">Search products</span>
+        </a>
+
+        <a class="pb-icon-btn pb-relative" href="#?route=account/wishlist&amp;language=en-gb&amp;customer_token=PREVIEW" id="wishlist-total" title="Wish List (0)">
+          <i class="fa-solid fa-heart" aria-hidden="true"></i>
+          <span class="pb-visually-hidden">Wish List (0)</span>
+        </a>
+
+        <div class="pb-relative"><div class="dropdown d-grid">
+  <button type="button" data-bs-toggle="dropdown" class="btn btn-lg btn-dark d-block dropdown-toggle"><i class="fa-solid fa-cart-shopping"></i> 0 item(s) - $0.00</button>
+  <ul class="dropdown-menu dropdown-menu-end p-2">
+          <li class="text-center p-4">Your shopping cart is empty!</li>
+      </ul>
+</div></div>
+
+        <div class="dropdown">
+          <button type="button" class="pb-avatar" data-bs-toggle="dropdown" aria-expanded="false" title="My Account">
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span class="pb-visually-hidden">My Account</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a href="#" class="dropdown-item">My Pools</a></li>
+                              <li><a href="#?route=extension/poolbuy/seller&amp;language=en-gb" class="dropdown-item"><i class="fa-solid fa-store" aria-hidden="true"></i> Seller Portal</a></li>
+                            <li><a href="#?route=account/account&amp;language=en-gb&amp;customer_token=PREVIEW" class="dropdown-item">My Account</a></li>
+              <li><a href="#?route=account/order&amp;language=en-gb&amp;customer_token=PREVIEW" class="dropdown-item">Order History</a></li>
+              <li><a href="#?route=account/transaction&amp;language=en-gb&amp;customer_token=PREVIEW" class="dropdown-item">Transactions</a></li>
+              <li><a href="#?route=account/logout&amp;language=en-gb" class="dropdown-item">Logout</a></li>
+                      </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="pb-main">
+      <div class="container">
+    <nav id="menu" class="navbar navbar-expand-lg bg-primary">
+      <div id="category" class="d-block d-sm-block d-lg-none">Categories</div>
+      <button type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" class="navbar-toggler d-lg-none" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle category menu"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <div id="navbar-menu" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+                                                                                                              <li class="nav-item dropdown"><a href="#?route=product/category&amp;language=en-gb&amp;path=20" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Desktops</a>
+                <div class="dropdown-menu dropdown-column-1">
+                  <div class="dropdown-inner">
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=20_26" class="dropdown-item">PC (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=20_27" class="dropdown-item">Mac (1)</a></li>
+                                              </ul>
+                                      </div>
+                  <ul class="list-unstyled">
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a href="#?route=product/category&amp;language=en-gb&amp;path=20" class="dropdown-item">Show All Desktops</a></li>
+                  </ul>
+                </div>
+              </li>
+                                                                                                                          <li class="nav-item dropdown"><a href="#?route=product/category&amp;language=en-gb&amp;path=18" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Laptops &amp; Notebooks</a>
+                <div class="dropdown-menu dropdown-column-1">
+                  <div class="dropdown-inner">
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=18_46" class="dropdown-item">Macs (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=18_45" class="dropdown-item">Windows (0)</a></li>
+                                              </ul>
+                                      </div>
+                  <ul class="list-unstyled">
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a href="#?route=product/category&amp;language=en-gb&amp;path=18" class="dropdown-item">Show All Laptops &amp; Notebooks</a></li>
+                  </ul>
+                </div>
+              </li>
+                                                                                                                          <li class="nav-item dropdown"><a href="#?route=product/category&amp;language=en-gb&amp;path=25" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Components</a>
+                <div class="dropdown-menu dropdown-column-1">
+                  <div class="dropdown-inner">
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25_29" class="dropdown-item">Mice and Trackballs (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25_28" class="dropdown-item">Monitors (1)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25_30" class="dropdown-item">Printers (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25_31" class="dropdown-item">Scanners (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25_32" class="dropdown-item">Web Cameras (0)</a></li>
+                                              </ul>
+                                      </div>
+                  <ul class="list-unstyled">
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a href="#?route=product/category&amp;language=en-gb&amp;path=25" class="dropdown-item">Show All Components</a></li>
+                  </ul>
+                </div>
+              </li>
+                                                <li class="nav-item"><a href="#?route=product/category&amp;language=en-gb&amp;path=57" class="dropdown-item">Tablets</a></li>
+                                                <li class="nav-item"><a href="#?route=product/category&amp;language=en-gb&amp;path=17" class="dropdown-item">Software</a></li>
+                                                <li class="nav-item"><a href="#?route=product/category&amp;language=en-gb&amp;path=24" class="dropdown-item">Phones &amp; PDAs</a></li>
+                                                <li class="nav-item"><a href="#?route=product/category&amp;language=en-gb&amp;path=33" class="dropdown-item">Cameras</a></li>
+                                                                                                                          <li class="nav-item dropdown"><a href="#?route=product/category&amp;language=en-gb&amp;path=34" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">MP3 Players</a>
+                <div class="dropdown-menu dropdown-column-4">
+                  <div class="dropdown-inner">
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_43" class="dropdown-item">test 11 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_44" class="dropdown-item">test 12 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_47" class="dropdown-item">test 15 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_48" class="dropdown-item">test 16 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_49" class="dropdown-item">test 17 (0)</a></li>
+                                              </ul>
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_50" class="dropdown-item">test 18 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_51" class="dropdown-item">test 19 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_52" class="dropdown-item">test 20 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_53" class="dropdown-item">test 21 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_54" class="dropdown-item">test 22 (0)</a></li>
+                                              </ul>
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_55" class="dropdown-item">test 23 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_56" class="dropdown-item">test 24 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_38" class="dropdown-item">test 4 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_37" class="dropdown-item">test 5 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_39" class="dropdown-item">test 6 (0)</a></li>
+                                              </ul>
+                                          <ul class="list-unstyled">
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_40" class="dropdown-item">test 7 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_41" class="dropdown-item">test 8 (0)</a></li>
+                                                  <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34_42" class="dropdown-item">test 9 (0)</a></li>
+                                              </ul>
+                                      </div>
+                  <ul class="list-unstyled">
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a href="#?route=product/category&amp;language=en-gb&amp;path=34" class="dropdown-item">Show All MP3 Players</a></li>
+                  </ul>
+                </div>
+              </li>
+                              </ul>
+      </div>
+    </nav>
+  </div>
+
+
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+              <li>
+          <a class="pb-link" href="#?route=common/home&amp;language=en-gb"><i class="fas fa-home" aria-hidden="true"></i><span class="pb-visually-hidden">Home</span></a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+                  </li>
+              <li>
+          <span aria-current="page">Seller Portal</span>        </li>
+          </ol>
+  </nav>
+
+    
+  
+  <div class="pb-flex pb-justify-between pb-items-end pb-wrap pb-gap-md pb-mb-xl">
+    <div>
+      <h1 class="pb-display-lg pb-mb-xs">Seller Portal</h1>
+      <p class="pb-body-lg pb-muted pb-mb-0">Titan Pumps Global Mfg. &middot; Manage your wholesale pools and track reservation progress.</p>
+    </div>
+    <a class="pb-btn pb-btn--primary" href="#?route=extension/poolbuy/seller.form&amp;language=en-gb"><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Create New Pool</a>
+  </div>
+
+  <div class="pb-grid pb-grid-3 pb-mb-xl">
+    <div class="pb-stat">
+      <p class="pb-stat__label">Total committed volume</p>
+      <p class="pb-stat__value pb-primary-text pb-tnum pb-mb-0">₹0.00</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">Active pools</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">2</p>
+      <p class="pb-stat__meta"><i class="fa-regular fa-hourglass" aria-hidden="true"></i> 1 reaching MOQ soon</p>
+    </div>
+    <div class="pb-stat">
+      <p class="pb-stat__label">Average fill rate</p>
+      <p class="pb-stat__value pb-tnum pb-mb-0">79.5%</p>
+    </div>
+  </div>
+
+  <div class="pb-flex pb-gap-sm pb-wrap pb-mb-md">
+    <a class="pb-btn pb-btn--sm pb-btn--primary" href="#?route=extension/poolbuy/seller&amp;language=en-gb">All</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=draft">Draft</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=active">Active</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=reached">MOQ Reached</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=closed">Closed</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=expired">Expired</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=fulfilled">Fulfilled</a>
+          <a class="pb-btn pb-btn--sm pb-btn--light" href="#?route=extension/poolbuy/seller&amp;language=en-gb&amp;filter_status=cancelled">Cancelled</a>
+      </div>
+
+  <h2 class="pb-headline-sm pb-mb-md">Your Pool Campaigns</h2>
+
+      <div class="pb-card">
+      <div class="pb-table-wrap">
+        <table class="pb-table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col" class="pb-text-end">MOQ target</th>
+              <th scope="col" class="pb-text-end">Reserved so far</th>
+              <th scope="col" style="width: 200px;">Average fill rate</th>
+              <th scope="col"> left</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="pb-text-end">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <div class="pb-flex pb-items-center pb-gap-sm">
+                    <img src="#image/cache/placeholder-120x120.png" alt="Brushed Al-Chassis (Model X-5)" width="44" height="44" loading="lazy" style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--pb-radius-sm);"/>
+                    <div>
+                      <a class="pb-link" href="#?route=extension/poolbuy/seller.pool&amp;language=en-gb&amp;pool_id=7">Brushed Al-Chassis (Model X-5)</a>
+                      <div class="pb-muted" style="font-size: 11px;">PB-88305 &middot; Product 8</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="pb-text-end pb-tnum">500 <span class="pb-muted">Units</span></td>
+                <td class="pb-text-end pb-tnum" style="font-weight: 600;">420</td>
+                <td>
+                  <div class="pb-flex pb-justify-between pb-label-md pb-mb-xs">
+                    <span class="pb-primary-text pb-tnum">84%</span>
+                    <span class="pb-muted pb-tnum">80 left</span>
+                  </div>
+                  <div class="pb-progress pb-progress--sm" role="progressbar" aria-label="Brushed Al-Chassis (Model X-5)" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pb-progress__bar pb-progress__bar--urgent" style="width: 84%;"></div>
+                  </div>
+                </td>
+                <td class="pb-tnum">
+                                      <span class="pb-tertiary-text" data-pb-countdown="1789068635" data-pb-ended="Ended">3d 04h</span>
+                                  </td>
+                <td><span class="pb-badge pb-badge--verified">Active</span></td>
+                <td class="pb-text-end">
+                  <a class="pb-btn pb-btn--light pb-btn--sm" href="#?route=extension/poolbuy/seller.pool&amp;language=en-gb&amp;pool_id=7">View</a>
+                  <a class="pb-btn pb-btn--ghost pb-btn--sm" href="#?route=extension/poolbuy/seller.form&amp;language=en-gb&amp;pool_id=7">Edit</a>
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <div class="pb-flex pb-items-center pb-gap-sm">
+                    <img src="#image/cache/catalog/demo/htc_touch_hd_1-120x120.jpg" alt="Titan-X Industrial Grade 5HP Submersible Drainage Pump" width="44" height="44" loading="lazy" style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--pb-radius-sm);"/>
+                    <div>
+                      <a class="pb-link" href="#?route=extension/poolbuy/seller.pool&amp;language=en-gb&amp;pool_id=1">Titan-X Industrial Grade 5HP Submersible Drainage Pump</a>
+                      <div class="pb-muted" style="font-size: 11px;">PB-99201 &middot; Product 1</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="pb-text-end pb-tnum">200 <span class="pb-muted">Units</span></td>
+                <td class="pb-text-end pb-tnum" style="font-weight: 600;">150</td>
+                <td>
+                  <div class="pb-flex pb-justify-between pb-label-md pb-mb-xs">
+                    <span class="pb-primary-text pb-tnum">75%</span>
+                    <span class="pb-muted pb-tnum">50 left</span>
+                  </div>
+                  <div class="pb-progress pb-progress--sm" role="progressbar" aria-label="Titan-X Industrial Grade 5HP Submersible Drainage Pump" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pb-progress__bar" style="width: 75%;"></div>
+                  </div>
+                </td>
+                <td class="pb-tnum">
+                                      <span class="pb-muted" data-pb-countdown="1789068968" data-pb-ended="Ended">3d 05h</span>
+                                  </td>
+                <td><span class="pb-badge pb-badge--verified">Active</span></td>
+                <td class="pb-text-end">
+                  <a class="pb-btn pb-btn--light pb-btn--sm" href="#?route=extension/poolbuy/seller.pool&amp;language=en-gb&amp;pool_id=1">View</a>
+                  <a class="pb-btn pb-btn--ghost pb-btn--sm" href="#?route=extension/poolbuy/seller.form&amp;language=en-gb&amp;pool_id=1">Edit</a>
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md pb-mt-lg">
+      <div></div>
+      <div class="pb-label-md pb-muted pb-tnum">Showing 1 to 2 of 2 (1 Pages)</div>
+    </div>
+  </div>
+  </main>
+
+  <footer class="pb-footer">
+    <div class="pb-container">
+      <div class="pb-footer__grid">
+        <div>
+          <div class="pb-flex pb-items-center pb-gap-sm pb-mb-md">
+            <i class="fa-solid fa-diagram-project pb-primary-text" style="font-size: 22px;" aria-hidden="true"></i>
+            <span class="pb-headline-sm pb-primary-text">PoolBuy</span>
+          </div>
+          <p class="pb-body-md pb-muted pb-mb-0">The global standard for collaborative wholesale procurement.</p>
+        </div>
+
+        <div>
+          <h2 class="pb-footer__title">Platform</h2>
+          <ul class="pb-footer__list">
+            <li><a href="#">Marketplace</a></li>
+            <li><a href="#">How it Works</a></li>
+            <li><a href="#?route=product/manufacturer&amp;language=en-gb">Seller Center</a></li>
+            <li><a href="#?route=product/special&amp;language=en-gb&amp;customer_token=PREVIEW">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="pb-footer__title">Support</h2>
+          <ul class="pb-footer__list">
+            <li><a href="#?route=information/contact&amp;language=en-gb">Help Center</a></li>
+            <li><a href="#?route=information/contact&amp;language=en-gb">GST Compliance</a></li>
+            <li><a href="#?route=information/contact&amp;language=en-gb">Seller Support</a></li>
+            <li><a href="#?route=information/sitemap&amp;language=en-gb">Sitemap</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="pb-footer__title">Legal</h2>
+          <ul class="pb-footer__list">
+                          <li><a href="#?route=information/information&amp;language=en-gb&amp;information_id=2">Terms &amp; Conditions</a></li>
+                          <li><a href="#?route=information/information&amp;language=en-gb&amp;information_id=4">Delivery Information</a></li>
+                          <li><a href="#?route=information/information&amp;language=en-gb&amp;information_id=1">About Us</a></li>
+                          <li><a href="#?route=information/information&amp;language=en-gb&amp;information_id=3">Privacy Policy</a></li>
+                        <li><a href="#?route=account/returns.add&amp;language=en-gb">Returns</a></li>
+                      </ul>
+        </div>
+      </div>
+
+      <div class="pb-footer__bottom">
+        <span>&copy; 2026 PoolBuy B2B Marketplace. All rights reserved.</span>
+        <span class="pb-muted">Powered By <a href="https://www.opencart.com">OpenCart</a><br/> Your Store &copy; 2026</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<nav class="pb-bottom-nav" aria-label="Mobile">
+  <a class="pb-bottom-nav__link" href="#">
+    <i class="fa-solid fa-house" aria-hidden="true"></i>
+    <span>Home</span>
+  </a>
+  <a class="pb-bottom-nav__link" href="#">
+    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+    <span>Market</span>
+  </a>
+  <a class="pb-bottom-nav__link" href="#">
+    <i class="fa-solid fa-users-rectangle" aria-hidden="true"></i>
+    <span>Pools</span>
+  </a>
+  <a class="pb-bottom-nav__link" href="#?route=information/contact&amp;language=en-gb">
+    <i class="fa-solid fa-comment-dots" aria-hidden="true"></i>
+    <span>Chat</span>
+  </a>
+  <a class="pb-bottom-nav__link" href="#?route=account/account&amp;language=en-gb&amp;customer_token=PREVIEW">
+    <i class="fa-solid fa-user" aria-hidden="true"></i>
+    <span>Account</span>
+  </a>
+</nav>
+
+
+<script src="/app/_assets/javascript/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+<script src="/app/_assets/javascript/poolbuy.js" type="text/javascript"></script>
+</body></html>
+
+
+
