@@ -36,10 +36,13 @@ function q($sql) { $r = mysqli_query(db(), $sql); if ($r === false) { fwrite(STD
 function scalar($sql) { $r = q($sql); if (!$r) return null; $row = mysqli_fetch_row($r); return $row ? $row[0] : null; }
 function esc($v) { return mysqli_real_escape_string(db(), (string)$v); }
 
-// --- Guard: only seed once ---
+// --- Note on idempotency ---
+// Every section below is individually idempotent (existence-checked inserts), so
+// this script is safe to re-run against an already-seeded database. That also lets
+// it add newly-introduced demo data (e.g. storefront logins) to an existing deploy.
 $hasSellerTable = scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='" . esc($GLOBALS['DB_NAME']) . "' AND table_name='oc_poolbuy_seller'");
 $sellerCount = $hasSellerTable ? (int)scalar("SELECT COUNT(*) FROM oc_poolbuy_seller") : 0;
-if ($sellerCount >= 5) { echo "seed: PoolBuy already seeded ($sellerCount sellers)\n"; exit(0); }
+echo "seed: starting (existing sellers: $sellerCount)\n";
 
 // --- 1. Register extension package (idempotent) ---
 q("INSERT INTO oc_extension_install (extension_id, extension_download_id, name, description, code, version, author, link, status, date_added)
@@ -277,8 +280,51 @@ q("INSERT INTO oc_cron (code, description, cycle, action, status, date_added, da
    SELECT 'poolbuy','PoolBuy lifecycle','hour','extension/poolbuy/cron/poolbuy',1,NOW(),'2020-01-01 00:00:00'
    FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oc_cron WHERE code='poolbuy')");
 
-// --- 7. Demo buyer + seller storefront accounts ---
-// (Kept minimal; passwords set via OpenCart's password hashing is complex headless,
-//  so demo buyer login is optional — the marketplace itself is public.)
+// --- 7. Demo storefront accounts (buyer + sellers) ---
+// OpenCart 4 stores customer passwords as bcrypt (password_hash / PASSWORD_DEFAULT),
+// so these accounts can log in through the normal storefront login form.
+$demoPassword = password_hash('PoolBuy123!', PASSWORD_DEFAULT);
+
+/** Create (or update) a storefront customer and return its id. */
+function ensureCustomer(string $email, string $first, string $last, string $hash): int {
+    $id = (int)scalar("SELECT customer_id FROM oc_customer WHERE email='" . esc($email) . "'");
+    if ($id === 0) {
+        q("INSERT INTO oc_customer
+            (customer_group_id, store_id, language_id, firstname, lastname, email, password,
+             telephone, custom_field, newsletter, ip, status, safe, commenter, token, code, date_added)
+           VALUES (1,0,1,'" . esc($first) . "','" . esc($last) . "','" . esc($email) . "','" . esc($hash) . "',
+             '9900000000','',0,'127.0.0.1',1,1,0,'','',NOW())");
+        $id = (int)scalar("SELECT customer_id FROM oc_customer WHERE email='" . esc($email) . "'");
+    } else {
+        // Keep the demo password predictable across redeploys.
+        q("UPDATE oc_customer SET password='" . esc($hash) . "', status=1, safe=1 WHERE customer_id=$id");
+    }
+    return $id;
+}
+
+// Buyer (with a delivery address so the join flow's shipping step works)
+$buyerId = ensureCustomer('buyer@poolbuy.test', 'Priya', 'Sharma', $demoPassword);
+if ($buyerId && (int)scalar("SELECT COUNT(*) FROM oc_address WHERE customer_id=$buyerId") === 0) {
+    q("INSERT INTO oc_address (customer_id, firstname, lastname, company, address_1, address_2, city, postcode, country_id, zone_id, custom_field, `default`)
+       VALUES ($buyerId,'Priya','Sharma','Sharma Procurement Pvt Ltd','Warehouse Alpha, Industrial Zone 4','','Bangalore','560100',99,1490,'',1)");
+}
+
+// Sellers, each linked to a seller profile so the Seller Portal resolves tenancy
+foreach ([['sellera@poolbuy.test','Seller','A',1], ['sellerb@poolbuy.test','Seller','B',3]] as $s) {
+    [$email, $first, $last, $sellerId] = $s;
+    $cid = ensureCustomer($email, $first, $last, $demoPassword);
+    if ($cid) {
+        q("UPDATE oc_poolbuy_seller SET customer_id=$cid, status=1 WHERE seller_id=$sellerId");
+    }
+}
+
+// The seller portal only lets a seller attach pools to products it owns, so map
+// every product that already carries a pool to that pool's seller.
+q("INSERT INTO oc_poolbuy_product_seller (product_id, seller_id)
+   SELECT p.product_id, MIN(p.seller_id) FROM oc_poolbuy_pool p
+   GROUP BY p.product_id
+   ON DUPLICATE KEY UPDATE seller_id = VALUES(seller_id)");
+
+echo "seed: demo logins ready (buyer@poolbuy.test / sellera@poolbuy.test / sellerb@poolbuy.test, password PoolBuy123!)\n";
 
 echo "seed: PoolBuy seed complete\n";

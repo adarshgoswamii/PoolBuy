@@ -1,0 +1,13 @@
+# Files not needed for the Docker build (keeps `railway up` uploads small).
+# The image only needs: upload/ and railway/
+tools/*.phar
+tools/daux.io/
+tools/phpstan/
+docs/
+_demo_shots/
+showcase/
+stitch_cobuy_wholesale_marketplace/
+tests/
+.git/
+node_modules/
+*.log
