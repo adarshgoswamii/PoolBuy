@@ -1,67 +1,45 @@
-FROM php:8.2.11-apache
+# Production/cloud image for the OpenCart PoolBuy app (used by Railway and any
+# Docker host). Bundles THIS repo's upload/ tree so the PoolBuy extension and
+# custom theme are included, and boots via railway/entrypoint.sh which:
+#   - writes config.php / admin/config.php from environment variables
+#   - waits for MySQL, installs OpenCart once, seeds PoolBuy demo data
+#   - serves Apache on $PORT
+#
+# The previous development Dockerfile (which downloaded stock OpenCart from
+# GitHub) is preserved as Dockerfile.legacy. Local dev uses docker-compose.yml,
+# which builds tools/Dockerfile and mounts ./upload.
+FROM php:8.2-apache
 
-ARG DOWNLOAD_URL
-ARG FOLDER
+RUN apt-get update && apt-get install -y \
+      unzip \
+      curl \
+      default-mysql-client \
+      libfreetype6-dev \
+      libjpeg62-turbo-dev \
+      libpng-dev \
+      libzip-dev \
+      libcurl4-openssl-dev \
+      libwebp-dev \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+  && docker-php-ext-install -j"$(nproc)" gd zip mysqli curl \
+  && docker-php-ext-enable gd zip mysqli curl \
+  && (a2dismod mpm_event mpm_worker 2>/dev/null || true) \
+  && a2enmod mpm_prefork rewrite \
+  && rm -rf /var/lib/apt/lists/*
 
+# App code (the real OpenCart + PoolBuy extension from this repo)
+COPY upload/ /var/www/html/
+COPY upload/php.ini /usr/local/etc/php/conf.d/opencart.ini
+COPY railway/railway_seed.php /var/www/html/railway_seed.php
 
-ENV DIR_OPENCART='/var/www/html/'
-ENV DIR_STORAGE='/storage/'
-ENV DIR_CACHE=${DIR_STORAGE}'cache/'
-ENV DIR_DOWNLOAD=${DIR_STORAGE}'download/'
-ENV DIR_LOGS=${DIR_STORAGE}'logs/'
-ENV DIR_SESSION=${DIR_STORAGE}'session/'
-ENV DIR_UPLOAD=${DIR_STORAGE}'upload/'
-ENV DIR_IMAGE=${DIR_OPENCART}'image/'
+# Provide the -dist configs (entrypoint overwrites config.php/admin/config.php at boot)
+RUN cp -n /var/www/html/config-dist.php /var/www/html/config.php 2>/dev/null || true \
+ && cp -n /var/www/html/admin/config-dist.php /var/www/html/admin/config.php 2>/dev/null || true \
+ && chown -R www-data:www-data /var/www/html \
+ && chmod -R 755 /var/www/html/system/storage
 
+COPY railway/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-RUN apt-get clean && apt-get update && apt-get install unzip
-
-RUN apt-get install -y \
-  libfreetype6-dev \
-  libjpeg62-turbo-dev \
-  libpng-dev \
-  libzip-dev \
-  && docker-php-ext-configure gd --with-freetype --with-jpeg\
-  && docker-php-ext-install -j$(nproc) gd \
-  && docker-php-ext-install zip && && docker-php-ext-enable zip\
-  && docker-php-ext-enable mysqli
-
-RUN apt-get install -y vim
-
-RUN mkdir /storage && mkdir /opencart
-
-RUN if [ -z "$DOWNLOAD_URL" ]; then \
-  curl -Lo /tmp/opencart.zip $(sh -c 'curl -s https://api.github.com/repos/opencart/opencart/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"'); \
-  else \
-  curl -Lo /tmp/opencart.zip ${DOWNLOAD_URL}; \
-  fi
-
-RUN unzip /tmp/opencart.zip -d  /tmp/opencart;
-
-RUN mv /tmp/opencart/$(if [ -n "$FOLDER" ]; then echo $FOLDER; else  unzip -l /tmp/opencart.zip | awk '{print $4}' | grep -E 'opencart-[a-z0-9.]+/upload/$'; fi)* ${DIR_OPENCART};
-
-RUN rm -rf /tmp/opencart.zip && rm -rf /tmp/opencart && rm -rf ${DIR_OPENCART}install;
-
-RUN mv ${DIR_OPENCART}system/storage/* /storage
-COPY configs ${DIR_OPENCART}
-COPY php.ini ${PHP_INI_DIR}
-
-RUN a2enmod rewrite
-
-RUN chown -R www-data:www-data ${DIR_STORAGE}
-RUN chmod -R 555 ${DIR_OPENCART}
-RUN chmod -R 666 ${DIR_STORAGE}
-RUN chmod 555 ${DIR_STORAGE}
-RUN chmod -R 555 ${DIR_STORAGE}vendor
-RUN chmod 755 ${DIR_LOGS}
-RUN chmod -R 644 ${DIR_LOGS}*
-
-RUN chown -R www-data:www-data ${DIR_IMAGE}
-RUN chmod -R 744 ${DIR_IMAGE}
-RUN chmod -R 755 ${DIR_CACHE}
-
-RUN chmod -R 666 ${DIR_DOWNLOAD}
-RUN chmod -R 666 ${DIR_SESSION}
-RUN chmod -R 666 ${DIR_UPLOAD}
-
-CMD ["apache2-foreground"]
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
