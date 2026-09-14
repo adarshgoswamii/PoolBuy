@@ -120,3 +120,48 @@ function Invoke-OcSql {
 
     docker compose exec -T -e MYSQL_PWD=opencart mysql mysql -uroot opencart -e $Sql | Out-Null
 }
+
+<#
+.SYNOPSIS
+    Writes a single module_poolbuy setting, idempotently.
+
+.DESCRIPTION
+    oc_setting has ONLY a primary key on setting_id. There is no unique index on
+    (store_id, code, key), so "INSERT ... ON DUPLICATE KEY UPDATE" never fires and
+    silently APPENDS a duplicate row on every call.
+
+    That is not a harmless untidiness. OpenCart's config loader reads every row for
+    the store and assigns as it goes, so the highest setting_id wins. A suite that
+    changed a setting, asserted against it and then "restored" it could leave the
+    test value as the last row and poison every later suite - which is exactly how a
+    stale webhook secret once made five payment checks fail.
+
+    Delete then insert, so exactly one row can exist per key.
+#>
+function Set-OcPoolbuySetting {
+    param(
+        [Parameter(Mandatory = $true)] [string] $Key,
+        [Parameter(Mandatory = $true)] [AllowEmptyString()] [string] $Value
+    )
+
+    $tick = [char]96
+    $escaped = $Value.Replace('\', '\\').Replace("'", "\'")
+
+    Invoke-OcSql "DELETE FROM oc_setting WHERE store_id=0 AND code='module_poolbuy' AND $tick$('key')$tick='$Key';"
+    Invoke-OcSql "INSERT INTO oc_setting (store_id, code, $tick$('key')$tick, value, serialized) VALUES (0, 'module_poolbuy', '$Key', '$escaped', 0);"
+}
+
+<#
+.SYNOPSIS
+    Counts module_poolbuy setting keys that have more than one row.
+
+.DESCRIPTION
+    Used as a guard assertion: any value above zero means something is appending
+    duplicate setting rows again, and the effective configuration has become
+    whichever row happens to sort last.
+#>
+function Get-OcDuplicateSettingCount {
+    $tick = [char]96
+
+    return Get-OcSqlInt "SELECT COUNT(*) FROM (SELECT 1 FROM oc_setting WHERE code='module_poolbuy' GROUP BY store_id, $tick$('key')$tick HAVING COUNT(*) > 1) d;"
+}

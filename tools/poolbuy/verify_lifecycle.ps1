@@ -128,6 +128,47 @@ docker compose exec -T -e MYSQL_PWD=opencart mysql mysql -uroot opencart -e "SEL
 $events = Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_pool_event WHERE pool_id=$poolId AND type IN ('repriced','pool_reached','pool_closed','pool_fulfilled','reservation_converted');"
 Assert ($events -ge 5) "lifecycle events logged (found $events)"
 
+Write-Host "`n[11] REFUND ON EXPIRY: a buyer who paid into a pool that later expires is refunded"
+# Reuse the fulfilled pool's orders: mark one payment paid, then expire that pool's
+# buyer via a fresh single-buyer pool so the refund path is isolated and idempotent.
+$tick = [char]96
+Set-OcPoolbuySetting -Key 'module_poolbuy_gateway' -Value 'mock'
+
+# Build a one-buyer pool that has NOT met MOQ, give the buyer a converted order with
+# a PAID payment (simulating a pool that closed, was paid, then is being unwound).
+$refPool = Get-OcSqlInt "SELECT pool_id FROM oc_poolbuy_pool WHERE reference='PB-88307';"
+$cid = Get-OcSqlInt "SELECT customer_id FROM oc_customer WHERE email='buyer@poolbuy.test';"
+$addr = Get-OcSqlInt "SELECT address_id FROM oc_address WHERE customer_id=$cid ORDER BY address_id LIMIT 1;"
+Invoke-OcSql "DELETE FROM oc_poolbuy_reservation WHERE pool_id=$refPool;"
+Invoke-OcSql "INSERT INTO oc_poolbuy_reservation (pool_id, customer_id, quantity, unit_price_locked, status, address_id, reference, order_id, date_added, date_modified) VALUES ($refPool, $cid, 30, 1550.0000, 'confirmed', $addr, 'TX-REFUND-1', 0, NOW(), NOW());"
+$refResId = Get-OcSqlInt "SELECT reservation_id FROM oc_poolbuy_reservation WHERE reference='TX-REFUND-1';"
+# A fake order + a PAID payment tied to this reservation.
+Invoke-OcSql "INSERT INTO oc_order (customer_id, order_status_id, total, currency_code, currency_value, date_added, date_modified) VALUES ($cid, 1, 46500, 'INR', 1, NOW(), NOW());"
+$refOrderId = Get-OcSqlInt "SELECT order_id FROM oc_order WHERE customer_id=$cid ORDER BY order_id DESC LIMIT 1;"
+Invoke-OcSql "UPDATE oc_poolbuy_reservation SET order_id=$refOrderId, status='converted' WHERE reservation_id=$refResId;"
+Invoke-OcSql "INSERT INTO oc_poolbuy_payment (order_id, reservation_id, gateway, gateway_ref, amount, currency, status, date_added, date_modified) VALUES ($refOrderId, $refResId, 'mock', 'MOCK-PL-REFUND', 46500, 'INR', 'paid', NOW(), NOW());"
+
+# Now expire the pool and run the refund hook directly through the cron's expiry path.
+Invoke-OcSql "UPDATE oc_poolbuy_reservation SET status='confirmed' WHERE reservation_id=$refResId;"
+Invoke-OcSql "UPDATE oc_poolbuy_pool SET status='active', date_end = NOW() - INTERVAL 1 HOUR WHERE pool_id=$refPool;"
+Invoke-OcSql "UPDATE oc_poolbuy_pool p SET reserved_qty=(SELECT COALESCE(SUM(quantity),0) FROM oc_poolbuy_reservation r WHERE r.pool_id=p.pool_id AND r.status IN ('pending','confirmed','converted')) WHERE p.pool_id=$refPool;"
+Invoke-WebRequest -Uri "$base/index.php?route=extension/poolbuy/cron/poolbuy.run&token=$token" -UseBasicParsing -TimeoutSec 120 | Out-Null
+
+$refundStatus = Get-OcSqlScalar "SELECT status FROM oc_poolbuy_payment WHERE gateway_ref='MOCK-PL-REFUND';"
+$refundRef = Get-OcSqlScalar "SELECT refund_ref FROM oc_poolbuy_payment WHERE gateway_ref='MOCK-PL-REFUND';"
+Assert ($refundStatus -eq 'refunded') "a paid payment on an expired pool was refunded (got $refundStatus)"
+Assert (-not [string]::IsNullOrWhiteSpace($refundRef)) "a refund reference was recorded ($refundRef)"
+
+Write-Host "`n[12] REFUND IS IDEMPOTENT: re-running the cron refunds nothing twice"
+Invoke-WebRequest -Uri "$base/index.php?route=extension/poolbuy/cron/poolbuy.run&token=$token" -UseBasicParsing -TimeoutSec 120 | Out-Null
+$refundRef2 = Get-OcSqlScalar "SELECT refund_ref FROM oc_poolbuy_payment WHERE gateway_ref='MOCK-PL-REFUND';"
+Assert ($refundRef2 -eq $refundRef) 'the refund reference is unchanged on a second run (no double refund)'
+
+# Tidy up the refund fixture.
+Invoke-OcSql "DELETE FROM oc_poolbuy_payment WHERE gateway_ref='MOCK-PL-REFUND';"
+Invoke-OcSql "DELETE FROM oc_order WHERE order_id=$refOrderId;"
+Invoke-OcSql "DELETE FROM oc_poolbuy_reservation WHERE reservation_id=$refResId;"
+
 Write-Host ""
 if ($failures.Count -eq 0) {
     Write-Host "ALL LIFECYCLE CHECKS PASSED" -ForegroundColor Green

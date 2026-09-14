@@ -117,6 +117,15 @@
         </div>
       {% endif %}
 
+      {# --- Discovery rails.
+             Only shown on the unfiltered feed, where they help a shopper start;
+             once a search or filter is active the grid itself is the answer. --- #}
+      {% if has_rails %}
+        {{ ending_soon_rail }}
+        {{ trending_rail }}
+        <h2 class="pb-headline-sm pb-mb-md">{{ text_rail_all_pools }}</h2>
+      {% endif %}
+
       <div id="pb-pool-list">{{ list }}</div>
     </div>
   </div>

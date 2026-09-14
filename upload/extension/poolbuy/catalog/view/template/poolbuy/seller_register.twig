@@ -1,0 +1,102 @@
+﻿{{ header }}
+{# Seller onboarding. A plain server-rendered POST: no fetch, no client-side state,
+   so it survives a refresh and works with JavaScript unavailable. Errors are
+   rendered next to their field and announced through aria-describedby. #}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <div style="max-width: 44rem;">
+    <h1 class="pb-display-lg pb-mb-sm">{{ heading_title }}</h1>
+    <p class="pb-body-lg pb-muted pb-mb-lg">{{ text_register_intro }}</p>
+
+    {% if errors %}
+      <div class="pb-alert pb-alert--error pb-mb-lg" role="alert">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <span>{{ error_check_form }}</span>
+      </div>
+    {% endif %}
+
+    <form action="{{ action }}" method="post">
+      <div class="pb-card pb-mb-lg">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_register_business }}</h2>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-name">{{ entry_business_name }}</label>
+            <input class="pb-input" type="text" id="pb-name" name="name" value="{{ name }}" maxlength="128" required
+                   aria-describedby="pb-help-name{% if errors.name %} pb-error-name{% endif %}"
+                   {% if errors.name %}aria-invalid="true"{% endif %}>
+            <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-name">{{ help_business_name }}</p>
+            {% if errors.name %}<p class="pb-error-text" id="pb-error-name">{{ errors.name }}</p>{% endif %}
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-location">{{ entry_location }}</label>
+            <input class="pb-input" type="text" id="pb-location" name="location" value="{{ location }}" maxlength="128" required
+                   aria-describedby="pb-help-location{% if errors.location %} pb-error-location{% endif %}"
+                   {% if errors.location %}aria-invalid="true"{% endif %}>
+            <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-location">{{ help_location }}</p>
+            {% if errors.location %}<p class="pb-error-text" id="pb-error-location">{{ errors.location }}</p>{% endif %}
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-description">{{ entry_description }}</label>
+            <textarea class="pb-input" id="pb-description" name="description" rows="4" maxlength="1000"
+                      aria-describedby="pb-help-description{% if errors.description %} pb-error-description{% endif %}"
+                      {% if errors.description %}aria-invalid="true"{% endif %}>{{ description }}</textarea>
+            <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-description">{{ help_description }}</p>
+            {% if errors.description %}<p class="pb-error-text" id="pb-error-description">{{ errors.description }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="pb-card pb-mb-lg">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_register_verify }}</h2>
+
+          <div class="pb-field">
+            <label class="pb-label" for="pb-gst">{{ entry_gst_number }}</label>
+            <input class="pb-input" type="text" id="pb-gst" name="gst_number" value="{{ gst_number }}" maxlength="15" required
+                   autocapitalize="characters" spellcheck="false"
+                   aria-describedby="pb-help-gst{% if errors.gst_number %} pb-error-gst-number{% endif %}"
+                   {% if errors.gst_number %}aria-invalid="true"{% endif %}>
+            <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-gst">{{ help_gst_number }}</p>
+            {% if errors.gst_number %}<p class="pb-error-text" id="pb-error-gst-number">{{ errors.gst_number }}</p>{% endif %}
+          </div>
+
+          <div class="pb-field">
+            <label class="pb-flex pb-gap-sm" for="pb-terms" style="align-items: flex-start;">
+              <input type="checkbox" id="pb-terms" name="terms" value="1"{% if terms %} checked{% endif %} required
+                     aria-describedby="{% if errors.terms %}pb-error-terms{% endif %}"
+                     {% if errors.terms %}aria-invalid="true"{% endif %}>
+              <span class="pb-body-md">{{ entry_terms }}</span>
+            </label>
+            {% if errors.terms %}<p class="pb-error-text" id="pb-error-terms">{{ errors.terms }}</p>{% endif %}
+          </div>
+
+          <div class="pb-alert pb-alert--info" role="status">
+            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+            <span>{{ text_register_pending }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pb-flex pb-gap-sm pb-wrap">
+        <button class="pb-btn pb-btn--primary" type="submit">{{ button_apply }}</button>
+        <a class="pb-btn pb-btn--ghost" href="{{ marketplace }}">{{ button_browse }}</a>
+      </div>
+    </form>
+  </div>
+</div>
+{{ footer }}
+

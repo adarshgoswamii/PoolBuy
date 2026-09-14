@@ -6,12 +6,12 @@
   <h2 id="pb-pool-heading" class="pb-visually-hidden">{{ text_pool_progress }}</h2>
 
   {# ---- Hero: live progress and the primary call to action ---- #}
-  <div class="pb-pool-hero pb-mb-lg">
+  <div class="pb-pool-hero pb-mb-lg" data-pb-progress="{{ pool.pool_id }}">
     <div class="pb-flex pb-justify-between pb-items-start pb-wrap pb-gap-md pb-mb-md">
       <div>
         <span class="pb-label-md pb-uppercase" style="opacity: 0.85;">{{ text_pool_progress }}</span>
         <div class="pb-flex pb-items-end pb-gap-xs">
-          <span class="pb-display-lg pb-tnum">{{ pool.reserved_qty }} / {{ pool.moq_target }}</span>
+          <span class="pb-display-lg pb-tnum"><span data-pb-progress-reserved>{{ pool.reserved_qty }}</span> / {{ pool.moq_target }}</span>
           <span class="pb-headline-sm" style="opacity: 0.9;">{{ pool.unit_label|escape }}</span>
         </div>
         <span class="pb-label-md pb-mono-sm" style="opacity: 0.8;">{{ text_pool_ref }} {{ pool.reference|escape }}</span>
@@ -26,7 +26,7 @@
         {% else %}
           <span class="pb-badge pb-badge--muted">{{ text_ended }}</span>
         {% endif %}
-        <div class="pb-headline-lg pb-mt-xs pb-tnum">{{ text_full|format(pool.fill) }}</div>
+        <div class="pb-headline-lg pb-mt-xs pb-tnum" data-pb-progress-percent>{{ text_full|format(pool.fill) }}</div>
       </div>
     </div>
 
@@ -120,7 +120,7 @@
         {% if seller.gallery %}
           <div class="pb-grid pb-grid-3 pb-mt-md" style="gap: var(--pb-sm);">
             {% for image in seller.gallery %}
-              <img src="{{ image }}" alt="{{ seller.name|escape }}" loading="lazy" style="width: 100%; height: 90px; object-fit: cover; border-radius: var(--pb-radius); border: 1px solid var(--pb-outline-variant);"/>
+              <img src="{{ image }}" alt="{{ seller.name|escape }}" width="400" height="260" loading="lazy" style="width: 100%; height: 90px; object-fit: cover; border-radius: var(--pb-radius); border: 1px solid var(--pb-outline-variant);"/>
             {% endfor %}
           </div>
         {% endif %}
@@ -188,5 +188,38 @@
         </div>
       </div>
     </div>
+  </div>
+
+  {# ---- Buyer reviews. Only approved reviews reach this template, and buyers are
+         attributed by an opaque handle so social proof never leaks identities. ---- #}
+  <div class="pb-container pb-mt-xl">
+    <h2 class="pb-headline-sm pb-mb-sm">{{ text_reviews_title }}</h2>
+
+    {% if review_summary.has_reviews %}
+      <p class="pb-body-md pb-mb-md">
+        <strong>{{ text_review_average|format(review_summary.average_text) }}</strong>
+        <span class="pb-muted">{{ text_review_count|format(review_summary.count) }}</span>
+      </p>
+    {% endif %}
+
+    {% if reviews %}
+      <ul class="pb-list">
+        {% for review in reviews %}
+          <li class="pb-mb-md">
+            <p class="pb-body-md pb-mb-xs">
+              <strong>{{ review.rating }} / 5</strong>
+              {% if review.title %} &mdash; {{ review.title|escape }}{% endif %}
+            </p>
+            <p class="pb-body-md pb-mb-xs">{{ review.text|escape }}</p>
+            <p class="pb-body-sm pb-muted pb-mb-0">
+              {{ review.buyer_handle }} &middot; {{ review.pool_reference }} &middot; {{ review.date_added }}
+              &middot; <span>{{ text_review_verified }}</span>
+            </p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="pb-body-md pb-muted">{{ text_no_reviews }}</p>
+    {% endif %}
   </div>
 </section>

@@ -1,0 +1,125 @@
+<div class="alert alert-info">
+  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+  {% if pending_total > 0 %}
+    <strong>{{ text_pending_badge|format(pending_total) }}.</strong>
+  {% else %}
+    <strong>{{ text_none_pending }}</strong>
+  {% endif %}
+  {{ text_moderation_note }}
+</div>
+
+<div class="row mb-3">
+  <div class="col-sm-4">
+    <label for="filter-status" class="form-label">{{ entry_filter_status }}</label>
+    <select name="filter_status" id="filter-status" class="form-select">
+      <option value="">{{ text_all }}</option>
+      <option value="pending"{% if filter_status == 'pending' %} selected{% endif %}>{{ text_status_pending }}</option>
+      <option value="approved"{% if filter_status == 'approved' %} selected{% endif %}>{{ text_status_approved }}</option>
+      <option value="rejected"{% if filter_status == 'rejected' %} selected{% endif %}>{{ text_status_rejected }}</option>
+    </select>
+  </div>
+  <div class="col-sm-4">
+    <label for="filter-rating" class="form-label">{{ entry_filter_rating }}</label>
+    <select name="filter_rating" id="filter-rating" class="form-select">
+      <option value="">{{ text_all }}</option>
+      {% for star in [5, 4, 3, 2, 1] %}
+        <option value="{{ star }}"{% if filter_rating == star %} selected{% endif %}>{{ star }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-4 d-flex align-items-end">
+    <button type="button" id="button-filter" class="btn btn-light w-100">{{ button_filter }}</button>
+  </div>
+</div>
+
+<form id="form-review" method="post" data-oc-toggle="ajax">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <td style="width: 1px;" class="text-center"><input type="checkbox" onchange="$('input[name^=\'selected\']').prop('checked', $(this).prop('checked'));" class="form-check-input"/></td>
+          <td class="text-center"><a href="{{ sort_rating }}" {% if sort == 'rating' %}class="{{ order|lower }}"{% endif %}>{{ column_rating }}</a></td>
+          <td class="text-start">{{ column_review }}</td>
+          <td class="text-start">{{ column_seller }}</td>
+          <td class="text-start">{{ column_pool }}</td>
+          <td class="text-start">{{ column_buyer }}</td>
+          <td class="text-start"><a href="{{ sort_status }}" {% if sort == 'status' %}class="{{ order|lower }}"{% endif %}>{{ column_status }}</a></td>
+          <td class="text-start"><a href="{{ sort_date_added }}" {% if sort == 'date_added' %}class="{{ order|lower }}"{% endif %}>{{ column_date }}</a></td>
+          <td class="text-end">{{ column_action }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% if reviews %}
+          {% for review in reviews %}
+            <tr>
+              <td class="text-center"><input type="checkbox" name="selected[]" value="{{ review.review_id }}" class="form-check-input"/></td>
+              <td class="text-center"><strong>{{ review.rating }}</strong> / 5</td>
+              <td class="text-start">
+                {% if review.title %}<strong>{{ review.title|escape }}</strong><br/>{% endif %}
+                <span class="text-muted">{{ review.excerpt|escape }}</span>
+              </td>
+              <td class="text-start">{{ review.seller_name|escape }}</td>
+              <td class="text-start">{{ review.pool_reference|escape }}</td>
+              <td class="text-start">{{ review.buyer_handle }}</td>
+              <td class="text-start">
+                {% if review.status == 'approved' %}
+                  <span class="badge bg-success">{{ review.status_text }}</span>
+                {% elseif review.status == 'rejected' %}
+                  <span class="badge bg-secondary">{{ review.status_text }}</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">{{ review.status_text }}</span>
+                {% endif %}
+              </td>
+              <td class="text-start">{{ review.date_added }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-success btn-sm" data-oc-moderate="{{ review.approve }}" title="{{ button_approve }}"><i class="fa-solid fa-check" aria-hidden="true"></i></button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-oc-moderate="{{ review.reject }}" title="{{ button_reject }}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="9">{{ text_no_results }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text-start">{{ pagination }}</div>
+    <div class="col-sm-6 text-end">{{ results }}</div>
+  </div>
+</form>
+<script type="text/javascript"><!--
+function pbReviewList() {
+    var url = 'index.php?route=extension/poolbuy/poolbuy/review.list&user_token={{ user_token }}';
+
+    var status = $('#filter-status').val();
+    if (status !== '') {
+        url += '&filter_status=' + encodeURIComponent(status);
+    }
+
+    var rating = $('#filter-rating').val();
+    if (rating !== '') {
+        url += '&filter_rating=' + encodeURIComponent(rating);
+    }
+
+    $('#review').load(url);
+}
+
+$('#button-filter').on('click', pbReviewList);
+
+// Moderation is a state change, so it posts and then refreshes the queue in place.
+$('[data-oc-moderate]').on('click', function() {
+    $.ajax({
+        url: $(this).attr('data-oc-moderate'),
+        dataType: 'json',
+        method: 'POST',
+        complete: function() {
+            pbReviewList();
+        }
+    });
+});
+//--></script>

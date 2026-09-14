@@ -47,6 +47,12 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 	 * @return void
 	 */
 	public function run(): void {
+		// Rate limited BEFORE the token is examined, so an anonymous caller cannot use
+		// this endpoint as an unlimited oracle for guessing the cron token.
+		if (!$this->allowRequest('cron.run')) {
+			return;
+		}
+
 		$expected = (string)$this->config->get('module_poolbuy_cron_token');
 		$supplied = (string)($this->request->get['token'] ?? '');
 
@@ -66,6 +72,33 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 	}
 
 	/**
+	 * Allow Request
+	 *
+	 * Applies the API rate limiter. Responds 429 with Retry-After and returns false
+	 * when the caller is over the limit.
+	 *
+	 * @param string $route
+	 *
+	 * @return bool
+	 */
+	private function allowRequest(string $route): bool {
+		$this->load->model('extension/poolbuy/poolbuy/rate_limit');
+
+		$gate = $this->model_extension_poolbuy_poolbuy_rate_limit->check($route);
+
+		if ($gate['allowed']) {
+			return true;
+		}
+
+		$this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 429 Too Many Requests');
+		$this->response->addHeader('Retry-After: ' . (int)$gate['retry_after']);
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput((string)json_encode(['error' => 'rate_limited', 'retry_after' => (int)$gate['retry_after']]));
+
+		return false;
+	}
+
+	/**
 	 * Process
 	 *
 	 * @return array<string, mixed>
@@ -75,8 +108,13 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 			return ['skipped' => 'PoolBuy is disabled'];
 		}
 
+		// Housekeeping: drop rate limit counters for windows that have closed, so the
+		// table stays small without needing its own scheduled job.
+		$this->load->model('extension/poolbuy/poolbuy/rate_limit');
+		$pruned = $this->model_extension_poolbuy_poolbuy_rate_limit->prune();
+
 		$this->load->model('extension/poolbuy/poolbuy/lifecycle');
 
-		return $this->model_extension_poolbuy_poolbuy_lifecycle->run();
+		return $this->model_extension_poolbuy_poolbuy_lifecycle->run() + ['rate_limit_pruned' => $pruned];
 	}
 }

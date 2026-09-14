@@ -8,6 +8,15 @@ $_['text_success']           = 'Success: You have modified the PoolBuy settings!
 $_['text_edit']              = 'PoolBuy Marketplace Settings';
 $_['text_pricing']           = 'Pricing &amp; Tax';
 $_['text_pools']             = 'Pool Defaults';
+$_['text_nav_manage']        = 'Manage';
+$_['text_nav_pools']         = 'Pools';
+$_['text_nav_sellers']       = 'Sellers';
+$_['text_nav_promotions']    = 'Promotions';
+$_['text_nav_reviews']       = 'Reviews';
+$_['text_nav_settlements']   = 'Payments &amp; Settlements';
+$_['text_payments']          = 'Payments';
+$_['text_gateway_mock']      = 'Mock (no credentials, for testing &amp; demo)';
+$_['text_gateway_razorpay']  = 'Razorpay (Payment Links)';
 $_['text_automation']        = 'Automation';
 $_['text_schema_ok']         = 'Database schema installed.';
 $_['text_schema_missing']    = 'Database schema is NOT installed. Uninstall and reinstall the extension from Extensions &gt; Modules.';
@@ -30,7 +39,13 @@ $_['entry_gst_rate']         = 'GST / Tax Rate (%)';
 $_['entry_platform_fee']     = 'Platform Fee (%)';
 $_['entry_pool_duration']    = 'Default Pool Duration (days)';
 $_['entry_retro_pricing']    = 'Retroactive Pricing';
+$_['entry_gateway']              = 'Payment Gateway';
+$_['entry_razorpay_key']         = 'Razorpay Key ID';
+$_['entry_razorpay_secret']      = 'Razorpay Key Secret';
+$_['entry_razorpay_webhook_secret'] = 'Razorpay Webhook Secret';
 $_['entry_cron_token']       = 'Cron Token';
+$_['entry_rate_limit']       = 'API Rate Limit';
+$_['entry_rate_window']      = 'Rate Limit Window';
 
 // Help
 $_['help_currency_code']     = 'Three-letter ISO code used for pool pricing, e.g. INR or USD.';
@@ -38,7 +53,11 @@ $_['help_gst_rate']          = 'Applied to the pool subtotal when a buyer reserv
 $_['help_platform_fee']      = 'Marketplace commission applied to the pool subtotal.';
 $_['help_pool_duration']     = 'Pre-fills the end date when creating a new pool.';
 $_['help_retro_pricing']     = 'When enabled, every participant receives the best price tier unlocked by the pool, not just the tier active when they joined.';
+$_['help_gateway']           = 'Mock requires no credentials and marks payments paid instantly - use it for testing and demos. Razorpay is used only when a Key ID and Secret are both set below.';
+$_['help_razorpay_webhook_secret'] = 'Secret configured on the Razorpay webhook. Inbound webhooks with a blank or invalid signature are always rejected.';
 $_['help_cron_token']        = 'Secret required to trigger the pool lifecycle cron. Keep this private; regenerate it if it leaks.';
+$_['help_rate_limit']        = 'Maximum requests per caller, per endpoint, per window, applied to the cron trigger and the payment webhook. Left blank this falls back to 120 rather than to unlimited. Set 0 only if you deliberately want the limiter off.';
+$_['help_rate_window']       = 'Length of the rate limit window in seconds. Defaults to 60.';
 
 // Button
 $_['button_regenerate']      = 'Regenerate';

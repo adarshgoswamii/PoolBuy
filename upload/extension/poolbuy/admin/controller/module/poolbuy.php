@@ -1,5 +1,8 @@
 <?php
 namespace Opencart\Admin\Controller\Extension\Poolbuy\Module;
+
+use Opencart\System\Library\Extension\Poolbuy\RateLimiter;
+
 /**
  * Class Poolbuy
  *
@@ -22,14 +25,20 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 	 * @var array<string, mixed>
 	 */
 	private array $defaults = [
-		'module_poolbuy_status'          => 0,
-		'module_poolbuy_currency_code'   => 'INR',
-		'module_poolbuy_currency_symbol' => '₹',
-		'module_poolbuy_gst_rate'        => 18.0,
-		'module_poolbuy_platform_fee'    => 2.0,
-		'module_poolbuy_pool_duration'   => 7,
-		'module_poolbuy_retro_pricing'   => 1,
-		'module_poolbuy_cron_token'      => ''
+		'module_poolbuy_status'                  => 0,
+		'module_poolbuy_currency_code'           => 'INR',
+		'module_poolbuy_currency_symbol'         => '₹',
+		'module_poolbuy_gst_rate'                => 18.0,
+		'module_poolbuy_platform_fee'            => 2.0,
+		'module_poolbuy_pool_duration'           => 7,
+		'module_poolbuy_retro_pricing'           => 1,
+		'module_poolbuy_gateway'                 => 'mock',
+		'module_poolbuy_razorpay_key'            => '',
+		'module_poolbuy_razorpay_secret'         => '',
+		'module_poolbuy_razorpay_webhook_secret' => '',
+		'module_poolbuy_rate_limit'              => 120,
+		'module_poolbuy_rate_window'             => 60,
+		'module_poolbuy_cron_token'              => ''
 	];
 
 	/**
@@ -46,7 +55,10 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 	private array $routes = [
 		'extension/poolbuy/poolbuy/seller',
 		'extension/poolbuy/poolbuy/pool',
-		'extension/poolbuy/poolbuy/reservation'
+		'extension/poolbuy/poolbuy/reservation',
+		'extension/poolbuy/poolbuy/promotion',
+		'extension/poolbuy/poolbuy/review',
+		'extension/poolbuy/poolbuy/settlement'
 	];
 
 	/**
@@ -78,6 +90,37 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 
 		$data['save'] = $this->url->link('extension/poolbuy/module/poolbuy.save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module');
+
+		// Operator navigation. OpenCart gives an extension no menu entry of its own,
+		// so without these the pool, seller, promotion and review screens would only
+		// be reachable by typing a route by hand.
+		$data['nav'] = [
+			[
+				'text' => $this->language->get('text_nav_pools'),
+				'icon' => 'fa-layer-group',
+				'href' => $this->url->link('extension/poolbuy/poolbuy/pool', 'user_token=' . $this->session->data['user_token'])
+			],
+			[
+				'text' => $this->language->get('text_nav_sellers'),
+				'icon' => 'fa-store',
+				'href' => $this->url->link('extension/poolbuy/poolbuy/seller', 'user_token=' . $this->session->data['user_token'])
+			],
+			[
+				'text' => $this->language->get('text_nav_promotions'),
+				'icon' => 'fa-tags',
+				'href' => $this->url->link('extension/poolbuy/poolbuy/promotion', 'user_token=' . $this->session->data['user_token'])
+			],
+			[
+				'text' => $this->language->get('text_nav_reviews'),
+				'icon' => 'fa-star',
+				'href' => $this->url->link('extension/poolbuy/poolbuy/review', 'user_token=' . $this->session->data['user_token'])
+			],
+			[
+				'text' => $this->language->get('text_nav_settlements'),
+				'icon' => 'fa-money-bill-transfer',
+				'href' => $this->url->link('extension/poolbuy/poolbuy/settlement', 'user_token=' . $this->session->data['user_token'])
+			]
+		];
 
 		// Current values, falling back to the factory defaults on a fresh install
 		foreach ($this->defaults as $key => $default) {
@@ -141,16 +184,26 @@ class Poolbuy extends \Opencart\System\Engine\Controller {
 		}
 
 		if (!$json) {
-			// Normalise before persisting so downstream code can trust the types
+			// Normalise before persisting so downstream code can trust the types.
+			//
+			// The rate limit fields go through the library resolvers, so a blank value
+			// is stored as the default rather than as 0: a missing limit must never
+			// silently mean "unlimited". Only an explicit 0 disables the limiter.
 			$setting = [
-				'module_poolbuy_status'          => (int)!empty($post_info['module_poolbuy_status']),
-				'module_poolbuy_currency_code'   => strtoupper((string)$post_info['module_poolbuy_currency_code']),
-				'module_poolbuy_currency_symbol' => (string)$post_info['module_poolbuy_currency_symbol'],
-				'module_poolbuy_gst_rate'        => (float)$post_info['module_poolbuy_gst_rate'],
-				'module_poolbuy_platform_fee'    => (float)$post_info['module_poolbuy_platform_fee'],
-				'module_poolbuy_pool_duration'   => (int)$post_info['module_poolbuy_pool_duration'],
-				'module_poolbuy_retro_pricing'   => (int)!empty($post_info['module_poolbuy_retro_pricing']),
-				'module_poolbuy_cron_token'      => (string)$post_info['module_poolbuy_cron_token']
+				'module_poolbuy_status'                  => (int)!empty($post_info['module_poolbuy_status']),
+				'module_poolbuy_currency_code'           => strtoupper((string)$post_info['module_poolbuy_currency_code']),
+				'module_poolbuy_currency_symbol'         => (string)$post_info['module_poolbuy_currency_symbol'],
+				'module_poolbuy_gst_rate'                => (float)$post_info['module_poolbuy_gst_rate'],
+				'module_poolbuy_platform_fee'            => (float)$post_info['module_poolbuy_platform_fee'],
+				'module_poolbuy_pool_duration'           => (int)$post_info['module_poolbuy_pool_duration'],
+				'module_poolbuy_retro_pricing'           => (int)!empty($post_info['module_poolbuy_retro_pricing']),
+				'module_poolbuy_gateway'                 => in_array((string)$post_info['module_poolbuy_gateway'], ['mock', 'razorpay'], true) ? (string)$post_info['module_poolbuy_gateway'] : 'mock',
+				'module_poolbuy_razorpay_key'            => trim((string)$post_info['module_poolbuy_razorpay_key']),
+				'module_poolbuy_razorpay_secret'         => trim((string)$post_info['module_poolbuy_razorpay_secret']),
+				'module_poolbuy_razorpay_webhook_secret' => trim((string)$post_info['module_poolbuy_razorpay_webhook_secret']),
+				'module_poolbuy_rate_limit'              => RateLimiter::resolveLimit($post_info['module_poolbuy_rate_limit'] ?? null),
+				'module_poolbuy_rate_window'             => RateLimiter::resolveWindow($post_info['module_poolbuy_rate_window'] ?? null),
+				'module_poolbuy_cron_token'              => (string)$post_info['module_poolbuy_cron_token']
 			];
 
 			if (!$setting['module_poolbuy_cron_token']) {

@@ -144,6 +144,10 @@ class Reservation extends \Opencart\System\Engine\Model {
 			$sql .= " `address_id` = '" . (int)($data['address_id'] ?? 0) . "',";
 			$sql .= " `shipping_method` = '" . $this->db->escape((string)json_encode($shipping_method)) . "',";
 			$sql .= " `shipping_cost` = '" . round((float)($data['shipping_cost'] ?? 0), 4) . "',";
+			// Which promotion discounted this commitment, and by how much. The amount
+			// is recomputed by the caller from the promotion row, never posted.
+			$sql .= " `promotion_id` = '" . (int)($data['promotion_id'] ?? 0) . "',";
+			$sql .= " `discount_total` = '" . round(max(0.0, (float)($data['discount_total'] ?? 0)), 4) . "',";
 			$sql .= " `reference` = '" . $this->db->escape($reference) . "',";
 			$sql .= " `date_added` = NOW(), `date_modified` = NOW()";
 
@@ -212,6 +216,17 @@ class Reservation extends \Opencart\System\Engine\Model {
 		try {
 			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_reservation` SET `status` = 'cancelled', `date_modified` = NOW() WHERE `reservation_id` = '" . (int)$reservation_id . "' AND `customer_id` = '" . (int)$customer_id . "'");
 
+			// Withdrawing gives any promotion redemption back, so a buyer who joins
+			// and leaves does not permanently burn one of a limited code's uses.
+			$redemptions = $this->db->query("SELECT `promotion_id` FROM `" . DB_PREFIX . "poolbuy_promotion_redemption` WHERE `reservation_id` = '" . (int)$reservation_id . "'")->rows;
+
+			foreach ($redemptions as $redemption) {
+				$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_promotion` SET `redemptions_used` = GREATEST(0, `redemptions_used` - 1), `date_modified` = NOW() WHERE `promotion_id` = '" . (int)$redemption['promotion_id'] . "'");
+			}
+
+			$this->db->query("DELETE FROM `" . DB_PREFIX . "poolbuy_promotion_redemption` WHERE `reservation_id` = '" . (int)$reservation_id . "'");
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_reservation` SET `promotion_id` = '0', `discount_total` = '0.0000' WHERE `reservation_id` = '" . (int)$reservation_id . "'");
+
 			$sum = $this->db->query("SELECT COALESCE(SUM(`quantity`), 0) AS `total` FROM `" . DB_PREFIX . "poolbuy_reservation` WHERE `pool_id` = '" . (int)$pool_id . "' AND `status` IN (" . self::HOLDING . ")");
 
 			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_pool` SET `reserved_qty` = '" . (int)$sum->row['total'] . "', `date_modified` = NOW() WHERE `pool_id` = '" . (int)$pool_id . "'");
@@ -228,6 +243,22 @@ class Reservation extends \Opencart\System\Engine\Model {
 
 			return false;
 		}
+	}
+
+	/**
+	 * Clear Discount
+	 *
+	 * Strips a promotion from a commitment. Used when the redemption could not be
+	 * claimed after all - for example another buyer took the last one between the
+	 * quote and the commit. The commitment itself stays valid; it simply is not
+	 * discounted, and the caller tells the buyer so.
+	 *
+	 * @param int $reservation_id
+	 *
+	 * @return void
+	 */
+	public function clearDiscount(int $reservation_id): void {
+		$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_reservation` SET `promotion_id` = '0', `discount_total` = '0.0000', `date_modified` = NOW() WHERE `reservation_id` = '" . (int)$reservation_id . "'");
 	}
 
 	/**

@@ -32,6 +32,21 @@ $_['text_pagination']      = 'Showing %d to %d of %d (%d Pages)';
 $_['button_withdraw']      = 'Withdraw';
 $_['text_withdraw_confirm'] = 'Withdraw your commitment from this pool?';
 
+// Payments
+$_['button_pay_now']            = 'Pay now';
+$_['text_payment_pending']      = 'Payment due';
+$_['text_payment_paid']         = 'Paid';
+$_['text_payment_failed']       = 'Payment failed';
+$_['text_payment_refunded']     = 'Refunded';
+$_['text_payment_success']      = 'Payment received. Thank you!';
+$_['text_payment_already']      = 'This order has already been paid.';
+$_['text_payment_return']       = 'Thanks - we are confirming your payment. Your order will update shortly.';
+$_['text_payment_refunded_notice'] = 'This payment has been refunded because the pool did not proceed.';
+$_['error_payment_missing']     = 'That payment could not be found.';
+$_['error_payment_unavailable'] = 'This order is not payable online just yet. Please try again shortly or contact us.';
+$_['error_payment_failed']      = 'That payment did not go through. You can try paying again.';
+$_['error_payment_cancelled']   = 'Payment was cancelled. Your order is still awaiting payment.';
+
 // Reservation statuses
 $_['text_reservation_pending']   = 'Pending';
 $_['text_reservation_confirmed'] = 'Confirmed';
@@ -87,3 +102,28 @@ $_['text_start_pool']    = 'Request a pool';
 // Messages
 $_['text_cancel_success'] = 'Your commitment has been withdrawn and the units returned to the pool.';
 $_['error_cancel']        = 'That commitment could not be withdrawn. A pool can only be left while it is still filling.';
+
+// Reviews
+$_['text_reviews_heading']    = 'Rate your completed purchases';
+$_['text_reviews_intro']      = 'You can review a purchase once the pool has been fulfilled and paid. Reviews are checked before they appear publicly.';
+$_['text_review_for']         = 'Review %s';
+$_['text_your_reviews']       = 'Your reviews';
+$_['text_review_pending']     = 'Awaiting moderation';
+$_['text_review_approved']    = 'Published';
+$_['text_review_rejected']    = 'Not published';
+$_['text_review_submitted']   = 'Thank you. Your review has been submitted and will appear once it has been checked.';
+$_['text_no_reviewable']      = 'You have no completed purchases waiting for a review.';
+
+$_['entry_review_rating']     = 'Rating';
+$_['entry_review_title']      = 'Headline';
+$_['entry_review_text']       = 'Your review';
+$_['button_submit_review']    = 'Submit review';
+$_['help_review_text']        = 'Tell other buyers about the product quality, the packaging and how the seller handled the order.';
+
+$_['error_review_method']           = 'A review must be submitted from the review form.';
+$_['error_review_not_found']        = 'That purchase could not be found.';
+$_['error_review_not_purchased']    = 'You can only review a pool you actually bought into.';
+$_['error_review_not_fulfilled']    = 'You can review this pool once it has been fulfilled.';
+$_['error_review_not_paid']         = 'You can review this purchase once its payment has been settled.';
+$_['error_review_already_reviewed'] = 'You have already reviewed that purchase.';
+$_['error_review_empty_text']       = 'Please write a few words about your purchase.';

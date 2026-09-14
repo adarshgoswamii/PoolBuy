@@ -53,6 +53,7 @@ class Seller extends \Opencart\System\Engine\Controller {
 		$data['add'] = $this->url->link('extension/poolbuy/seller.form', 'language=' . $language);
 		$data['marketplace'] = $this->url->link('extension/poolbuy/pool', 'language=' . $language);
 		$data['account'] = $this->url->link('account/account', 'language=' . $language);
+		$data['tabs'] = $this->tabs('pools');
 
 		$data['breadcrumbs'] = [
 			['text' => $this->language->get('text_home'), 'href' => $this->url->link('common/home', 'language=' . $language)],
@@ -148,6 +149,47 @@ class Seller extends \Opencart\System\Engine\Controller {
 		}
 
 		$data['all_href'] = $this->url->link('extension/poolbuy/seller', 'language=' . $language);
+
+		// ---- Settlements (read only): what the platform owes this seller per pool.
+		//
+		// Each row is formatted in ITS OWN currency, because a seller running pools
+		// in more than one currency would otherwise see yen labelled as rupees.
+		$data['settlements'] = [];
+
+		foreach ($this->model_extension_poolbuy_poolbuy_seller->getSettlements($seller_id) as $row) {
+			$row_currency = (string)($row['currency'] ?? '');
+
+			$data['settlements'][] = [
+				'pool_reference' => (string)$row['pool_reference'],
+				'title'          => (string)($row['title'] ?: $row['pool_reference']),
+				'currency'       => $row_currency,
+				'gross_text'     => PoolPresenter::moneyIn((float)$row['gross'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'fee_text'       => PoolPresenter::moneyIn((float)$row['platform_fee'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'net_text'       => PoolPresenter::moneyIn((float)$row['net'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'order_count'    => (int)$row['order_count'],
+				'status'         => (string)$row['status'],
+				'status_text'    => $this->language->get('text_settlement_' . $row['status'])
+			];
+		}
+
+		// Totals are aggregated WITHIN a currency and never across currencies -
+		// adding different currencies together would produce a meaningless figure.
+		$data['settlement_totals'] = [];
+
+		foreach ($this->model_extension_poolbuy_poolbuy_seller->getSettlementTotals($seller_id) as $row) {
+			$row_currency = (string)($row['currency'] ?? '');
+
+			$data['settlement_totals'][] = [
+				'currency'         => $row_currency !== '' ? $row_currency : $this->language->get('text_settlement_unknown_currency'),
+				'pools'            => (int)$row['pools'],
+				'orders'           => (int)$row['orders'],
+				'gross_text'       => PoolPresenter::moneyIn((float)$row['gross'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'fee_text'         => PoolPresenter::moneyIn((float)$row['platform_fee'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'net_text'         => PoolPresenter::moneyIn((float)$row['net'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'net_pending_text' => PoolPresenter::moneyIn((float)$row['net_pending'], $row_currency, $row_currency === '' ? $symbol : ''),
+				'net_paid_text'    => PoolPresenter::moneyIn((float)$row['net_paid'], $row_currency, $row_currency === '' ? $symbol : '')
+			];
+		}
 
 		$data += $this->flash();
 		$data += $this->chrome();
@@ -308,7 +350,8 @@ class Seller extends \Opencart\System\Engine\Controller {
 			'min_qty_per_buyer'  => 1,
 			'max_qty_per_buyer'  => 0,
 			'lead_time'          => '',
-			'shipping_terms'     => ''
+			'shipping_terms'     => '',
+			'freight_total'      => '0.00'
 		];
 
 		foreach ($defaults as $key => $default) {
@@ -429,6 +472,13 @@ class Seller extends \Opencart\System\Engine\Controller {
 			$json['error']['max_qty_per_buyer'] = $this->language->get('error_max_qty');
 		}
 
+		// Freight is quoted for the pool and split across participants at close.
+		$freight_raw = $post['freight_total'] ?? 0;
+
+		if ($freight_raw !== '' && (!is_numeric($freight_raw) || (float)$freight_raw < 0)) {
+			$json['error']['freight_total'] = $this->language->get('error_freight_total');
+		}
+
 		// Sellers may only set draft, active or cancelled
 		if (!in_array($status, [PoolLifecycle::DRAFT, PoolLifecycle::ACTIVE, PoolLifecycle::CANCELLED], true)) {
 			$json['error']['status'] = $this->language->get('error_status');
@@ -492,6 +542,136 @@ class Seller extends \Opencart\System\Engine\Controller {
 	}
 
 	/**
+	 * Register
+	 *
+	 * Seller onboarding. A signed-in shopper applies to become a seller by
+	 * supplying the mandatory business verification details.
+	 *
+	 * Deliberately a server-rendered POST rather than a JSON/fetch form, for the
+	 * same reason the join flow is: it survives a refresh, is linkable, and works
+	 * with JavaScript unavailable.
+	 *
+	 * The application is always created unapproved. Approval and GST verification
+	 * are administrator decisions, never anything the applicant can assert.
+	 *
+	 * Route: index.php?route=extension/poolbuy/seller.register
+	 *
+	 * @return void
+	 */
+	public function register(): void {
+		$this->load->language('extension/poolbuy/poolbuy/seller');
+
+		$language = (string)$this->config->get('config_language');
+
+		if (!$this->config->get('module_poolbuy_status')) {
+			$this->respondDenied(false, $this->language->get('error_unavailable'));
+
+			return;
+		}
+
+		if (!$this->customer->isLogged()) {
+			$this->session->data['redirect'] = $this->url->link('extension/poolbuy/seller.register', 'language=' . $language);
+
+			$this->response->redirect($this->url->link('account/login', 'language=' . $language));
+
+			return;
+		}
+
+		$this->load->model('extension/poolbuy/poolbuy/seller');
+
+		// Already a seller, approved or not: the portal is the right place to be.
+		if ($this->model_extension_poolbuy_poolbuy_seller->getSellerByCustomerId((int)$this->customer->getId())) {
+			$this->response->redirect($this->url->link('extension/poolbuy/seller', 'language=' . $language));
+
+			return;
+		}
+
+		$errors = [];
+
+		$post = [
+			'name'        => trim((string)($this->request->post['name'] ?? '')),
+			'gst_number'  => strtoupper(trim((string)($this->request->post['gst_number'] ?? ''))),
+			'location'    => trim((string)($this->request->post['location'] ?? '')),
+			'description' => trim((string)($this->request->post['description'] ?? '')),
+			'terms'       => !empty($this->request->post['terms'])
+		];
+
+		if ($this->request->server['REQUEST_METHOD'] === 'POST') {
+			$errors = $this->validateApplication($post);
+
+			if (!$errors) {
+				$this->model_extension_poolbuy_poolbuy_seller->addSeller((int)$this->customer->getId(), $post);
+
+				// The portal already announces the unapproved state, so land there.
+				$this->response->redirect($this->url->link('extension/poolbuy/seller', 'language=' . $language));
+
+				return;
+			}
+		}
+
+		$this->document->setTitle($this->language->get('text_register'));
+
+		$data = [
+			'heading_title' => $this->language->get('text_register'),
+			'action'        => $this->url->link('extension/poolbuy/seller.register', 'language=' . $language),
+			'marketplace'   => $this->url->link('extension/poolbuy/pool', 'language=' . $language),
+			'account'       => $this->url->link('account/account', 'language=' . $language),
+			'errors'        => $errors,
+			'name'          => $post['name'],
+			'gst_number'    => $post['gst_number'],
+			'location'      => $post['location'],
+			'description'   => $post['description'],
+			'terms'         => $post['terms'],
+			'breadcrumbs'   => [
+				['text' => $this->language->get('text_home'), 'href' => $this->url->link('common/home', 'language=' . $language)],
+				['text' => $this->language->get('heading_title'), 'href' => $this->url->link('extension/poolbuy/seller', 'language=' . $language)],
+				['text' => $this->language->get('text_register'), 'href' => $this->url->link('extension/poolbuy/seller.register', 'language=' . $language)]
+			]
+		] + $this->chrome();
+
+		$this->response->setOutput($this->load->view('extension/poolbuy/poolbuy/seller_register', $data));
+	}
+
+	/**
+	 * Validate Application
+	 *
+	 * @param array<string, mixed> $post
+	 *
+	 * @return array<string, string> field name => message, empty when valid
+	 */
+	private function validateApplication(array $post): array {
+		$errors = [];
+
+		$name = (string)$post['name'];
+
+		if (oc_strlen($name) < 3 || oc_strlen($name) > 128) {
+			$errors['name'] = $this->language->get('error_business_name');
+		}
+
+		// Indian GSTIN: 2 digit state code, 5 letter PAN prefix, 4 digits, 1 letter,
+		// 1 entity digit/letter, literal Z, then a checksum character.
+		if (!preg_match('/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/', (string)$post['gst_number'])) {
+			$errors['gst_number'] = $this->language->get('error_gst_number');
+		}
+
+		$location = (string)$post['location'];
+
+		if (oc_strlen($location) < 2 || oc_strlen($location) > 128) {
+			$errors['location'] = $this->language->get('error_location');
+		}
+
+		if (oc_strlen((string)$post['description']) > 1000) {
+			$errors['description'] = $this->language->get('error_description');
+		}
+
+		if (empty($post['terms'])) {
+			$errors['terms'] = $this->language->get('error_terms');
+		}
+
+		return $errors;
+	}
+
+	/**
 	 * Resolve Seller
 	 *
 	 * Turns the signed-in customer into a seller profile, or ends the request.
@@ -543,6 +723,7 @@ class Seller extends \Opencart\System\Engine\Controller {
 
 			$data = [
 				'marketplace' => $this->url->link('extension/poolbuy/pool', 'language=' . $language),
+				'register'    => $this->url->link('extension/poolbuy/seller.register', 'language=' . $language),
 				'contact'     => $this->url->link('information/contact', 'language=' . $language),
 				'account'     => $this->url->link('account/account', 'language=' . $language)
 			] + $this->chrome();
@@ -592,6 +773,32 @@ class Seller extends \Opencart\System\Engine\Controller {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Tabs
+	 *
+	 * Renders the portal tab strip. Rendered through load->view() rather than a Twig
+	 * {% include %}, because OpenCart's Twig loader does not resolve
+	 * extension-relative include paths.
+	 *
+	 * @param string $active
+	 *
+	 * @return string
+	 */
+	private function tabs(string $active): string {
+		$language = (string)$this->config->get('config_language');
+
+		return $this->load->view('extension/poolbuy/poolbuy/seller_tabs', [
+			'pb_active'     => $active,
+			'pools'         => $this->url->link('extension/poolbuy/seller', 'language=' . $language),
+			'products_link' => $this->url->link('extension/poolbuy/seller_product', 'language=' . $language),
+			'orders'        => $this->url->link('extension/poolbuy/seller_order', 'language=' . $language),
+			'text_portal'   => $this->language->get('heading_title'),
+			'tab_pools'     => $this->language->get('tab_pools'),
+			'tab_products'  => $this->language->get('tab_products'),
+			'tab_orders'    => $this->language->get('tab_orders')
+		]);
 	}
 
 	/**

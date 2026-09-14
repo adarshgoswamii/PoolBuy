@@ -17,8 +17,14 @@ declare(strict_types=1);
 $library = __DIR__ . '/../upload/extension/poolbuy/system/library/';
 
 $classmap = [
-	'Opencart\\System\\Library\\Extension\\Poolbuy\\PoolCalculator' => $library . 'pool_calculator.php',
-	'Opencart\\System\\Library\\Extension\\Poolbuy\\PoolLifecycle'  => $library . 'pool_lifecycle.php'
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\PoolCalculator'          => $library . 'pool_calculator.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\PoolLifecycle'           => $library . 'pool_lifecycle.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\PoolPresenter'           => $library . 'pool_presenter.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\PaymentGatewayInterface' => $library . 'payment_gateway_interface.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\MockGateway'             => $library . 'mock_gateway.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\RazorpayGateway'         => $library . 'razorpay_gateway.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\GatewayFactory'          => $library . 'gateway_factory.php',
+	'Opencart\\System\\Library\\Extension\\Poolbuy\\RateLimiter'             => $library . 'rate_limiter.php'
 ];
 
 spl_autoload_register(static function (string $class) use ($classmap): void {

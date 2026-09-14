@@ -1,0 +1,127 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {{ tabs }}
+
+  {% if success %}
+    <div class="pb-alert pb-alert--success pb-mb-lg" role="status">
+      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+      <span>{{ success }}</span>
+    </div>
+  {% endif %}
+
+  {% if error %}
+    <div class="pb-alert pb-alert--error pb-mb-lg" role="alert">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ error }}</span>
+    </div>
+  {% endif %}
+
+  <h1 class="pb-display-lg pb-mb-lg">{{ heading_title }}</h1>
+
+  <div class="pb-grid pb-grid-main-aside" style="gap: var(--pb-gutter);">
+    <div>
+      <div class="pb-card pb-mb-lg">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_summary }}</h2>
+
+          <dl class="pb-dl">
+            <dt>{{ text_pool }}</dt><dd>{{ pool }} &middot; {{ pool_title|escape }}</dd>
+            <dt>{{ text_commitment }}</dt><dd>{{ commitment }}</dd>
+            <dt>{{ column_buyer }}</dt><dd>{{ handle }}</dd>
+            <dt>{{ text_quantity }}</dt><dd class="pb-tnum">{{ text_units|format(quantity, unit_label) }}</dd>
+            <dt>{{ text_unit_price }}</dt><dd class="pb-tnum">{{ unit_price }}</dd>
+            <dt>{{ text_current_status }}</dt><dd>{{ order_status }}</dd>
+            <dt>{{ text_shipping_method }}</dt><dd>{{ shipping_method|escape }}</dd>
+            <dt>{{ text_raised }}</dt><dd>{{ date_added }}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="pb-card pb-mb-lg">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_delivery }}</h2>
+
+          {% if address_released %}
+            <address class="pb-body-md pb-mb-0">
+              {{ address.name|escape }}<br>
+              {{ address.line1|escape }}{% if address.line2 %}<br>{{ address.line2|escape }}{% endif %}<br>
+              {{ address.city|escape }} {{ address.postcode|escape }}<br>
+              {{ address.zone|escape }}, {{ address.country|escape }}
+              {% if address.phone %}<br>{{ address.phone|escape }}{% endif %}
+            </address>
+          {% else %}
+            {# Buyer privacy: the model blanks these until the pool is fulfilled. #}
+            <div class="pb-alert pb-alert--info pb-mb-0" role="status">
+              <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+              <div>
+                <p class="pb-body-md pb-mb-xs" style="font-weight: 600;">{{ text_privacy_withheld }}</p>
+                <p class="pb-mb-0">{{ text_privacy_body }}</p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="pb-card pb-mb-lg">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_fulfilment }}</h2>
+
+          <form action="{{ action }}" method="post">
+            <div class="pb-field">
+              <label class="pb-label" for="pb-status">{{ entry_status }}</label>
+              <select class="pb-select" id="pb-status" name="order_status_id" required
+                      aria-describedby="pb-help-status{% if errors.order_status_id %} pb-error-status{% endif %}"
+                      {% if errors.order_status_id %}aria-invalid="true"{% endif %}>
+                {% for status in statuses %}
+                  <option value="{{ status.order_status_id }}"{% if status.selected %} selected{% endif %}>{{ status.name }}</option>
+                {% endfor %}
+              </select>
+              <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-status">{{ help_status }}</p>
+              {% if errors.order_status_id %}<p class="pb-error-text" id="pb-error-status">{{ errors.order_status_id }}</p>{% endif %}
+            </div>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-tracking">{{ entry_tracking }}</label>
+              <input class="pb-input" type="text" id="pb-tracking" name="tracking" value="{{ tracking }}" maxlength="64"
+                     aria-describedby="pb-help-tracking{% if errors.tracking %} pb-error-tracking{% endif %}"
+                     {% if errors.tracking %}aria-invalid="true"{% endif %}>
+              <p class="pb-body-md pb-muted pb-mt-xs pb-mb-0" id="pb-help-tracking">{{ help_tracking }}</p>
+              {% if errors.tracking %}<p class="pb-error-text" id="pb-error-tracking">{{ errors.tracking }}</p>{% endif %}
+            </div>
+
+            <button class="pb-btn pb-btn--primary pb-btn--block" type="submit">{{ button_update }}</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="pb-card">
+        <div class="pb-card__body">
+          <h2 class="pb-headline-sm pb-mb-md">{{ text_totals }}</h2>
+
+          <dl class="pb-dl">
+            {% for total in totals %}
+              <dt>{{ total.title|escape }}</dt><dd class="pb-tnum">{{ total.value }}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+
+      <p class="pb-mt-lg"><a class="pb-btn pb-btn--ghost" href="{{ back }}">{{ button_back }}</a></p>
+    </aside>
+  </div>
+</div>
+{{ footer }}

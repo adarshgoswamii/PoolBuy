@@ -1,0 +1,79 @@
+{#
+  A discovery rail: a compact strip of joinable pools for the marketplace.
+
+  Rendered by the controller through load->view(), matching how marketplace_list
+  is handled, because OpenCart's Twig loader does not resolve extension-relative
+  {% include %} paths.
+
+  Inputs:
+    pools           - presented pool views (PoolPresenter::present + thumb/href/join)
+    urgent          - true for the "closing soon" strip, styled more insistently
+    heading         - section heading text
+    heading_id      - id used by aria-labelledby
+    heading_icon    - FontAwesome classes for the heading icon
+    see_all_href    - link to the equivalent sorted feed
+    text_see_all    - label for that link
+    button_join_pool - CTA label
+
+  All operator supplied values are escaped, since Twig autoescape is off.
+  Each card carries the same data-pb-progress hooks as every other surface, so
+  the live-progress script keeps these current too.
+#}
+{% if pools %}
+  <section class="pb-mb-xl" aria-labelledby="{{ heading_id }}">
+    <div class="pb-flex pb-justify-between pb-items-end pb-gap-md pb-mb-md">
+      <h2 id="{{ heading_id }}" class="pb-headline-sm pb-mb-0">
+        <i class="{{ heading_icon }}" aria-hidden="true"></i> {{ heading }}
+      </h2>
+      <a class="pb-link pb-label-md" href="{{ see_all_href }}">{{ text_see_all }}</a>
+    </div>
+
+    <div class="pb-grid pb-grid-rail">
+      {% for pool in pools %}
+        <article class="pb-card pb-card--interactive pb-rail-card">
+          <a href="{{ pool.href }}" class="pb-rail-card__media" tabindex="-1" aria-hidden="true">
+            <img src="{{ pool.thumb }}" alt="" width="320" height="200" loading="lazy" decoding="async"/>
+          </a>
+
+          <div class="pb-card__body pb-flex pb-flex-col pb-gap-sm">
+            <div class="pb-flex pb-gap-xs pb-wrap">
+              {% if urgent or pool.is_urgent %}
+                <span class="pb-badge pb-badge--urgent">{{ pool.time_left }}</span>
+              {% else %}
+                <span class="pb-badge pb-badge--soft">{{ pool.fill }}%</span>
+              {% endif %}
+              {% if pool.verified_seller %}
+                <span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span>
+              {% endif %}
+            </div>
+
+            <h3 class="pb-body-md pb-mb-0" style="font-weight: 600;">
+              <a class="pb-link" href="{{ pool.href }}" style="color: var(--pb-on-surface);">{{ pool.title|escape }}</a>
+            </h3>
+
+            <div class="pb-flex pb-justify-between pb-items-end pb-gap-sm">
+              <span class="pb-headline-sm pb-primary-text pb-tnum">{{ pool.unit_price_text }}</span>
+              {% if pool.has_retail_saving %}
+                <span class="pb-muted pb-strike pb-tnum" style="font-size: 11px;">{{ pool.retail_price_text }}</span>
+              {% endif %}
+            </div>
+
+            <div data-pb-progress="{{ pool.pool_id }}">
+              <div class="pb-flex pb-justify-between pb-label-md pb-mb-xs">
+                <span class="pb-muted pb-tnum" data-pb-progress-filled>{{ pool.reserved_qty }} / {{ pool.moq_target }}</span>
+                <span class="pb-primary-text pb-tnum" data-pb-progress-percent>{{ pool.fill }}%</span>
+              </div>
+              <div class="pb-progress pb-progress--sm{% if pool.is_open %} pb-progress--pulse{% endif %}"
+                   role="progressbar" aria-label="{{ pool.title|escape }}"
+                   aria-valuenow="{{ pool.fill }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="pb-progress__bar{% if pool.progress_modifier %} pb-progress__bar--{{ pool.progress_modifier }}{% endif %}" style="width: {{ pool.fill }}%;"></div>
+              </div>
+            </div>
+
+            <a class="pb-btn pb-btn--primary pb-btn--sm pb-btn--block" href="{{ pool.join }}">{{ button_join_pool }}</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

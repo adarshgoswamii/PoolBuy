@@ -1,0 +1,176 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-promotion" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save" aria-hidden="true"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply" aria-hidden="true"></i></a>
+      </div>
+      <h1>{{ promotion_id ? text_edit : text_add }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ text_form }}</div>
+      <div class="card-body">
+        <form id="form-promotion" action="{{ save }}" method="post" data-oc-toggle="ajax">
+
+          <div class="row mb-3">
+            <label for="input-code" class="col-sm-3 col-form-label">{{ entry_code }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="code" value="{{ code }}" placeholder="SAVE10" id="input-code" class="form-control" style="text-transform: uppercase;"/>
+              <div id="error-code" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_code }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-name" class="col-sm-3 col-form-label">{{ entry_name }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="name" value="{{ name }}" id="input-name" class="form-control"/>
+              <div id="error-name" class="invalid-feedback"></div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-scope" class="col-sm-3 col-form-label">{{ entry_scope }}</label>
+            <div class="col-sm-9">
+              <select name="scope" id="input-scope" class="form-select">
+                {% for option in scopes %}
+                  <option value="{{ option.value }}"{% if scope == option.value %} selected{% endif %}>{{ option.text }}</option>
+                {% endfor %}
+              </select>
+              <div id="error-scope" class="invalid-feedback"></div>
+              <div class="form-text">{{ text_scope_help }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-pool" class="col-sm-3 col-form-label">{{ entry_pool }}</label>
+            <div class="col-sm-9">
+              <select name="pool_id" id="input-pool" class="form-select">
+                <option value="0">{{ text_any_pool }}</option>
+                {% for pool in pools %}
+                  <option value="{{ pool.pool_id }}"{% if pool_id == pool.pool_id %} selected{% endif %}>{{ pool.reference }} &mdash; {{ pool.title }} ({{ pool.status }})</option>
+                {% endfor %}
+              </select>
+              <div id="error-pool_id" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_pool }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-type" class="col-sm-3 col-form-label">{{ entry_type }}</label>
+            <div class="col-sm-9">
+              <select name="type" id="input-type" class="form-select">
+                {% for option in types %}
+                  <option value="{{ option.value }}"{% if type == option.value %} selected{% endif %}>{{ option.text }}</option>
+                {% endfor %}
+              </select>
+              <div id="error-type" class="invalid-feedback"></div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-value" class="col-sm-3 col-form-label">{{ entry_value }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="value" value="{{ value }}" placeholder="10" id="input-value" class="form-control"/>
+              <div id="error-value" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_value }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-min-qty" class="col-sm-3 col-form-label">{{ entry_min_qty }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="min_qty" value="{{ min_qty }}" id="input-min-qty" class="form-control"/>
+              <div id="error-min_qty" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_min_qty }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-max-redemptions" class="col-sm-3 col-form-label">{{ entry_max_redemptions }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="max_redemptions" value="{{ max_redemptions }}" id="input-max-redemptions" class="form-control"/>
+              <div id="error-max_redemptions" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_max_redemptions }}</div>
+              {% if promotion_id %}
+                <div class="form-text"><strong>{{ text_redemptions }}: {{ redemptions_used }}</strong> &mdash; {{ help_redemptions_used }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-date-start" class="col-sm-3 col-form-label">{{ entry_date_start }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="date_start" value="{{ date_start }}" placeholder="YYYY-MM-DD HH:MM:SS" id="input-date-start" class="form-control"/>
+              <div id="error-date_start" class="invalid-feedback"></div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-date-end" class="col-sm-3 col-form-label">{{ entry_date_end }}</label>
+            <div class="col-sm-9">
+              <input type="text" name="date_end" value="{{ date_end }}" placeholder="YYYY-MM-DD HH:MM:SS" id="input-date-end" class="form-control"/>
+              <div id="error-date_end" class="invalid-feedback"></div>
+              <div class="form-text">{{ help_dates }}</div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-status" class="col-sm-3 col-form-label">{{ entry_status }}</label>
+            <div class="col-sm-9">
+              <div class="form-check form-switch form-switch-lg">
+                <input type="hidden" name="status" value="0"/>
+                <input type="checkbox" name="status" value="1" id="input-status" class="form-check-input"{% if status %} checked{% endif %}/>
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" name="promotion_id" value="{{ promotion_id }}"/>
+        </form>
+      </div>
+    </div>
+
+    {% if promotion_id %}
+      <div class="card mt-3">
+        <div class="card-header"><i class="fa-solid fa-receipt" aria-hidden="true"></i> {{ text_redemptions }}</div>
+        <div class="card-body">
+          {% if redemptions %}
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <td class="text-start">{{ text_redemption_pool }}</td>
+                    <td class="text-start">{{ text_redemption_ref }}</td>
+                    <td class="text-end">{{ text_redemption_amount }}</td>
+                    <td class="text-start">{{ text_redemption_date }}</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for redemption in redemptions %}
+                    <tr>
+                      <td class="text-start">{{ redemption.pool_reference }}</td>
+                      <td class="text-start">{{ redemption.reservation_reference }}</td>
+                      <td class="text-end">{{ redemption.discount_amount }}</td>
+                      <td class="text-start">{{ redemption.date_added }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">{{ text_no_redemptions }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{{ footer }}

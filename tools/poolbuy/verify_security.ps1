@@ -79,6 +79,41 @@ Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_pool WHERE pool_id=1;") -
 $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/pool.close&user_token=$forged&pool_id=1" -Method 'POST'
 Assert ((Get-OcSqlScalar "SELECT status FROM oc_poolbuy_pool WHERE pool_id=1;") -eq 'active') 'forged user_token cannot close a pool early'
 
+# The promotion and review moderation screens were added after this suite was first
+# written. Their write actions are asserted here too, so the central security gate
+# covers the whole admin surface rather than only the original three routes.
+$promoBefore = Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_promotion;"
+$r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/promotion.save&user_token=$forged" -Method 'POST' -Body 'name=ForgedPromo&code=FORGED100&type=percent&value=100&status=1'
+Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_promotion WHERE code='FORGED100';") -eq 0) 'forged user_token cannot create a promotion'
+Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_promotion;") -eq $promoBefore) 'forged user_token left the promotion table untouched'
+
+$firstPromo = Get-OcSqlInt "SELECT COALESCE(MIN(promotion_id), 0) FROM oc_poolbuy_promotion;"
+if ($firstPromo -gt 0) {
+    $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/promotion.delete&user_token=$forged" -Method 'POST' -Body "selected%5B%5D=$firstPromo"
+    Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_promotion WHERE promotion_id=$firstPromo;") -eq 1) 'forged user_token cannot delete a promotion'
+}
+
+$reviewsBefore = Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_review;"
+$firstReview = Get-OcSqlInt "SELECT COALESCE(MIN(review_id), 0) FROM oc_poolbuy_review;"
+if ($firstReview -gt 0) {
+    $statusBefore = Get-OcSqlScalar "SELECT status FROM oc_poolbuy_review WHERE review_id=$firstReview;"
+    $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/review.approve&user_token=$forged&review_id=$firstReview" -Method 'POST'
+    Assert ((Get-OcSqlScalar "SELECT status FROM oc_poolbuy_review WHERE review_id=$firstReview;") -eq $statusBefore) 'forged user_token cannot approve a review'
+    $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/review.reject&user_token=$forged&review_id=$firstReview" -Method 'POST'
+    Assert ((Get-OcSqlScalar "SELECT status FROM oc_poolbuy_review WHERE review_id=$firstReview;") -eq $statusBefore) 'forged user_token cannot reject a review'
+    $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/review.delete&user_token=$forged" -Method 'POST' -Body "selected%5B%5D=$firstReview"
+    Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_review WHERE review_id=$firstReview;") -eq 1) 'forged user_token cannot delete a review'
+}
+Assert ((Get-OcSqlInt "SELECT COUNT(*) FROM oc_poolbuy_review;") -eq $reviewsBefore) 'forged user_token left the review table untouched'
+
+# The payments and settlements screen can move money out of the platform, so its
+# write action is asserted here as well as in its own suite.
+$settlementTarget = Get-OcSqlInt "SELECT COALESCE(MIN(settlement_id), 0) FROM oc_poolbuy_settlement WHERE status='pending';"
+if ($settlementTarget -gt 0) {
+    $r = Get-Page "$base/admin/index.php?route=extension/poolbuy/poolbuy/settlement.pay&user_token=$forged&settlement_id=$settlementTarget" -Method 'POST'
+    Assert ((Get-OcSqlScalar "SELECT status FROM oc_poolbuy_settlement WHERE settlement_id=$settlementTarget;") -eq 'pending') 'forged user_token cannot mark a seller settlement paid'
+}
+
 Write-Host "`n=== [C] STOREFRONT PRIVATE ROUTES REQUIRE A LOGIN ==="
 $privateRoutes = @(
     'extension/poolbuy/account',
@@ -87,7 +122,12 @@ $privateRoutes = @(
     'extension/poolbuy/join',
     'extension/poolbuy/seller',
     'extension/poolbuy/seller.pool',
-    'extension/poolbuy/seller.form'
+    'extension/poolbuy/seller.form',
+    'extension/poolbuy/seller.register',
+    'extension/poolbuy/seller_product',
+    'extension/poolbuy/seller_product.form',
+    'extension/poolbuy/seller_order',
+    'extension/poolbuy/seller_order.view'
 )
 
 foreach ($route in $privateRoutes) {
@@ -149,6 +189,34 @@ $r = Get-Page "$base/index.php?route=extension/poolbuy/cron/poolbuy.run&token="
 Assert ($r.Code -eq 403) "blank token supplied against blank config still denies (HTTP $($r.Code))"
 Invoke-OcSql "UPDATE oc_setting SET value='$realToken' WHERE $tokenWhere;"
 Assert ((Get-OcSqlScalar "SELECT value FROM oc_setting WHERE $tokenWhere;") -eq $realToken) 'the real cron token was restored'
+
+Write-Host "`n=== [F2] PAYMENT WEBHOOK IS SIGNATURE GATED (FAIL CLOSED) ==="
+# The webhook authenticates by gateway signature and fails closed on a blank
+# configured secret, exactly like the cron token.
+$whKeyCol = "$OcTick" + 'key' + "$OcTick"
+$whWhere = "code='module_poolbuy' AND $whKeyCol='module_poolbuy_razorpay_webhook_secret'"
+$origSecret = Get-OcSqlScalar "SELECT value FROM oc_setting WHERE store_id=0 AND $whWhere;"
+
+# Configure a known secret so the signature checks are meaningful. Delete-then-insert
+# via the shared helper: oc_setting has no unique key, so an upsert would append a
+# duplicate row and leave the effective value to whichever row sorts last.
+Set-OcPoolbuySetting -Key 'module_poolbuy_razorpay_webhook_secret' -Value 'whsec_security'
+
+$whBody = '{"reference":"NO-SUCH-REF","status":"paid"}'
+$rUnsigned = Get-Page "$base/index.php?route=extension/poolbuy/payment.webhook" $null 'POST' $whBody
+Assert ($rUnsigned.Code -eq 403) "an unsigned webhook is refused with 403 (HTTP $($rUnsigned.Code))"
+
+# With the secret blanked, EVERY webhook must be denied - fail closed.
+Invoke-OcSql "UPDATE oc_setting SET value='' WHERE $whWhere;"
+$rNoSecret = Get-Page "$base/index.php?route=extension/poolbuy/payment.webhook" $null 'POST' $whBody
+Assert ($rNoSecret.Code -eq 403) "a BLANK configured webhook secret denies all webhooks (HTTP $($rNoSecret.Code)) - fail closed"
+
+# Restore whatever was configured before.
+if ([string]::IsNullOrEmpty($origSecret)) {
+    Invoke-OcSql "UPDATE oc_setting SET value='' WHERE $whWhere;"
+} else {
+    Invoke-OcSql "UPDATE oc_setting SET value='$origSecret' WHERE $whWhere;"
+}
 
 Write-Host "`n=== [G] XSS: OPERATOR DATA IS ESCAPED ON THE STOREFRONT ==="
 # Deliberately free of quote characters so the payload survives the SQL round trip

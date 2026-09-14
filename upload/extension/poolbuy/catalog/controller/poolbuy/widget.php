@@ -163,6 +163,36 @@ class Widget extends \Opencart\System\Engine\Controller {
 			'shipping_terms' => $view['shipping_terms']
 		];
 
+		// ---- Reviews.
+		//
+		// Only APPROVED reviews are ever fetched, so a pending or rejected review
+		// cannot appear here. Buyers are attributed with the same opaque
+		// "Buyer #NNNN" handle used everywhere else, so publishing social proof
+		// never publishes who bought what.
+		$this->load->model('extension/poolbuy/poolbuy/review');
+
+		$summary = $this->model_extension_poolbuy_poolbuy_review->getProductSummary($product_id);
+
+		$data['review_summary'] = [
+			'count'        => $summary['count'],
+			'average'      => $summary['average'],
+			'average_text' => number_format($summary['average'], 1),
+			'has_reviews'  => $summary['count'] > 0
+		];
+
+		$data['reviews'] = [];
+
+		foreach ($this->model_extension_poolbuy_poolbuy_review->getApprovedByProduct($product_id, 10) as $row) {
+			$data['reviews'][] = [
+				'rating'         => (int)$row['rating'],
+				'title'          => (string)$row['title'],
+				'text'           => (string)$row['text'],
+				'buyer_handle'   => sprintf($this->language->get('text_buyer_handle'), (int)$row['customer_id']),
+				'pool_reference' => (string)($row['pool_reference'] ?? ''),
+				'date_added'     => date($this->language->get('date_format_short'), strtotime((string)$row['date_added']))
+			];
+		}
+
 		return $this->load->view('extension/poolbuy/poolbuy/pool_widget', $data);
 	}
 

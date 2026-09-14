@@ -389,6 +389,353 @@ final class PoolCalculatorTest extends TestCase {
 		self::assertSame(0.0, $breakdown['total']);
 	}
 
+	// ------------------------------------------------------ promotion discount
+
+	public function testDiscountIsTakenBeforeTaxAndFeeAreCharged(): void {
+		// 50 units at 1,100 is a 55,000 subtotal. A 5,000 discount leaves 50,000
+		// as the taxable base, so GST is 9,000 and the 2% fee is 1,000.
+		$breakdown = PoolCalculator::priceBreakdown(50, 1100.00, 18.0, 2.0, 0.0, 5000.00);
+
+		self::assertSame(55000.00, $breakdown['subtotal'], 'the gross subtotal is unchanged by a discount');
+		self::assertSame(5000.00, $breakdown['discount']);
+		self::assertSame(50000.00, $breakdown['discounted_subtotal']);
+		self::assertSame(9000.00, $breakdown['gst'], 'GST is charged on the discounted base');
+		self::assertSame(1000.00, $breakdown['platform_fee'], 'the platform fee is charged on the discounted base');
+		self::assertSame(60000.00, $breakdown['total']);
+	}
+
+	public function testDiscountIsCappedAtTheSubtotalSoTheTotalNeverGoesNegative(): void {
+		// A 999,999 discount against a 1,000 subtotal must not invert the order.
+		$breakdown = PoolCalculator::priceBreakdown(10, 100.00, 18.0, 2.0, 0.0, 999999.00);
+
+		self::assertSame(1000.00, $breakdown['discount'], 'the discount is clamped to the subtotal');
+		self::assertSame(0.0, $breakdown['discounted_subtotal']);
+		self::assertSame(0.0, $breakdown['gst']);
+		self::assertSame(0.0, $breakdown['platform_fee']);
+		self::assertSame(0.0, $breakdown['total']);
+	}
+
+	public function testNegativeDiscountCannotBeUsedToInflateAnOrder(): void {
+		$breakdown = PoolCalculator::priceBreakdown(10, 100.00, 18.0, 2.0, 0.0, -500.00);
+
+		self::assertSame(0.0, $breakdown['discount']);
+		self::assertSame(1200.00, $breakdown['total']);
+	}
+
+	public function testFreightIsAddedAfterTheDiscountAndIsNotDiscounted(): void {
+		$breakdown = PoolCalculator::priceBreakdown(50, 1100.00, 18.0, 2.0, 420.00, 5000.00);
+
+		self::assertSame(420.00, $breakdown['shipping']);
+		self::assertSame(60420.00, $breakdown['total']);
+	}
+
+	public function testOmittingTheDiscountReproducesThePrePromotionFigures(): void {
+		$without = PoolCalculator::priceBreakdown(37, 1381.37, 18.0, 2.5, 199.99);
+		$explicit_zero = PoolCalculator::priceBreakdown(37, 1381.37, 18.0, 2.5, 199.99, 0.0);
+
+		self::assertSame($without, $explicit_zero);
+		self::assertSame(0.0, $without['discount']);
+		self::assertSame($without['subtotal'], $without['discounted_subtotal']);
+	}
+
+	// --------------------------------------------------- promotion resolution
+
+	/**
+	 * A live, unlimited 10% code with no constraints.
+	 *
+	 * @param array<string, mixed> $overrides
+	 *
+	 * @return array<string, mixed>
+	 */
+	private static function promotion(array $overrides = []): array {
+		return $overrides + [
+			'promotion_id'     => 1,
+			'code'             => 'POOL10',
+			'scope'            => 'buyer',
+			'pool_id'          => 0,
+			'type'             => 'percent',
+			'value'            => 10.0,
+			'min_qty'          => 0,
+			'max_redemptions'  => 0,
+			'redemptions_used' => 0,
+			'date_start'       => null,
+			'date_end'         => null,
+			'status'           => 1
+		];
+	}
+
+	public function testPercentagePromotionDiscountsTheSubtotal(): void {
+		$result = PoolCalculator::resolveDiscount(self::promotion(), 50, 55000.00);
+
+		self::assertTrue($result['valid']);
+		self::assertSame(5500.00, $result['discount'], '10% of 55,000');
+	}
+
+	public function testFixedPromotionDiscountsAFlatAmount(): void {
+		$promotion = self::promotion(['type' => 'fixed', 'value' => 2500.00]);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00);
+
+		self::assertTrue($result['valid']);
+		self::assertSame(2500.00, $result['discount']);
+	}
+
+	public function testAFixedPromotionCannotExceedTheSubtotal(): void {
+		// A 5,000 off code against a 1,000 order must not create a refund.
+		$promotion = self::promotion(['type' => 'fixed', 'value' => 5000.00]);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 10, 1000.00);
+
+		self::assertTrue($result['valid']);
+		self::assertSame(1000.00, $result['discount'], 'capped at the subtotal');
+	}
+
+	public function testAPercentageAbove100IsClampedToTheWholeSubtotal(): void {
+		$promotion = self::promotion(['value' => 900.0]);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 10, 1000.00);
+
+		self::assertSame(1000.00, $result['discount'], 'a 900% code discounts 100%, never more');
+	}
+
+	public function testAnInactivePromotionIsRejected(): void {
+		$result = PoolCalculator::resolveDiscount(self::promotion(['status' => 0]), 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('inactive', $result['reason']);
+		self::assertSame(0.0, $result['discount']);
+	}
+
+	public function testAPromotionThatHasNotStartedIsRejected(): void {
+		$promotion = self::promotion(['date_start' => '2030-01-01 00:00:00']);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00, strtotime('2026-01-01 00:00:00'));
+
+		self::assertFalse($result['valid']);
+		self::assertSame('not_started', $result['reason']);
+	}
+
+	public function testAnExpiredPromotionIsRejected(): void {
+		$promotion = self::promotion(['date_end' => '2020-01-01 00:00:00']);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00, strtotime('2026-01-01 00:00:00'));
+
+		self::assertFalse($result['valid']);
+		self::assertSame('expired', $result['reason']);
+	}
+
+	public function testOpenEndedDatesImposeNoBound(): void {
+		// Null, empty string and MySQL's zero date all mean "no bound".
+		foreach ([null, '', '0000-00-00 00:00:00'] as $blank) {
+			$promotion = self::promotion(['date_start' => $blank, 'date_end' => $blank]);
+
+			$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00);
+
+			self::assertTrue($result['valid'], 'a blank date must not reject the code');
+		}
+	}
+
+	public function testAPromotionBelowItsMinimumQuantityIsRejected(): void {
+		$promotion = self::promotion(['min_qty' => 100]);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('min_qty', $result['reason']);
+	}
+
+	public function testAPromotionAtItsMinimumQuantityIsAccepted(): void {
+		$promotion = self::promotion(['min_qty' => 50]);
+
+		self::assertTrue(PoolCalculator::resolveDiscount($promotion, 50, 55000.00)['valid']);
+	}
+
+	public function testAnExhaustedPromotionIsRejected(): void {
+		$promotion = self::promotion(['max_redemptions' => 5, 'redemptions_used' => 5]);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('exhausted', $result['reason'], 'a real code that ran out says so');
+	}
+
+	public function testTheLastRedemptionIsStillAvailable(): void {
+		$promotion = self::promotion(['max_redemptions' => 5, 'redemptions_used' => 4]);
+
+		self::assertTrue(PoolCalculator::resolveDiscount($promotion, 50, 55000.00)['valid']);
+	}
+
+	public function testZeroMaxRedemptionsMeansUnlimited(): void {
+		$promotion = self::promotion(['max_redemptions' => 0, 'redemptions_used' => 9999]);
+
+		self::assertTrue(PoolCalculator::resolveDiscount($promotion, 50, 55000.00)['valid']);
+	}
+
+	public function testAnUnknownPromotionTypeIsRejected(): void {
+		$promotion = self::promotion(['type' => 'buy_one_get_one']);
+
+		$result = PoolCalculator::resolveDiscount($promotion, 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('unknown_type', $result['reason']);
+	}
+
+	public function testAZeroValuePromotionIsRejectedRatherThanAppliedAsNothing(): void {
+		$result = PoolCalculator::resolveDiscount(self::promotion(['value' => 0]), 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('worthless', $result['reason']);
+	}
+
+	public function testANegativePromotionValueCannotIncreaseTheTotal(): void {
+		$result = PoolCalculator::resolveDiscount(self::promotion(['value' => -50]), 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame(0.0, $result['discount']);
+	}
+
+	public function testAnEmptyPromotionIsRejected(): void {
+		$result = PoolCalculator::resolveDiscount([], 50, 55000.00);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('not_found', $result['reason']);
+	}
+
+	public function testThereIsNothingToDiscountOnAnEmptyOrder(): void {
+		$result = PoolCalculator::resolveDiscount(self::promotion(), 0, 0.0);
+
+		self::assertFalse($result['valid']);
+		self::assertSame('nothing_to_discount', $result['reason']);
+	}
+
+	public function testAResolvedDiscountFedIntoTheBreakdownNeverInvertsTheOrder(): void {
+		// The two pieces are designed to compose: whatever resolveDiscount returns
+		// must be safe to hand straight to priceBreakdown.
+		$promotion = self::promotion(['type' => 'fixed', 'value' => 999999.00]);
+
+		$resolved = PoolCalculator::resolveDiscount($promotion, 10, 1000.00);
+		$breakdown = PoolCalculator::priceBreakdown(10, 100.00, 18.0, 2.0, 0.0, $resolved['discount']);
+
+		self::assertSame(0.0, $breakdown['total']);
+		self::assertGreaterThanOrEqual(0.0, $breakdown['discounted_subtotal']);
+	}
+
+	// ----------------------------------------------------- freight allocation
+	public function testFreightSharesSumExactlyToTheQuotedTotal(): void {
+		// 9,000 freight across 150 units in three unequal commitments.
+		$reservations = [
+			['reservation_id' => 1, 'quantity' => 40],
+			['reservation_id' => 2, 'quantity' => 60],
+			['reservation_id' => 3, 'quantity' => 50]
+		];
+
+		$shares = PoolCalculator::allocateFreight($reservations, 9000.00);
+
+		self::assertSame(2400.00, $shares[1], '40/150 of 9,000');
+		self::assertSame(3600.00, $shares[2], '60/150 of 9,000');
+		self::assertSame(3000.00, $shares[3], '50/150 of 9,000');
+		self::assertSame(9000.00, round(array_sum($shares), PoolCalculator::SCALE));
+	}
+
+	public function testFreightIndivisibleByThreeLosesNothingToRounding(): void {
+		// 100.00 across three equal commitments cannot divide evenly. The largest
+		// remainder method must still account for every last unit.
+		$reservations = [
+			['reservation_id' => 1, 'quantity' => 10],
+			['reservation_id' => 2, 'quantity' => 10],
+			['reservation_id' => 3, 'quantity' => 10]
+		];
+
+		$shares = PoolCalculator::allocateFreight($reservations, 100.00);
+
+		self::assertSame(100.00, round(array_sum($shares), PoolCalculator::SCALE), 'not a single paisa is lost or invented');
+
+		// Exactly one buyer absorbs the odd remaining unit.
+		sort($shares);
+		self::assertSame([33.3333, 33.3333, 33.3334], $shares);
+	}
+
+	public function testFreightSplitsEquallyForEqualQuantities(): void {
+		$reservations = [
+			['reservation_id' => 1, 'quantity' => 25],
+			['reservation_id' => 2, 'quantity' => 25]
+		];
+
+		$shares = PoolCalculator::allocateFreight($reservations, 500.00);
+
+		self::assertSame(250.00, $shares[1]);
+		self::assertSame(250.00, $shares[2]);
+	}
+
+	public function testASingleBuyerCarriesTheWholeFreightCharge(): void {
+		$shares = PoolCalculator::allocateFreight([['reservation_id' => 9, 'quantity' => 12]], 1234.56);
+
+		self::assertSame(1234.56, $shares[9]);
+	}
+
+	public function testZeroAndNegativeFreightAllocateNothingToAnyone(): void {
+		$reservations = [
+			['reservation_id' => 1, 'quantity' => 10],
+			['reservation_id' => 2, 'quantity' => 20]
+		];
+
+		foreach ([0.0, -750.00] as $total) {
+			$shares = PoolCalculator::allocateFreight($reservations, $total);
+
+			self::assertSame([1 => 0.0, 2 => 0.0], $shares, 'every share is present and zero');
+		}
+	}
+
+	public function testFreightAllocatesNothingWhenNoQuantityIsCommitted(): void {
+		// A pool whose reservations all carry zero quantity has nothing to divide
+		// freight against; the charge must not be dumped on an arbitrary buyer.
+		$shares = PoolCalculator::allocateFreight([['reservation_id' => 1, 'quantity' => 0]], 500.00);
+
+		self::assertSame([1 => 0.0], $shares);
+	}
+
+	public function testFreightAllocationIsEmptyForAnEmptyPool(): void {
+		self::assertSame([], PoolCalculator::allocateFreight([], 500.00));
+	}
+
+	public function testFreightAllocationIsDeterministicAcrossRuns(): void {
+		// Idempotency at pool close depends on a re-run producing identical
+		// figures, including which buyer absorbed the spare unit.
+		$reservations = [
+			['reservation_id' => 3, 'quantity' => 7],
+			['reservation_id' => 1, 'quantity' => 7],
+			['reservation_id' => 2, 'quantity' => 7]
+		];
+
+		$first = PoolCalculator::allocateFreight($reservations, 1000.00);
+		$second = PoolCalculator::allocateFreight($reservations, 1000.00);
+
+		self::assertSame($first, $second);
+	}
+
+	public function testFreightSharesFallAsThePoolFills(): void {
+		// The point of pooling: the same 9,000 freight spread over more units
+		// costs an individual buyer less.
+		$early = PoolCalculator::allocateFreight([['reservation_id' => 1, 'quantity' => 10]], 9000.00);
+
+		$late = PoolCalculator::allocateFreight([
+			['reservation_id' => 1, 'quantity' => 10],
+			['reservation_id' => 2, 'quantity' => 90]
+		], 9000.00);
+
+		self::assertSame(9000.00, $early[1]);
+		self::assertSame(900.00, $late[1], 'the same commitment now carries a tenth of the freight');
+	}
+
+	public function testFreightIgnoresRowsWithoutAReservationId(): void {
+		$shares = PoolCalculator::allocateFreight([
+			['reservation_id' => 0, 'quantity' => 50],
+			['reservation_id' => 4, 'quantity' => 50]
+		], 600.00);
+
+		self::assertSame([4 => 600.00], $shares, 'an unidentified row cannot be charged');
+	}
+
 	// ------------------------------------------------------------- repricing
 
 	public function testRepricingMovesEveryParticipantToTheUnlockedTier(): void {

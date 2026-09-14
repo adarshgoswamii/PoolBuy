@@ -1,0 +1,106 @@
+<div class="row mb-3">
+  <div class="col-sm-4">
+    <label for="filter-code" class="form-label">{{ entry_filter_code }}</label>
+    <input type="text" name="filter_code" value="{{ filter_code }}" id="filter-code" class="form-control"/>
+  </div>
+  <div class="col-sm-3">
+    <label for="filter-scope" class="form-label">{{ entry_filter_scope }}</label>
+    <select name="filter_scope" id="filter-scope" class="form-select">
+      <option value="">{{ text_all }}</option>
+      <option value="buyer"{% if filter_scope == 'buyer' %} selected{% endif %}>{{ text_scope_buyer }}</option>
+      <option value="pool"{% if filter_scope == 'pool' %} selected{% endif %}>{{ text_scope_pool }}</option>
+    </select>
+  </div>
+  <div class="col-sm-3">
+    <label for="filter-status" class="form-label">{{ entry_filter_status }}</label>
+    <select name="filter_status" id="filter-status" class="form-select">
+      <option value="">{{ text_all }}</option>
+      <option value="1"{% if filter_status == '1' %} selected{% endif %}>{{ text_enabled }}</option>
+      <option value="0"{% if filter_status == '0' %} selected{% endif %}>{{ text_disabled }}</option>
+    </select>
+  </div>
+  <div class="col-sm-2 d-flex align-items-end">
+    <button type="button" id="button-filter" class="btn btn-light w-100">{{ button_filter }}</button>
+  </div>
+</div>
+
+<form id="form-promotion" method="post" data-oc-toggle="ajax">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <td style="width: 1px;" class="text-center"><input type="checkbox" onchange="$('input[name^=\'selected\']').prop('checked', $(this).prop('checked'));" class="form-check-input"/></td>
+          <td class="text-start"><a href="{{ sort_code }}" {% if sort == 'code' %}class="{{ order|lower }}"{% endif %}>{{ column_code }}</a></td>
+          <td class="text-start">{{ column_name }}</td>
+          <td class="text-start"><a href="{{ sort_scope }}" {% if sort == 'scope' %}class="{{ order|lower }}"{% endif %}>{{ column_scope }}</a></td>
+          <td class="text-start">{{ column_pool }}</td>
+          <td class="text-end"><a href="{{ sort_value }}" {% if sort == 'value' %}class="{{ order|lower }}"{% endif %}>{{ column_value }}</a></td>
+          <td class="text-end"><a href="{{ sort_redemptions_used }}" {% if sort == 'redemptions_used' %}class="{{ order|lower }}"{% endif %}>{{ column_redemptions }}</a></td>
+          <td class="text-start">{{ column_window }}</td>
+          <td class="text-start"><a href="{{ sort_status }}" {% if sort == 'status' %}class="{{ order|lower }}"{% endif %}>{{ column_status }}</a></td>
+          <td class="text-end">{{ column_action }}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% if promotions %}
+          {% for promotion in promotions %}
+            <tr>
+              <td class="text-center"><input type="checkbox" name="selected[]" value="{{ promotion.promotion_id }}" class="form-check-input"/></td>
+              <td class="text-start"><code>{{ promotion.code|escape }}</code></td>
+              <td class="text-start">{{ promotion.name|escape }}</td>
+              <td class="text-start">
+                {% if promotion.scope == 'pool' %}
+                  <span class="badge bg-info">{{ promotion.scope_text }}</span>
+                {% else %}
+                  <span class="badge bg-light text-dark">{{ promotion.scope_text }}</span>
+                {% endif %}
+              </td>
+              <td class="text-start">{{ promotion.pool_reference ?: text_any_pool }}</td>
+              <td class="text-end">{{ promotion.value_text }}</td>
+              <td class="text-end">{{ promotion.redemptions_text }}</td>
+              <td class="text-start">{{ promotion.window_text }}</td>
+              <td class="text-start">
+                {% if promotion.status %}
+                  <span class="badge bg-success">{{ text_enabled }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ text_disabled }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end"><a href="{{ promotion.edit }}" data-bs-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a></td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="text-center" colspan="10">{{ text_no_results }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text-start">{{ pagination }}</div>
+    <div class="col-sm-6 text-end">{{ results }}</div>
+  </div>
+</form>
+<script type="text/javascript"><!--
+$('#button-filter').on('click', function() {
+    var url = 'index.php?route=extension/poolbuy/poolbuy/promotion.list&user_token={{ user_token }}';
+
+    var code = $('#filter-code').val();
+    if (code) {
+        url += '&filter_code=' + encodeURIComponent(code);
+    }
+
+    var scope = $('#filter-scope').val();
+    if (scope !== '') {
+        url += '&filter_scope=' + encodeURIComponent(scope);
+    }
+
+    var status = $('#filter-status').val();
+    if (status !== '') {
+        url += '&filter_status=' + encodeURIComponent(status);
+    }
+
+    $('#promotion').load(url);
+});
+//--></script>

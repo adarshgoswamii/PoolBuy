@@ -183,6 +183,26 @@ body.pb {
 .pb-tertiary-text { color: var(--pb-tertiary); }
 .pb-strike { text-decoration: line-through; }
 
+/* Key/value detail lists, used by the seller order screen. A two column grid so
+   labels and values line up without a table, which keeps the markup semantic for
+   what is genuinely descriptive data rather than tabular data. */
+.pb-dl {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: var(--pb-xs) var(--pb-md);
+    margin: 0;
+}
+
+.pb-dl dt {
+    color: var(--pb-on-surface-variant);
+    font-size: 13px;
+}
+
+.pb-dl dd {
+    margin: 0;
+    font-size: 14px;
+}
+
 /* ==========================================================================
    Layout
    ========================================================================== */
@@ -221,6 +241,53 @@ body.pb {
 .pb-grid-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .pb-grid-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .pb-grid-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+
+/* Main content beside a secondary column.
+   Declared as a class rather than an inline style so it can actually collapse on
+   small screens: an inline grid-template-columns cannot be overridden by a media
+   query, which previously forced a cramped two-column layout onto phones. */
+.pb-grid-main-aside {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+}
+
+@media (min-width: 992px) {
+    .pb-grid-main-aside { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+}
+
+/* Discovery rails: a compact strip above the marketplace grid. Two across on
+   mobile so a rail reads as a strip rather than a second full-width list, then
+   four across once there is room. */
+.pb-grid-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pb-md);
+}
+
+@media (min-width: 768px) {
+    .pb-grid-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+    .pb-grid-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.pb-rail-card__media {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-start-start-radius: var(--pb-radius);
+    border-start-end-radius: var(--pb-radius);
+}
+
+.pb-rail-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* The rail card body is tighter than a full marketplace card. */
+.pb-rail-card .pb-card__body { padding: var(--pb-md); }
 
 @media (min-width: 768px) {
     .pb-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -489,6 +556,17 @@ body.pb {
 .pb-btn--danger:hover { background: rgba(186, 26, 26, 0.06); color: var(--pb-error); }
 
 .pb-btn--sm { padding: 8px 14px; font-size: 12px; }
+
+/* Touch devices get a comfortable tap target. Scoped to coarse pointers so the
+   tighter desktop density is preserved, and expressed as a minimum so nothing
+   that is already large enough changes. Buttons are inline-flex, so min-height
+   applies; it would be ignored on plain inline links. */
+@media (hover: none) and (pointer: coarse) {
+    .pb-btn,
+    .pb-btn--sm {
+        min-height: 44px;
+    }
+}
 .pb-btn--lg { padding: 14px 28px; font-size: 16px; }
 .pb-btn--block { width: 100%; }
 
