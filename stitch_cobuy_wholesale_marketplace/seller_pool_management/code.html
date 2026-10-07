@@ -56,6 +56,18 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
 .stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--primary);margin-bottom:6px;}
 .stat-trend{font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px;}
 .trend-up{color:#16A34A;}.trend-warn{color:#D97706;}.trend-neutral{color:var(--text-muted);}
+/* Table Filter Toolbar */
+.table-filter-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+.filter-tabs-wrap{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-tab-btn{background:#fff;border:1px solid var(--border);border-radius:30px;padding:7px 16px;font-size:12px;font-weight:600;color:var(--text-body);cursor:pointer;transition:all .2s;}
+.filter-tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+.filter-tab-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+.table-filter-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.filter-search-box{position:relative;min-width:220px;}
+.filter-search-box input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:30px;font-size:12px;font-family:var(--font-body);outline:none;background:#fff;}
+.filter-search-box input:focus{border-color:var(--accent);}
+.filter-search-box span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:18px;}
+.filter-cat-select{padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:var(--font-body);background:#fff;color:var(--text-dark);outline:none;cursor:pointer;}
 /* Table */
 .table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .data-table{width:100%;border-collapse:collapse;text-align:left;}
@@ -257,6 +269,31 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
     </div>
 
+    <!-- Table Filter Bar -->
+    <div class="table-filter-bar">
+      <div class="filter-tabs-wrap">
+        <button class="filter-tab-btn active" data-filter="all" onclick="filterSellerPools('all', this)">All Pools (6)</button>
+        <button class="filter-tab-btn" data-filter="closing" onclick="filterSellerPools('closing', this)">⚡ Closing Soon (3)</button>
+        <button class="filter-tab-btn" data-filter="active" onclick="filterSellerPools('active', this)">📈 Active (2)</button>
+        <button class="filter-tab-btn" data-filter="fulfilled" onclick="filterSellerPools('fulfilled', this)">✓ Fulfilled (1)</button>
+      </div>
+      <div class="table-filter-controls">
+        <select class="filter-cat-select" id="sellerCatFilter" onchange="filterSellerPoolsByCat(this.value)">
+          <option value="all">All Industries</option>
+          <option value="machinery">Machinery &amp; Equipment</option>
+          <option value="chemicals">Chemicals</option>
+          <option value="electronics">Electronics &amp; IoT (Climate Safe)</option>
+          <option value="apparel">Fashion &amp; Apparel</option>
+          <option value="packaging">Packaging &amp; Printing</option>
+          <option value="office">Office &amp; Furniture</option>
+        </select>
+        <div class="filter-search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="sellerSearchInput" placeholder="Search campaign or SKU..." oninput="filterSellerPoolsBySearch(this.value)"/>
+        </div>
+      </div>
+    </div>
+
     <!-- Table -->
     <div class="table-wrap">
       <div style="overflow-x:auto;">
@@ -273,7 +310,7 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
             </tr>
           </thead>
           <tbody id="poolsTableBody">
-            <tr onclick="toggleDetail('row-1')">
+            <tr data-status="active" data-category="machinery" data-title="Titan-X Commercial 5HP Submersible Pump" data-sku="TX-5HP-PMP" onclick="toggleDetail('row-1')">
               <td>
                 <div class="product-cell">
                   <div class="product-thumb"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA" alt="Titan-X Pump"/></div>
@@ -290,7 +327,7 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
               <td><span class="status-badge status-active">Active</span></td>
               <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
             </tr>
-            <tr onclick="toggleDetail('row-2')">
+            <tr data-status="active" data-category="chemicals" data-title="Caustic Soda Flakes 99% Pure (25kg Bag)" data-sku="CHM-CS99-BAG" onclick="toggleDetail('row-2')">
               <td>
                 <div class="product-cell">
                   <div class="product-thumb"><img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80" alt="Caustic Soda"/></div>
@@ -307,7 +344,7 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
               <td><span class="status-badge status-active">Active</span></td>
               <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
             </tr>
-            <tr onclick="toggleDetail('row-3')">
+            <tr data-status="closing" data-category="packaging" data-title="5-Ply Heavy-Duty Shipping Cartons (Bundle 50)" data-sku="PKG-5PLY-BND" onclick="toggleDetail('row-3')">
               <td>
                 <div class="product-cell">
                   <div class="product-thumb"><img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80" alt="Shipping Cartons"/></div>
@@ -324,7 +361,7 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
               <td><span class="status-badge status-closing">Closing</span></td>
               <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
             </tr>
-            <tr onclick="toggleDetail('row-4')">
+            <tr data-status="closing" data-category="office" data-title="75 GSM Copier Paper A4 (Box 5 Reams)" data-sku="OFF-PPR-75G" onclick="toggleDetail('row-4')">
               <td>
                 <div class="product-cell">
                   <div class="product-thumb"><img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80" alt="A4 Paper"/></div>
@@ -339,6 +376,40 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
               </td>
               <td><div class="time-cell" style="color:var(--primary);"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>4h 02m</div></td>
               <td><span class="status-badge status-closing">Closing</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+            <tr data-status="closing" data-category="electronics" data-title="65W GaN Dual USB-C Fast Charger Hub (Bulk 50)" data-sku="ELC-GAN-65W" onclick="toggleDetail('row-1')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80" alt="GaN Charger"/></div>
+                  <div><div class="product-cell-name">65W GaN Dual USB-C Fast Charger Hub (Bulk 50)</div><div class="product-cell-sku">Electronics (Climate Safe) &bull; SKU: ELC-GAN-65W</div></div>
+                </div>
+              </td>
+              <td class="table-moq">50 Units</td>
+              <td class="table-reserved">44 Units</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct">88%</span><span class="progress-rem">6 left</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:88%;"></div></div>
+              </td>
+              <td><div class="time-cell" style="color:var(--primary);"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>6h 45m</div></td>
+              <td><span class="status-badge status-closing">Closing</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+            <tr data-status="fulfilled" data-category="apparel" data-title="220 GSM 100% Combed Cotton Polos (Lot 50)" data-progress="100" data-sku="APP-POLO-220" onclick="toggleDetail('row-2')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80" alt="Cotton Polos"/></div>
+                  <div><div class="product-cell-name">220 GSM 100% Combed Cotton Polos (Lot 50)</div><div class="product-cell-sku">Apparel &bull; SKU: APP-POLO-220</div></div>
+                </div>
+              </td>
+              <td class="table-moq">10 Lots</td>
+              <td class="table-reserved">10 Lots</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct" style="color:#16A34A;">100%</span><span class="progress-rem" style="color:#16A34A;">Dispatched</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:100%;background:#16A34A;"></div></div>
+              </td>
+              <td><div class="time-cell steady"><span class="material-symbols-outlined" style="font-size:16px;">local_shipping</span>In Transit</div></td>
+              <td><span class="status-badge" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;">Fulfilled</span></td>
               <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
             </tr>
           </tbody>
@@ -704,6 +775,48 @@ function submitCreatePool(e) {
   closeCreatePoolModal();
   document.getElementById('createPoolForm').reset();
   showToast(`🎉 "${name}" wholesale campaign published successfully!`);
+}
+
+// Seller Table Filters
+let sellerFilterStatus = 'all';
+let sellerFilterCategory = 'all';
+let sellerFilterSearch = '';
+
+function filterSellerPools(status, btn) {
+  sellerFilterStatus = status;
+  document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applySellerTableFilters();
+}
+
+function filterSellerPoolsByCat(cat) {
+  sellerFilterCategory = cat;
+  applySellerTableFilters();
+}
+
+function filterSellerPoolsBySearch(query) {
+  sellerFilterSearch = query.trim().toLowerCase();
+  applySellerTableFilters();
+}
+
+function applySellerTableFilters() {
+  const rows = document.querySelectorAll('#poolsTableBody tr');
+  rows.forEach(row => {
+    const status = (row.getAttribute('data-status') || '').toLowerCase();
+    const category = (row.getAttribute('data-category') || '').toLowerCase();
+    const title = (row.getAttribute('data-title') || '').toLowerCase();
+    const sku = (row.getAttribute('data-sku') || '').toLowerCase();
+
+    let matchStatus = (sellerFilterStatus === 'all' || status === sellerFilterStatus);
+    let matchCat = (sellerFilterCategory === 'all' || category === sellerFilterCategory);
+    let matchSearch = (sellerFilterSearch === '' || title.includes(sellerFilterSearch) || sku.includes(sellerFilterSearch));
+
+    if (matchStatus && matchCat && matchSearch) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
 }
 </script>
 </body>

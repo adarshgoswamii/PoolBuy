@@ -59,16 +59,52 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
 .subchip:hover{border-color:var(--accent);color:var(--accent);}
 .subchip.active{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:600;}
 /* Layout */
-.main-layout{max-width:1280px;margin:0 auto;padding:40px;display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start;}
+.main-layout{max-width:1320px;margin:0 auto;padding:36px 40px;display:grid;grid-template-columns:290px 1fr;gap:32px;align-items:start;}
 /* Filter Sidebar */
-.filter-sidebar{background:var(--bg-section);border-radius:var(--radius-card);padding:24px;border:1px solid var(--border);position:sticky;top:90px;}
-.filter-title{font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:20px;}
-.filter-group{margin-bottom:24px;}
-.filter-group-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.filter-sidebar{background:var(--bg-section);border-radius:var(--radius-card);padding:20px;border:1px solid var(--border);position:sticky;top:90px;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#CBD5E1 transparent;}
+.filter-sidebar::-webkit-scrollbar{width:5px;}
+.filter-sidebar::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:10px;}
+.filter-sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.filter-sidebar-header .filter-title{font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:0;}
+.filter-reset-link{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;padding:2px 4px;}
+.filter-reset-link:hover{color:var(--accent-dark);}
+.filter-group{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(226,230,237,.7);}
+.filter-group:last-of-type{border-bottom:none;margin-bottom:8px;padding-bottom:0;}
+.filter-group-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;margin-bottom:10px;}
+.filter-group-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:0;display:flex;align-items:center;gap:6px;}
+.filter-badge-accent{background:var(--accent-light);color:var(--accent);font-size:9px;font-weight:700;padding:1px 6px;border-radius:50px;border:1px solid rgba(224,98,20,.2);}
+.filter-badge-safe{background:#ECFDF5;color:#059669;font-size:9px;font-weight:700;padding:1px 6px;border-radius:50px;border:1px solid #A7F3D0;}
+.filter-chevron{font-size:16px;color:var(--text-muted);transition:transform .2s;}
+.filter-group.collapsed .filter-chevron{transform:rotate(-90deg);}
+.filter-group.collapsed .filter-group-body{display:none;}
 .filter-option{display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;}
-.filter-option input[type=radio],.filter-option input[type=checkbox]{accent-color:var(--primary);cursor:pointer;}
+.filter-option input[type=radio],.filter-option input[type=checkbox]{accent-color:var(--primary);cursor:pointer;width:15px;height:15px;}
 .filter-option label{font-size:13px;color:var(--text-body);cursor:pointer;display:flex;justify-content:space-between;flex:1;}
-.filter-option label span{color:var(--text-muted);}
+.filter-option label span{color:var(--text-muted);font-size:11px;}
+/* Price inputs */
+.price-inputs-row{display:flex;align-items:center;gap:6px;margin-top:10px;}
+.price-input-box{flex:1;position:relative;}
+.price-input-box span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);font-weight:600;}
+.price-input-box input{width:100%;padding:6px 6px 6px 18px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--font-body);background:#fff;color:var(--text-dark);outline:none;}
+.price-input-box input:focus{border-color:var(--accent);}
+.price-go-btn{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:background .2s;}
+.price-go-btn:hover{background:var(--accent);}
+/* Size Pills Grid */
+.size-pills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.size-pill-btn{background:#fff;border:1px solid var(--border);border-radius:6px;padding:6px 0;font-size:11px;font-weight:600;color:var(--text-body);cursor:pointer;text-align:center;transition:all .2s;}
+.size-pill-btn:hover{border-color:var(--accent);color:var(--accent);}
+.size-pill-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700;}
+/* Color Swatches Grid */
+.color-swatches-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.color-swatch-chip{width:28px;height:28px;border-radius:50%;border:2px solid #E2E6ED;cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;align-items:center;justify-content:center;}
+.color-swatch-chip:hover{transform:scale(1.15);}
+.color-swatch-chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(224,98,20,.4);}
+.color-swatch-chip.active::after{content:'✓';font-size:12px;font-weight:900;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.8);}
+.color-swatch-chip.light.active::after{color:#1A1A1A;text-shadow:none;}
+/* Warehouse Safety Callout */
+.warehouse-safety-notice{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 12px;margin-bottom:12px;}
+.warehouse-safety-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#166534;margin-bottom:4px;}
+.warehouse-safety-desc{font-size:10.5px;line-height:1.4;color:#14532D;}
 .filter-apply{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-btn);padding:12px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:8px;}
 .filter-apply:hover{background:var(--accent-dark);}
 /* Search Bar */
@@ -277,31 +313,217 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
 <div class="main-layout">
   <!-- Sidebar Filter -->
   <aside class="filter-sidebar">
-    <div class="filter-title">Filter By</div>
-    <div class="filter-group">
-      <div class="filter-group-label">Industry Category</div>
-      <div class="filter-option"><input type="radio" name="cat" checked id="cat-all" value="all"/><label for="cat-all">All Categories <span>(25)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-chem" value="chemicals"/><label for="cat-chem">Chemicals <span>(4)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-ind" value="industrial-tooling"/><label for="cat-ind">Industrial &amp; Tooling <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-elec" value="electronics-iot"/><label for="cat-elec">Electronics &amp; IoT <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-fash" value="fashion-apparel"/><label for="cat-fash">Fashion &amp; Apparel <span>(4)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-met" value="metals-raw-materials"/><label for="cat-met">Metals &amp; Raw Materials <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-mach" value="machinery-equipment"/><label for="cat-mach">Machinery &amp; Equipment <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-pack" value="packaging-printing"/><label for="cat-pack">Packaging &amp; Printing <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-bld" value="building-construction"/><label for="cat-bld">Building &amp; Construction <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-off" value="office-furniture"/><label for="cat-off">Office &amp; Furniture <span>(5)</span></label></div>
-      <div class="filter-option"><input type="radio" name="cat" id="cat-hsk" value="housekeeping-hospitality"/><label for="cat-hsk">Housekeeping &amp; Supplies <span>(5)</span></label></div>
+    <div class="filter-sidebar-header">
+      <div class="filter-title">Filter By</div>
+      <button class="filter-reset-link" onclick="clearAllFilters()">Reset All</button>
     </div>
-    <div class="filter-group">
-      <div class="filter-group-label">Pool Status</div>
-      <div class="filter-option"><input type="checkbox" id="f-active" checked/><label for="f-active">Pools Available</label></div>
-      <div class="filter-option"><input type="checkbox" id="f-gst" checked/><label for="f-gst">GST Verified Sellers</label></div>
-      <div class="filter-option"><input type="checkbox" id="f-urgent"/><label for="f-urgent">Closing Soon (&gt;80%)</label></div>
+
+    <!-- 1. Industry Category -->
+    <div class="filter-group" id="filterGroupCat">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupCat')">
+        <div class="filter-group-label">Industry Category</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="radio" name="cat" checked id="cat-all" value="all"/><label for="cat-all">All Categories <span>(48)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-chem" value="chemicals"/><label for="cat-chem">Chemicals <span>(4)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-ind" value="industrial-tooling"/><label for="cat-ind">Industrial &amp; Tooling <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-elec" value="electronics-iot"/><label for="cat-elec">Electronics &amp; IoT <span>(7)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-fash" value="fashion-apparel"/><label for="cat-fash">Fashion &amp; Apparel <span>(7)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-met" value="metals-raw-materials"/><label for="cat-met">Metals &amp; Raw Materials <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-mach" value="machinery-equipment"/><label for="cat-mach">Machinery &amp; Equipment <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-pack" value="packaging-printing"/><label for="cat-pack">Packaging &amp; Printing <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-bld" value="building-construction"/><label for="cat-bld">Building &amp; Construction <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-off" value="office-furniture"/><label for="cat-off">Office &amp; Furniture <span>(5)</span></label></div>
+        <div class="filter-option"><input type="radio" name="cat" id="cat-hsk" value="housekeeping-hospitality"/><label for="cat-hsk">Housekeeping &amp; Supplies <span>(5)</span></label></div>
+      </div>
     </div>
-    <div class="filter-group">
-      <div class="filter-group-label">Escrow Guarantee</div>
-      <div class="filter-option"><input type="checkbox" id="f-escrow" checked/><label for="f-escrow">ICICI 20% Deposit Safe</label></div>
+
+    <!-- 2. Wholesale Price Range -->
+    <div class="filter-group" id="filterGroupPrice">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupPrice')">
+        <div class="filter-group-label">Wholesale Price</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="radio" name="priceTier" checked id="pt-all" value="all" onchange="selectPriceTier('all')"/><label for="pt-all">All Prices</label></div>
+        <div class="filter-option"><input type="radio" name="priceTier" id="pt-under25" value="under-25" onchange="selectPriceTier('under-25')"/><label for="pt-under25">Under $25</label></div>
+        <div class="filter-option"><input type="radio" name="priceTier" id="pt-25-60" value="25-60" onchange="selectPriceTier('25-60')"/><label for="pt-25-60">$25 – $60</label></div>
+        <div class="filter-option"><input type="radio" name="priceTier" id="pt-60-150" value="60-150" onchange="selectPriceTier('60-150')"/><label for="pt-60-150">$60 – $150</label></div>
+        <div class="filter-option"><input type="radio" name="priceTier" id="pt-over150" value="over-150" onchange="selectPriceTier('over-150')"/><label for="pt-over150">$150+</label></div>
+        <div class="price-inputs-row">
+          <div class="price-input-box">
+            <span>$</span>
+            <input type="number" id="minPriceInput" placeholder="Min" min="0"/>
+          </div>
+          <span style="color:var(--text-muted);font-size:12px;">–</span>
+          <div class="price-input-box">
+            <span>$</span>
+            <input type="number" id="maxPriceInput" placeholder="Max" min="0"/>
+          </div>
+          <button class="price-go-btn" type="button" onclick="applyCustomPrice()">Go</button>
+        </div>
+      </div>
     </div>
+
+    <!-- 3. Minimum Order Quantity (MOQ) -->
+    <div class="filter-group" id="filterGroupMoq">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupMoq')">
+        <div class="filter-group-label">Minimum Order Qty (MOQ)</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="radio" name="moqTier" checked id="moq-all" value="all" onchange="selectMoqTier('all')"/><label for="moq-all">All MOQs</label></div>
+        <div class="filter-option"><input type="radio" name="moqTier" id="moq-under50" value="under-50" onchange="selectMoqTier('under-50')"/><label for="moq-under50">&lt; 50 units / lots</label></div>
+        <div class="filter-option"><input type="radio" name="moqTier" id="moq-50-150" value="50-150" onchange="selectMoqTier('50-150')"/><label for="moq-50-150">50 – 150 units</label></div>
+        <div class="filter-option"><input type="radio" name="moqTier" id="moq-150-500" value="150-500" onchange="selectMoqTier('150-500')"/><label for="moq-150-500">150 – 500 units</label></div>
+        <div class="filter-option"><input type="radio" name="moqTier" id="moq-over500" value="over-500" onchange="selectMoqTier('over-500')"/><label for="moq-over500">500+ units</label></div>
+      </div>
+    </div>
+
+    <!-- 4. Pool Fulfillment Stage -->
+    <div class="filter-group" id="filterGroupStage">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupStage')">
+        <div class="filter-group-label">Pool Status</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="radio" name="poolStage" checked id="ps-all" value="all" onchange="selectPoolStage('all')"/><label for="ps-all">All Active Pools</label></div>
+        <div class="filter-option"><input type="radio" name="poolStage" id="ps-urgent" value="closing-soon" onchange="selectPoolStage('closing-soon')"/><label for="ps-urgent">⚡ Closing Soon (&gt;80%)</label></div>
+        <div class="filter-option"><input type="radio" name="poolStage" id="ps-mid" value="mid" onchange="selectPoolStage('mid')"/><label for="ps-mid">📈 In Progress (40%–80%)</label></div>
+        <div class="filter-option"><input type="radio" name="poolStage" id="ps-early" value="early" onchange="selectPoolStage('early')"/><label for="ps-early">🌱 Just Launched (&lt;40%)</label></div>
+      </div>
+    </div>
+
+    <!-- 5. Apparel & Fashion Filters -->
+    <div class="filter-group" id="filterGroupFashion">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupFashion')">
+        <div class="filter-group-label">
+          Apparel &amp; Fashion
+          <span class="filter-badge-accent">Apparel</span>
+        </div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <!-- Size Pills -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Available Sizes</div>
+        <div class="size-pills-grid" id="sizePills">
+          <button type="button" class="size-pill-btn" data-size="xs" onclick="toggleSizeFilter('xs', this)">XS</button>
+          <button type="button" class="size-pill-btn" data-size="s" onclick="toggleSizeFilter('s', this)">S</button>
+          <button type="button" class="size-pill-btn" data-size="m" onclick="toggleSizeFilter('m', this)">M</button>
+          <button type="button" class="size-pill-btn" data-size="l" onclick="toggleSizeFilter('l', this)">L</button>
+          <button type="button" class="size-pill-btn" data-size="xl" onclick="toggleSizeFilter('xl', this)">XL</button>
+          <button type="button" class="size-pill-btn" data-size="2xl" onclick="toggleSizeFilter('2xl', this)">2XL</button>
+          <button type="button" class="size-pill-btn" data-size="3xl" onclick="toggleSizeFilter('3xl', this)">3XL</button>
+          <button type="button" class="size-pill-btn" data-size="free" onclick="toggleSizeFilter('free', this)">Free</button>
+        </div>
+
+        <!-- Color Swatches -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Color Palette</div>
+        <div class="color-swatches-grid" id="colorSwatches">
+          <div class="color-swatch-chip" data-color="black" title="Jet Black" style="background:#111111;" onclick="toggleColorFilter('black', this)"></div>
+          <div class="color-swatch-chip light" data-color="white" title="Optical White" style="background:#FFFFFF;border-color:#CBD5E1;" onclick="toggleColorFilter('white', this)"></div>
+          <div class="color-swatch-chip" data-color="navy" title="Navy Blue" style="background:#1B2A4A;" onclick="toggleColorFilter('navy', this)"></div>
+          <div class="color-swatch-chip" data-color="olive" title="Olive Green" style="background:#4A5D4E;" onclick="toggleColorFilter('olive', this)"></div>
+          <div class="color-swatch-chip" data-color="grey" title="Heather Grey" style="background:#8E8E93;" onclick="toggleColorFilter('grey', this)"></div>
+          <div class="color-swatch-chip" data-color="red" title="Crimson Red" style="background:#A91D22;" onclick="toggleColorFilter('red', this)"></div>
+          <div class="color-swatch-chip" data-color="sand" title="Sand Beige" style="background:#D4B996;" onclick="toggleColorFilter('sand', this)"></div>
+        </div>
+
+        <!-- Fabric GSM Weight -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Fabric Weight (GSM)</div>
+        <div class="filter-option"><input type="checkbox" id="gsm-180" value="180" onchange="toggleGsmFilter('180', this)"/><label for="gsm-180">180 GSM (Light Jersey)</label></div>
+        <div class="filter-option"><input type="checkbox" id="gsm-220" value="220" onchange="toggleGsmFilter('220', this)"/><label for="gsm-220">220 GSM (Standard Pique)</label></div>
+        <div class="filter-option"><input type="checkbox" id="gsm-240" value="240" onchange="toggleGsmFilter('240', this)"/><label for="gsm-240">240 GSM (Heavy Drop)</label></div>
+        <div class="filter-option"><input type="checkbox" id="gsm-280" value="280" onchange="toggleGsmFilter('280', this)"/><label for="gsm-280">280 GSM (French Terry)</label></div>
+        <div class="filter-option"><input type="checkbox" id="gsm-350" value="350" onchange="toggleGsmFilter('350', this)"/><label for="gsm-350">350+ GSM (Heavy Fleece)</label></div>
+
+        <!-- Fabric Composition -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Fabric Composition</div>
+        <div class="filter-option"><input type="checkbox" id="fab-cotton" value="cotton" onchange="toggleFabricFilter('cotton', this)"/><label for="fab-cotton">100% Combed Cotton</label></div>
+        <div class="filter-option"><input type="checkbox" id="fab-blend" value="blend" onchange="toggleFabricFilter('blend', this)"/><label for="fab-blend">Poly-Cotton (60/40)</label></div>
+        <div class="filter-option"><input type="checkbox" id="fab-poly" value="polyester" onchange="toggleFabricFilter('polyester', this)"/><label for="fab-poly">100% Polyester / Dri-Fit</label></div>
+        <div class="filter-option"><input type="checkbox" id="fab-cordura" value="cordura" onchange="toggleFabricFilter('cordura', this)"/><label for="fab-cordura">1000D Cordura / Drill</label></div>
+
+        <!-- Fit Type -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Fit Type</div>
+        <div class="filter-option"><input type="checkbox" id="fit-regular" value="regular" onchange="toggleFitFilter('regular', this)"/><label for="fit-regular">Regular Fit</label></div>
+        <div class="filter-option"><input type="checkbox" id="fit-oversized" value="oversized" onchange="toggleFitFilter('oversized', this)"/><label for="fit-oversized">Oversized / Boxy</label></div>
+        <div class="filter-option"><input type="checkbox" id="fit-slim" value="slim" onchange="toggleFitFilter('slim', this)"/><label for="fit-slim">Slim Fit</label></div>
+        <div class="filter-option"><input type="checkbox" id="fit-workwear" value="workwear" onchange="toggleFitFilter('workwear', this)"/><label for="fit-workwear">Workwear Relaxed</label></div>
+      </div>
+    </div>
+
+    <!-- 6. Electronics & IoT (Warehouse Climate Safe) -->
+    <div class="filter-group" id="filterGroupElec">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupElec')">
+        <div class="filter-group-label">
+          Electronics &amp; IoT
+          <span class="filter-badge-safe">Climate Safe</span>
+        </div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <!-- Safety Protocol Banner -->
+        <div class="warehouse-safety-notice">
+          <div class="warehouse-safety-badge">
+            <span class="material-symbols-outlined" style="font-size:15px;">verified_user</span>
+            Warehouse Climate Safe
+          </div>
+          <div class="warehouse-safety-desc">
+            Raw lithium-polymer cells &amp; heat-sensitive batteries are <strong>strictly barred</strong>. All products are 0–55°C shelf-stable &amp; warehouse safe.
+          </div>
+        </div>
+
+        <!-- Wattage / Power Rating -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Wattage &amp; Power Rating</div>
+        <div class="filter-option"><input type="checkbox" id="watt-30" value="30w" onchange="toggleWattageFilter('30w', this)"/><label for="watt-30">20W – 30W Fast Charge</label></div>
+        <div class="filter-option"><input type="checkbox" id="watt-65" value="65w" onchange="toggleWattageFilter('65w', this)"/><label for="watt-65">65W GaN Compact</label></div>
+        <div class="filter-option"><input type="checkbox" id="watt-100" value="100w" onchange="toggleWattageFilter('100w', this)"/><label for="watt-100">100W GaN Multi-Port</label></div>
+        <div class="filter-option"><input type="checkbox" id="watt-140" value="140w" onchange="toggleWattageFilter('140w', this)"/><label for="watt-140">140W+ Industrial Power</label></div>
+
+        <!-- Interface / Connectors -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Interface &amp; Connectors</div>
+        <div class="filter-option"><input type="checkbox" id="conn-usb" value="usb-c" onchange="toggleConnectorFilter('usb-c', this)"/><label for="conn-usb">USB-C 240W PD 3.1</label></div>
+        <div class="filter-option"><input type="checkbox" id="conn-hdmi" value="hdmi" onchange="toggleConnectorFilter('hdmi', this)"/><label for="conn-hdmi">HDMI 2.1 8K Ultra</label></div>
+        <div class="filter-option"><input type="checkbox" id="conn-cat6a" value="cat6a" onchange="toggleConnectorFilter('cat6a', this)"/><label for="conn-cat6a">Cat6A / RJ45 Gigabit</label></div>
+        <div class="filter-option"><input type="checkbox" id="conn-screw" value="screw" onchange="toggleConnectorFilter('screw', this)"/><label for="conn-screw">3-Phase Industrial Screw</label></div>
+        <div class="filter-option"><input type="checkbox" id="conn-loop" value="4-20ma" onchange="toggleConnectorFilter('4-20ma', this)"/><label for="conn-loop">4-20mA Sensor Loop</label></div>
+
+        <!-- Certifications -->
+        <div style="font-size:11px;font-weight:700;color:var(--text-dark);margin-top:14px;margin-bottom:6px;">Compliance &amp; Certifications</div>
+        <div class="filter-option"><input type="checkbox" id="cert-bis" value="bis" onchange="toggleCertFilter('bis', this)"/><label for="cert-bis">BIS Certified (India)</label></div>
+        <div class="filter-option"><input type="checkbox" id="cert-ce" value="ce" onchange="toggleCertFilter('ce', this)"/><label for="cert-ce">CE &amp; RoHS Compliant</label></div>
+        <div class="filter-option"><input type="checkbox" id="cert-ip66" value="ip66" onchange="toggleCertFilter('ip66', this)"/><label for="cert-ip66">IP66 / IP67 Waterproof</label></div>
+        <div class="filter-option"><input type="checkbox" id="cert-ul" value="ul" onchange="toggleCertFilter('ul', this)"/><label for="cert-ul">UL Listed Industrial</label></div>
+      </div>
+    </div>
+
+    <!-- 7. Trust & Verification -->
+    <div class="filter-group" id="filterGroupTrust">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupTrust')">
+        <div class="filter-group-label">Trust &amp; Escrow</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="checkbox" id="f-gst" checked onchange="applyFilters()"/><label for="f-gst">GSTIN Audited Sellers</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-escrow" checked onchange="applyFilters()"/><label for="f-escrow">ICICI 20% Deposit Safe</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-factory" onchange="applyFilters()"/><label for="f-factory">Direct Factory / Mill Origin</label></div>
+      </div>
+    </div>
+
+    <!-- 8. Dispatch & Lead Time -->
+    <div class="filter-group" id="filterGroupDispatch">
+      <div class="filter-group-header" onclick="toggleFilterGroup('filterGroupDispatch')">
+        <div class="filter-group-label">Lead Time</div>
+        <span class="material-symbols-outlined filter-chevron">expand_more</span>
+      </div>
+      <div class="filter-group-body">
+        <div class="filter-option"><input type="checkbox" id="f-ready" onchange="applyFilters()"/><label for="f-ready">Ready Stock (&lt;48h Dispatch)</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-prod" onchange="applyFilters()"/><label for="f-prod">Production Pool (7–10 Days)</label></div>
+      </div>
+    </div>
+
     <button class="filter-apply" onclick="applyFilters()">Apply Filters</button>
   </aside>
 
@@ -562,10 +784,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 3. Electronics and IoT: Cables, Wires and Connectors -->
-      <div class="product-card" data-category="electronics-iot" data-subcategory="cables-connectors" data-price="78" data-title="Multi-Core Shielded Control Cable 100m Drum" data-progress="64" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="electronics-iot" data-subcategory="cables-connectors" data-price="78" data-moq="20" data-wattage="" data-connector="cat6a" data-certification="bis,ce" data-safe="true" data-factory="true" data-leadtime="ready" data-title="Multi-Core Shielded Control Cable 100m Drum" data-progress="64" data-verified="true" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="Shielded Cable Drum"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span><span class="badge badge-gst">GST</span></div>
+          <div class="product-badges"><span class="badge badge-verified">Verified</span><span class="badge badge-gst">GST</span><span class="badge" style="background:#059669;color:#fff;">Climate Safe</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">Multi-Core Shielded Control Cable 100m Drum</div>
@@ -587,10 +809,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 3. Electronics and IoT: Switches, Relays and Protection -->
-      <div class="product-card" data-category="electronics-iot" data-subcategory="switches-relays" data-price="22.5" data-title="3-Phase 40A Modular Contactor & Thermal Relay" data-progress="80" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="electronics-iot" data-subcategory="switches-relays" data-price="22.5" data-moq="60" data-wattage="140w" data-connector="screw" data-certification="ce,rohs" data-safe="true" data-factory="true" data-leadtime="ready" data-title="3-Phase 40A Modular Contactor & Thermal Relay" data-progress="80" data-verified="true" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="Contactor Relay"/>
-          <div class="product-badges"><span class="badge badge-popular">High Demand</span><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-popular">High Demand</span><span class="badge badge-verified">Verified</span><span class="badge" style="background:#059669;color:#fff;">140W Industrial</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">3-Phase 40A Modular Contactor &amp; Thermal Relay</div>
@@ -612,10 +834,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 3. Electronics and IoT: Sensors and Modules -->
-      <div class="product-card" data-category="electronics-iot" data-subcategory="sensors-modules" data-price="46" data-title="4-20mA Submersible Hydrostatic Level Sensor" data-progress="74" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="electronics-iot" data-subcategory="sensors-modules" data-price="46" data-moq="30" data-wattage="" data-connector="4-20ma" data-certification="ce,ip66" data-safe="true" data-factory="true" data-leadtime="ready" data-title="4-20mA Submersible Hydrostatic Level Sensor" data-progress="74" data-verified="true" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="Hydrostatic Sensor"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-verified">Verified</span><span class="badge" style="background:#059669;color:#fff;">IP66 Waterproof</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">4-20mA Hydrostatic Liquid Level Sensor</div>
@@ -637,10 +859,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 3. Electronics and IoT: Microcontrollers and Dev Boards -->
-      <div class="product-card" data-category="electronics-iot" data-subcategory="microcontrollers-boards" data-price="62" data-title="ESP32-S3 Dual-Core Industrial IoT Boards (Pack 10)" data-progress="86" data-verified="true" data-closing="true">
+      <div class="product-card" data-category="electronics-iot" data-subcategory="microcontrollers-boards" data-price="62" data-moq="25" data-wattage="30w" data-connector="usb-c" data-certification="bis,ce,rohs" data-safe="true" data-factory="true" data-leadtime="ready" data-title="ESP32-S3 Dual-Core Industrial IoT Boards (Pack 10)" data-progress="86" data-verified="true" data-closing="true">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1517055729441-37c152a22bc7?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuBhLVQ1eZsw1QAVqqiDcaRNVgh7OX86Quc8AOjYw-9A_sQUqjFr1N1V0NtCG7wDtu5_OUztn9RVJM7b5h9JlwpTXRZvAbE8R691Y7xfRDhImLCy9L_5l1CY1wIXYWH7JNi2PPNqn3bzxgUfq9x5FzwviNjYIt4FfKhsFEPEOSr2qZYZbjSfztGNvstojagvBRFIW88aprNVJwk6B5xJEPEgevNz6DJbGHXUUESktPnKM7hR9ORNYpeklA';" alt="ESP32-S3 Boards"/>
-          <div class="product-badges"><span class="badge badge-popular">Closing Soon</span><span class="badge badge-gst">GST</span></div>
+          <div class="product-badges"><span class="badge badge-popular">Closing Soon</span><span class="badge badge-gst">GST</span><span class="badge" style="background:#059669;color:#fff;">USB-C PD</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">ESP32-S3 Dual-Core Industrial IoT Gateway (Pack 10)</div>
@@ -662,10 +884,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 3. Electronics and IoT: Enclosures and Mounting -->
-      <div class="product-card" data-category="electronics-iot" data-subcategory="enclosures-mounting" data-price="16.8" data-title="IP66 Waterproof ABS Electrical Junction Enclosure" data-progress="40" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="electronics-iot" data-subcategory="enclosures-mounting" data-price="16.8" data-moq="50" data-wattage="" data-connector="" data-certification="ce,rohs,ip66,ul" data-safe="true" data-factory="true" data-leadtime="ready" data-title="IP66 Waterproof ABS Electrical Junction Enclosure" data-progress="40" data-verified="true" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="IP66 Enclosure"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-verified">Verified</span><span class="badge" style="background:#059669;color:#fff;">IP66 Rated</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">IP66 Waterproof ABS Junction Enclosure (300x200mm)</div>
@@ -686,11 +908,61 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
         </div>
       </div>
 
+      <!-- 3. Electronics: 65W GaN Dual USB-C Fast Charger Hub (Warehouse Safe) -->
+      <div class="product-card" data-category="electronics-iot" data-subcategory="cables-connectors" data-price="14.5" data-moq="50" data-wattage="65w" data-connector="usb-c" data-certification="bis,ce,rohs" data-safe="true" data-factory="true" data-leadtime="ready" data-title="65W GaN Dual USB-C Fast Charger Hub (Bulk Pack 50)" data-progress="75" data-verified="true" data-closing="false">
+        <div class="product-img-wrap">
+          <img class="product-img" src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80'" alt="65W GaN Charger"/>
+          <div class="product-badges"><span class="badge badge-popular">GaN 65W</span><span class="badge badge-verified">BIS Certified</span><span class="badge" style="background:#059669;color:#fff;">Warehouse Safe</span></div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">65W GaN Dual USB-C Fast Charger Hub (Bulk 50)</div>
+          <div class="product-supplier"><span class="material-symbols-outlined" style="font-size:13px;">factory</span>SolidGaN Power Systems</div>
+          <div class="product-meta">
+            <div class="meta-box"><div class="meta-label">MOQ</div><div class="meta-val">50 <span class="unit">Units</span></div></div>
+            <div class="meta-box"><div class="meta-label">Wholesale Price</div><div class="meta-val price">$14.50 <span class="unit">/unit</span></div></div>
+          </div>
+          <div class="pool-status-box">
+            <div class="pool-status-header"><span class="pool-status-label">Pool Status</span><span class="pool-status-count">38 / 50 Units</span></div>
+            <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:76%;"></div></div>
+            <div class="pool-status-note">Solid-state GaN, zero lithium cells, 100% shelf-stable.</div>
+          </div>
+          <div class="product-cta">
+            <button onclick="addToCart('65W GaN Dual USB-C Charger Hub (50 Pcs)', 14.5, 'Units', 10, 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80')" class="btn-join" style="border:none;cursor:pointer;">Join Pool</button>
+            <a href="../product_details_pool_status/code.html" class="btn-moq">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Electronics: 100W GaN 4-Port Multi-Voltage Power Dock (Warehouse Safe) -->
+      <div class="product-card" data-category="electronics-iot" data-subcategory="microcontrollers-boards" data-price="28" data-moq="20" data-wattage="100w" data-connector="usb-c" data-certification="bis,ce,rohs,ul" data-safe="true" data-factory="true" data-leadtime="ready" data-title="100W GaN 4-Port Multi-Voltage Power Dock (Pack 20)" data-progress="84" data-verified="true" data-closing="true">
+        <div class="product-img-wrap">
+          <img class="product-img" src="https://images.unsplash.com/photo-1622445262464-84b1456045b6?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80'" alt="100W GaN Dock"/>
+          <div class="product-badges"><span class="badge badge-popular">Closing Soon</span><span class="badge badge-verified">UL Listed</span><span class="badge" style="background:#059669;color:#fff;">100W GaN</span></div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">100W GaN 4-Port Multi-Voltage Power Dock (Pack 20)</div>
+          <div class="product-supplier"><span class="material-symbols-outlined" style="font-size:13px;">factory</span>VoltaControl Systems</div>
+          <div class="product-meta">
+            <div class="meta-box"><div class="meta-label">MOQ</div><div class="meta-val">20 <span class="unit">Packs</span></div></div>
+            <div class="meta-box"><div class="meta-label">Wholesale Price</div><div class="meta-val price">$28.00 <span class="unit">/pack</span></div></div>
+          </div>
+          <div class="pool-status-box">
+            <div class="pool-status-header"><span class="pool-status-label">Pool Status</span><span class="pool-status-count">17 / 20 Packs</span></div>
+            <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:84%;"></div></div>
+            <div class="pool-status-note" style="color:var(--primary);font-weight:600;">⚡ 84% Filled: 3 packs left to lock pool!</div>
+          </div>
+          <div class="product-cta">
+            <button onclick="addToCart('100W GaN 4-Port Power Dock (Pack 20)', 28, 'Packs', 2, 'https://images.unsplash.com/photo-1622445262464-84b1456045b6?auto=format&fit=crop&w=600&q=80')" class="btn-join" style="border:none;cursor:pointer;">Join Pool</button>
+            <a href="../product_details_pool_status/code.html" class="btn-moq">View Details</a>
+          </div>
+        </div>
+      </div>
+
       <!-- 4. Fashion and Apparel: Uniforms and Workwear -->
-      <div class="product-card" data-category="fashion-apparel" data-subcategory="uniforms-workwear" data-price="24.5" data-title="High-Vis Flame Retardant Heavy Duty Coveralls" data-progress="82" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="uniforms-workwear" data-price="24.5" data-moq="100" data-size="m,l,xl,2xl,3xl" data-color="navy,black,olive" data-gsm="280" data-fabric="blend,cordura" data-fit="workwear" data-title="High-Vis Flame Retardant Heavy Duty Coveralls" data-progress="82" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="FR Workwear Coveralls"/>
-          <div class="product-badges"><span class="badge badge-popular">Popular</span><span class="badge badge-gst">GST</span></div>
+          <div class="product-badges"><span class="badge badge-popular">Popular</span><span class="badge badge-gst">GST</span><span class="badge badge-verified">Sizes M-3XL</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">High-Vis Flame Retardant Workwear Coveralls</div>
@@ -712,10 +984,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 4. Fashion and Apparel: T-Shirts and Polos (bulk) -->
-      <div class="product-card" data-category="fashion-apparel" data-subcategory="tshirts-polos" data-price="185" data-title="220 GSM 100% Combed Cotton Polo T-Shirts (Lot 50)" data-progress="70" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="tshirts-polos" data-price="185" data-moq="10" data-size="s,m,l,xl,2xl" data-color="black,white,navy,red,sand" data-gsm="220" data-fabric="cotton" data-fit="regular" data-title="220 GSM 100% Combed Cotton Polo T-Shirts (Lot 50)" data-progress="70" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="Bulk Polo T-Shirts"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-verified">220 GSM</span><span class="badge badge-popular">Combed Cotton</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">220 GSM 100% Combed Cotton Polos (Lot of 50)</div>
@@ -736,11 +1008,86 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
         </div>
       </div>
 
+      <!-- 4. Fashion and Apparel: 180 GSM Bio-Washed Crew Neck T-Shirts (Lot 100) -->
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="tshirts-polos" data-price="140" data-moq="10" data-size="xs,s,m,l,xl" data-color="black,white,grey,navy,sand" data-gsm="180" data-fabric="cotton" data-fit="regular" data-title="180 GSM Bio-Washed Combed Cotton Crew Neck T-Shirts (Lot 100)" data-progress="80" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
+        <div class="product-img-wrap">
+          <img class="product-img" src="https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'" alt="Crew Neck Tees"/>
+          <div class="product-badges"><span class="badge badge-popular">180 GSM</span><span class="badge badge-verified">Bio-Washed</span><span class="badge badge-gst">GST</span></div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">180 GSM Bio-Washed Cotton Crew Neck Tees (Lot 100)</div>
+          <div class="product-supplier"><span class="material-symbols-outlined" style="font-size:13px;">factory</span>Tirupur TexMills Direct</div>
+          <div class="product-meta">
+            <div class="meta-box"><div class="meta-label">MOQ</div><div class="meta-val">10 <span class="unit">Lots</span></div></div>
+            <div class="meta-box"><div class="meta-label">Wholesale Price</div><div class="meta-val price">$140.00 <span class="unit">/lot</span></div></div>
+          </div>
+          <div class="pool-status-box">
+            <div class="pool-status-header"><span class="pool-status-label">Pool Status</span><span class="pool-status-count">8 / 10 Lots</span></div>
+            <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:80%;"></div></div>
+            <div class="pool-status-note">Sizes XS–XL, pre-shrunk reactive dyed yarn.</div>
+          </div>
+          <div class="product-cta">
+            <button onclick="addToCart('180 GSM Bio-Washed Crew Tees (Lot 100)', 140, 'Lots', 2, 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80')" class="btn-join" style="border:none;cursor:pointer;">Join Pool</button>
+            <a href="../product_details_pool_status/code.html" class="btn-moq">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Fashion and Apparel: 240 GSM Oversized Drop-Shoulder French Terry (Lot 40) -->
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="tshirts-polos" data-price="165" data-moq="8" data-size="s,m,l,xl,2xl" data-color="black,olive,sand,grey" data-gsm="240" data-fabric="cotton" data-fit="oversized" data-title="240 GSM Heavy Drop-Shoulder Oversized Tees (Lot 40)" data-progress="88" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="true">
+        <div class="product-img-wrap">
+          <img class="product-img" src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'" alt="Oversized Streetwear Tees"/>
+          <div class="product-badges"><span class="badge badge-popular">Closing Soon</span><span class="badge" style="background:var(--primary);color:#fff;">Oversized</span><span class="badge badge-verified">240 GSM</span></div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">240 GSM Heavy Drop-Shoulder Oversized Tees (Lot 40)</div>
+          <div class="product-supplier"><span class="material-symbols-outlined" style="font-size:13px;">factory</span>UrbanStreet Apparels Co.</div>
+          <div class="product-meta">
+            <div class="meta-box"><div class="meta-label">MOQ</div><div class="meta-val">8 <span class="unit">Lots</span></div></div>
+            <div class="meta-box"><div class="meta-label">Wholesale Price</div><div class="meta-val price">$165.00 <span class="unit">/lot</span></div></div>
+          </div>
+          <div class="pool-status-box">
+            <div class="pool-status-header"><span class="pool-status-label">Pool Status</span><span class="pool-status-count">7 / 8 Lots</span></div>
+            <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:88%;"></div></div>
+            <div class="pool-status-note" style="color:var(--primary);font-weight:600;">⚡ 88% Filled: 1 lot left to trigger batch cut!</div>
+          </div>
+          <div class="product-cta">
+            <button onclick="addToCart('240 GSM Oversized Tees (Lot 40)', 165, 'Lots', 1, 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=600&q=80')" class="btn-join" style="border:none;cursor:pointer;">Join Pool</button>
+            <a href="../product_details_pool_status/code.html" class="btn-moq">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Fashion and Apparel: 350 GSM Fleece Kangaroo Streetwear Hoodies (Lot 30) -->
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="uniforms-workwear" data-price="280" data-moq="5" data-size="m,l,xl,2xl,3xl" data-color="black,navy,grey,red" data-gsm="350" data-fabric="blend" data-fit="oversized" data-title="350 GSM Heavy Fleece Kangaroo Streetwear Hoodies (Lot 30)" data-progress="78" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
+        <div class="product-img-wrap">
+          <img class="product-img" src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'" alt="Streetwear Hoodies"/>
+          <div class="product-badges"><span class="badge badge-popular">350 GSM</span><span class="badge badge-verified">Heavy Fleece</span></div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">350 GSM Heavy Fleece Kangaroo Hoodies (Lot 30)</div>
+          <div class="product-supplier"><span class="material-symbols-outlined" style="font-size:13px;">factory</span>KnitMasters Export House</div>
+          <div class="product-meta">
+            <div class="meta-box"><div class="meta-label">MOQ</div><div class="meta-val">5 <span class="unit">Lots</span></div></div>
+            <div class="meta-box"><div class="meta-label">Wholesale Price</div><div class="meta-val price">$280.00 <span class="unit">/lot</span></div></div>
+          </div>
+          <div class="pool-status-box">
+            <div class="pool-status-header"><span class="pool-status-label">Pool Status</span><span class="pool-status-count">4 / 5 Lots</span></div>
+            <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:80%;"></div></div>
+            <div class="pool-status-note">Double-layered hood, brushed inside fleece.</div>
+          </div>
+          <div class="product-cta">
+            <button onclick="addToCart('350 GSM Heavy Fleece Hoodies (Lot 30)', 280, 'Lots', 1, 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80')" class="btn-join" style="border:none;cursor:pointer;">Join Pool</button>
+            <a href="../product_details_pool_status/code.html" class="btn-moq">View Details</a>
+          </div>
+        </div>
+      </div>
+
       <!-- 4. Fashion and Apparel: Footwear -->
-      <div class="product-card" data-category="fashion-apparel" data-subcategory="footwear" data-price="29" data-title="S3 Steel-Toe Oil & Slip Resistant Safety Work Boots" data-progress="58" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="footwear" data-price="29" data-moq="50" data-size="m,l,xl,2xl" data-color="black,sand" data-gsm="" data-fabric="cordura" data-fit="workwear" data-title="S3 Steel-Toe Oil & Slip Resistant Safety Work Boots" data-progress="58" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="S3 Safety Boots"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-verified">Verified</span><span class="badge badge-gst">GST</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">S3 Steel-Toe Oil &amp; Slip Resistant Work Boots</div>
@@ -762,10 +1109,10 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       </div>
 
       <!-- 4. Fashion and Apparel: Bags and Accessories -->
-      <div class="product-card" data-category="fashion-apparel" data-subcategory="bags-accessories" data-price="19.8" data-title="1000D Ballistic Cordura Multi-Pocket Tool Bags" data-progress="68" data-verified="true" data-closing="false">
+      <div class="product-card" data-category="fashion-apparel" data-subcategory="bags-accessories" data-price="19.8" data-moq="40" data-size="free" data-color="black,olive,grey" data-gsm="" data-fabric="cordura" data-fit="workwear" data-title="1000D Ballistic Cordura Multi-Pocket Tool Bags" data-progress="68" data-verified="true" data-factory="true" data-leadtime="ready" data-closing="false">
         <div class="product-img-wrap">
           <img class="product-img" src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA';" alt="Ballistic Tool Bags"/>
-          <div class="product-badges"><span class="badge badge-verified">Verified</span></div>
+          <div class="product-badges"><span class="badge badge-verified">1000D Cordura</span></div>
         </div>
         <div class="product-body">
           <div class="product-name">1000D Ballistic Cordura Heavy Tool Bags</div>
@@ -1546,22 +1893,67 @@ body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dar
       <span class="drawer-title">Filters</span>
       <button class="drawer-close" onclick="toggleMobileFilter()">×</button>
     </div>
+    
     <div class="filter-group">
-      <div class="filter-group-label">Category</div>
-      <select style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);">
-        <option>All Categories</option><option>Chemicals</option><option>Filtration</option><option>Lighting</option>
+      <div class="filter-group-label">Industry Category</div>
+      <select id="mobCatSelect" onchange="selectCategory(this.value)" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);background:#fff;">
+        <option value="all">All Categories (48)</option>
+        <option value="chemicals">Chemicals</option>
+        <option value="industrial-tooling">Industrial &amp; Tooling</option>
+        <option value="electronics-iot">Electronics &amp; IoT (Climate Safe)</option>
+        <option value="fashion-apparel">Fashion &amp; Apparel</option>
+        <option value="metals-raw-materials">Metals &amp; Raw Materials</option>
+        <option value="machinery-equipment">Machinery &amp; Equipment</option>
+        <option value="packaging-printing">Packaging &amp; Printing</option>
+        <option value="building-construction">Building &amp; Construction</option>
+        <option value="office-furniture">Office &amp; Furniture</option>
+        <option value="housekeeping-hospitality">Housekeeping &amp; Supplies</option>
       </select>
     </div>
+
     <div class="filter-group">
-      <div class="filter-group-label">Location</div>
-      <input type="text" placeholder="Enter city or state" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);"/>
+      <div class="filter-group-label">Wholesale Price</div>
+      <select id="mobPriceSelect" onchange="selectPriceTier(this.value)" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);background:#fff;">
+        <option value="all">All Prices</option>
+        <option value="under-25">Under $25</option>
+        <option value="25-60">$25 – $60</option>
+        <option value="60-150">$60 – $150</option>
+        <option value="over-150">$150+</option>
+      </select>
     </div>
+
     <div class="filter-group">
-      <div class="filter-group-label">Pool Status</div>
-      <div class="filter-option"><input type="checkbox" id="d-pools" checked/><label for="d-pools">Pools Available</label></div>
-      <div class="filter-option"><input type="checkbox" id="d-gst" checked/><label for="d-gst">GST Verified Sellers</label></div>
+      <div class="filter-group-label">Minimum Order Qty (MOQ)</div>
+      <select id="mobMoqSelect" onchange="selectMoqTier(this.value)" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);background:#fff;">
+        <option value="all">All MOQs</option>
+        <option value="under-50">&lt; 50 units / lots</option>
+        <option value="50-150">50 – 150 units</option>
+        <option value="150-500">150 – 500 units</option>
+        <option value="over-500">500+ units</option>
+      </select>
     </div>
-    <button class="filter-apply" onclick="toggleMobileFilter()">Apply Filters</button>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Pool Stage</div>
+      <select id="mobStageSelect" onchange="selectPoolStage(this.value)" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-body);background:#fff;">
+        <option value="all">All Active Pools</option>
+        <option value="closing-soon">⚡ Closing Soon (&gt;80%)</option>
+        <option value="mid">📈 In Progress (40%–80%)</option>
+        <option value="early">🌱 Just Launched (&lt;40%)</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Trust &amp; Verification</div>
+      <div class="filter-option"><input type="checkbox" id="m-gst" checked onchange="document.getElementById('f-gst').checked = this.checked; applyFilters();"/><label for="m-gst">GSTIN Audited Sellers</label></div>
+      <div class="filter-option"><input type="checkbox" id="m-escrow" checked onchange="document.getElementById('f-escrow').checked = this.checked; applyFilters();"/><label for="m-escrow">ICICI 20% Deposit Safe</label></div>
+      <div class="filter-option"><input type="checkbox" id="m-ready" onchange="document.getElementById('f-ready').checked = this.checked; applyFilters();"/><label for="m-ready">Ready Stock (&lt;48h)</label></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="filter-apply" style="margin-top:0;flex:1;" onclick="applyFilters(); toggleMobileFilter();">Apply Filters</button>
+      <button class="price-go-btn" style="padding:12px;font-size:13px;" onclick="clearAllFilters(); toggleMobileFilter();">Reset</button>
+    </div>
   </div>
 </div>
 
@@ -1898,6 +2290,131 @@ let activeSubcategory = 'all';
 let searchQuery = '';
 let currentSort = 'default';
 
+// Multi-Attribute Filter State
+let selectedPriceTier = 'all';
+let customMinPrice = null;
+let customMaxPrice = null;
+let selectedMoqTier = 'all';
+let selectedPoolStage = 'all';
+
+// Fashion State
+let selectedSizes = new Set();
+let selectedColors = new Set();
+let selectedGsms = new Set();
+let selectedFabrics = new Set();
+let selectedFits = new Set();
+
+// Electronics State
+let selectedWattages = new Set();
+let selectedConnectors = new Set();
+let selectedCerts = new Set();
+
+function toggleFilterGroup(id) {
+  const group = document.getElementById(id);
+  if (group) group.classList.toggle('collapsed');
+}
+
+function selectPriceTier(tier) {
+  selectedPriceTier = tier;
+  customMinPrice = null;
+  customMaxPrice = null;
+  const minInput = document.getElementById('minPriceInput');
+  const maxInput = document.getElementById('maxPriceInput');
+  if (minInput) minInput.value = '';
+  if (maxInput) maxInput.value = '';
+  const radio = document.getElementById(`pt-${tier}`);
+  if (radio) radio.checked = true;
+  const mobSelect = document.getElementById('mobPriceSelect');
+  if (mobSelect) mobSelect.value = tier;
+  applyFilters();
+}
+
+function applyCustomPrice() {
+  const minVal = parseFloat(document.getElementById('minPriceInput').value);
+  const maxVal = parseFloat(document.getElementById('maxPriceInput').value);
+  customMinPrice = !isNaN(minVal) ? minVal : null;
+  customMaxPrice = !isNaN(maxVal) ? maxVal : null;
+  document.querySelectorAll('input[name="priceTier"]').forEach(r => r.checked = false);
+  selectedPriceTier = 'custom';
+  applyFilters();
+}
+
+function selectMoqTier(tier) {
+  selectedMoqTier = tier;
+  const radio = document.getElementById(`moq-${tier}`);
+  if (radio) radio.checked = true;
+  const mobSelect = document.getElementById('mobMoqSelect');
+  if (mobSelect) mobSelect.value = tier;
+  applyFilters();
+}
+
+function selectPoolStage(stage) {
+  selectedPoolStage = stage;
+  const radio = document.getElementById(`ps-${stage}`);
+  if (radio) radio.checked = true;
+  const mobSelect = document.getElementById('mobStageSelect');
+  if (mobSelect) mobSelect.value = stage;
+  applyFilters();
+}
+
+function toggleSizeFilter(size, btn) {
+  if (selectedSizes.has(size)) {
+    selectedSizes.delete(size);
+    if (btn) btn.classList.remove('active');
+  } else {
+    selectedSizes.add(size);
+    if (btn) btn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function toggleColorFilter(color, chip) {
+  if (selectedColors.has(color)) {
+    selectedColors.delete(color);
+    if (chip) chip.classList.remove('active');
+  } else {
+    selectedColors.add(color);
+    if (chip) chip.classList.add('active');
+  }
+  applyFilters();
+}
+
+function toggleGsmFilter(gsm, checkbox) {
+  if (checkbox.checked) selectedGsms.add(gsm);
+  else selectedGsms.delete(gsm);
+  applyFilters();
+}
+
+function toggleFabricFilter(fab, checkbox) {
+  if (checkbox.checked) selectedFabrics.add(fab);
+  else selectedFabrics.delete(fab);
+  applyFilters();
+}
+
+function toggleFitFilter(fit, checkbox) {
+  if (checkbox.checked) selectedFits.add(fit);
+  else selectedFits.delete(fit);
+  applyFilters();
+}
+
+function toggleWattageFilter(watt, checkbox) {
+  if (checkbox.checked) selectedWattages.add(watt);
+  else selectedWattages.delete(watt);
+  applyFilters();
+}
+
+function toggleConnectorFilter(conn, checkbox) {
+  if (checkbox.checked) selectedConnectors.add(conn);
+  else selectedConnectors.delete(conn);
+  applyFilters();
+}
+
+function toggleCertFilter(cert, checkbox) {
+  if (checkbox.checked) selectedCerts.add(cert);
+  else selectedCerts.delete(cert);
+  applyFilters();
+}
+
 function renderSubcategories(cat) {
   const subBar = document.getElementById('subcatBar');
   const subContainer = document.getElementById('subcategoryChips');
@@ -1936,6 +2453,19 @@ function selectCategory(cat) {
   const radio = document.querySelector(`input[name="cat"][value="${cat}"]`);
   if (radio) radio.checked = true;
 
+  // Sync mobile select
+  const mobSelect = document.getElementById('mobCatSelect');
+  if (mobSelect) mobSelect.value = cat;
+
+  // Auto-expand relevant group
+  if (cat === 'fashion-apparel') {
+    const fGroup = document.getElementById('filterGroupFashion');
+    if (fGroup) fGroup.classList.remove('collapsed');
+  } else if (cat === 'electronics-iot') {
+    const eGroup = document.getElementById('filterGroupElec');
+    if (eGroup) eGroup.classList.remove('collapsed');
+  }
+
   renderSubcategories(cat);
   applyFilters();
 }
@@ -1971,14 +2501,64 @@ function updateActiveTags() {
   if (searchQuery) {
     tagsHtml += `<span class="filter-tag">Search: "${searchQuery}" <button onclick="clearSearch()">×</button></span>`;
   }
-
-  const urgentCheckbox = document.getElementById('f-urgent');
-  if (urgentCheckbox && urgentCheckbox.checked) {
-    tagsHtml += `<span class="filter-tag">Closing Soon (&gt;80%) <button onclick="toggleUrgentFilter()">×</button></span>`;
+  if (selectedPriceTier !== 'all') {
+    let priceLabel = 'Price: ' + selectedPriceTier;
+    if (selectedPriceTier === 'under-25') priceLabel = 'Price < $25';
+    else if (selectedPriceTier === '25-60') priceLabel = '$25 – $60';
+    else if (selectedPriceTier === '60-150') priceLabel = '$60 – $150';
+    else if (selectedPriceTier === 'over-150') priceLabel = '$150+';
+    else if (selectedPriceTier === 'custom') priceLabel = `$${customMinPrice||0} – $${customMaxPrice||'∞'}`;
+    tagsHtml += `<span class="filter-tag">${priceLabel} <button onclick="selectPriceTier('all')">×</button></span>`;
+  }
+  if (selectedMoqTier !== 'all') {
+    let moqLabel = 'MOQ: ' + selectedMoqTier;
+    if (selectedMoqTier === 'under-50') moqLabel = 'MOQ < 50 units';
+    else if (selectedMoqTier === '50-150') moqLabel = 'MOQ 50–150 units';
+    else if (selectedMoqTier === '150-500') moqLabel = 'MOQ 150–500 units';
+    else if (selectedMoqTier === 'over-500') moqLabel = 'MOQ 500+ units';
+    tagsHtml += `<span class="filter-tag">${moqLabel} <button onclick="selectMoqTier('all')">×</button></span>`;
+  }
+  if (selectedPoolStage !== 'all') {
+    let stageLabel = selectedPoolStage === 'closing-soon' ? 'Closing Soon (>80%)' : (selectedPoolStage === 'mid' ? 'In Progress (40–80%)' : 'Just Launched (<40%)');
+    tagsHtml += `<span class="filter-tag">${stageLabel} <button onclick="selectPoolStage('all')">×</button></span>`;
   }
 
-  tagsHtml += `<button class="clear-all" onclick="clearAllFilters()">Clear all filters</button>`;
-  tagsContainer.innerHTML = tagsHtml;
+  // Fashion tags
+  selectedSizes.forEach(s => {
+    tagsHtml += `<span class="filter-tag">Size: ${s.toUpperCase()} <button onclick="toggleSizeFilter('${s}', document.querySelector('.size-pill-btn[data-size=\\'${s}\\']'))">×</button></span>`;
+  });
+  selectedColors.forEach(c => {
+    tagsHtml += `<span class="filter-tag">Color: ${c} <button onclick="toggleColorFilter('${c}', document.querySelector('.color-swatch-chip[data-color=\\'${c}\\']'))">×</button></span>`;
+  });
+  selectedGsms.forEach(g => {
+    tagsHtml += `<span class="filter-tag">${g} GSM <button onclick="const cb=document.getElementById('gsm-${g}'); if(cb)cb.checked=false; toggleGsmFilter('${g}', {checked:false})">×</button></span>`;
+  });
+  selectedFabrics.forEach(f => {
+    tagsHtml += `<span class="filter-tag">${f} <button onclick="const cb=document.getElementById('fab-${f}'); if(cb)cb.checked=false; toggleFabricFilter('${f}', {checked:false})">×</button></span>`;
+  });
+  selectedFits.forEach(ft => {
+    tagsHtml += `<span class="filter-tag">${ft} Fit <button onclick="const cb=document.getElementById('fit-${ft}'); if(cb)cb.checked=false; toggleFitFilter('${ft}', {checked:false})">×</button></span>`;
+  });
+
+  // Electronics tags
+  selectedWattages.forEach(w => {
+    tagsHtml += `<span class="filter-tag">${w.toUpperCase()} <button onclick="const cb=document.getElementById('watt-${w.replace('w','')}'); if(cb)cb.checked=false; toggleWattageFilter('${w}', {checked:false})">×</button></span>`;
+  });
+  selectedConnectors.forEach(cn => {
+    tagsHtml += `<span class="filter-tag">${cn.toUpperCase()} <button onclick="const cb=document.getElementById('conn-${cn}'); if(cb)cb.checked=false; toggleConnectorFilter('${cn}', {checked:false})">×</button></span>`;
+  });
+  selectedCerts.forEach(crt => {
+    tagsHtml += `<span class="filter-tag">${crt.toUpperCase()} <button onclick="const cb=document.getElementById('cert-${crt}'); if(cb)cb.checked=false; toggleCertFilter('${crt}', {checked:false})">×</button></span>`;
+  });
+
+  const hasAnyFilter = (tagsHtml !== '');
+  if (hasAnyFilter) {
+    tagsHtml += `<button class="clear-all" onclick="clearAllFilters()">Clear all filters</button>`;
+    tagsContainer.innerHTML = tagsHtml;
+    tagsContainer.style.display = 'flex';
+  } else {
+    tagsContainer.innerHTML = '';
+  }
 }
 
 function clearSearch() {
@@ -1988,27 +2568,61 @@ function clearSearch() {
   applyFilters();
 }
 
-function toggleUrgentFilter() {
-  const urgentCheckbox = document.getElementById('f-urgent');
-  if (urgentCheckbox) {
-    urgentCheckbox.checked = false;
-    applyFilters();
-  }
-}
-
 function clearAllFilters() {
   const searchInput = document.querySelector('.search-input');
   if (searchInput) searchInput.value = '';
   searchQuery = '';
-  const urgentCheckbox = document.getElementById('f-urgent');
-  if (urgentCheckbox) urgentCheckbox.checked = false;
+  selectedPriceTier = 'all';
+  customMinPrice = null;
+  customMaxPrice = null;
+  selectedMoqTier = 'all';
+  selectedPoolStage = 'all';
+
+  // Uncheck inputs
+  const ptAll = document.getElementById('pt-all');
+  if (ptAll) ptAll.checked = true;
+  const moqAll = document.getElementById('moq-all');
+  if (moqAll) moqAll.checked = true;
+  const psAll = document.getElementById('ps-all');
+  if (psAll) psAll.checked = true;
+  const minInput = document.getElementById('minPriceInput');
+  if (minInput) minInput.value = '';
+  const maxInput = document.getElementById('maxPriceInput');
+  if (maxInput) maxInput.value = '';
+
+  // Clear fashion
+  selectedSizes.clear();
+  document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active'));
+  selectedColors.clear();
+  document.querySelectorAll('.color-swatch-chip').forEach(c => c.classList.remove('active'));
+  selectedGsms.clear();
+  document.querySelectorAll('#filterGroupFashion input[type="checkbox"]').forEach(c => c.checked = false);
+  selectedFabrics.clear();
+  selectedFits.clear();
+
+  // Clear electronics
+  selectedWattages.clear();
+  selectedConnectors.clear();
+  selectedCerts.clear();
+  document.querySelectorAll('#filterGroupElec input[type="checkbox"]').forEach(c => c.checked = false);
+
   selectCategory('all');
-  showToast('Filters cleared', 'refresh');
+  showToast('All filters reset', 'refresh');
 }
 
 function applyFilters() {
   const cards = Array.from(document.querySelectorAll('#productsGrid .product-card'));
-  const urgentOnly = document.getElementById('f-urgent') ? document.getElementById('f-urgent').checked : false;
+  const gstEl = document.getElementById('f-gst');
+  const filterGst = gstEl ? gstEl.checked : false;
+  const escrowEl = document.getElementById('f-escrow');
+  const filterEscrow = escrowEl ? escrowEl.checked : false;
+  const factoryEl = document.getElementById('f-factory');
+  const filterFactory = factoryEl ? factoryEl.checked : false;
+  const readyEl = document.getElementById('f-ready');
+  const filterReady = readyEl ? readyEl.checked : false;
+  const prodEl = document.getElementById('f-prod');
+  const filterProd = prodEl ? prodEl.checked : false;
+
   let visibleCount = 0;
 
   cards.forEach(card => {
@@ -2016,13 +2630,106 @@ function applyFilters() {
     const cardSubcat = (card.getAttribute('data-subcategory') || '').toLowerCase();
     const cardTitle = (card.getAttribute('data-title') || '').toLowerCase();
     const progress = parseFloat(card.getAttribute('data-progress') || '0');
+    
+    // Price
+    let price = parseFloat(card.getAttribute('data-price') || '0');
+    if (isNaN(price) || price === 0) {
+      const priceValEl = card.querySelector('.meta-val.price');
+      if (priceValEl) price = parseFloat(priceValEl.innerText.replace(/[^0-9.]/g, '')) || 0;
+    }
 
+    // MOQ
+    let moq = parseFloat(card.getAttribute('data-moq') || '0');
+    if (isNaN(moq) || moq === 0) {
+      const moqValEl = card.querySelector('.meta-box .meta-val');
+      if (moqValEl) moq = parseFloat(moqValEl.innerText.replace(/[^0-9.]/g, '')) || 10;
+    }
+
+    const verified = card.getAttribute('data-verified') === 'true' || card.querySelector('.badge-verified') !== null;
+    const isFactory = card.getAttribute('data-factory') === 'true' || card.querySelector('.product-supplier') !== null;
+    const leadTime = card.getAttribute('data-leadtime') || 'ready';
+
+    // Apparel data
+    const sizes = (card.getAttribute('data-size') || '').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+    const colors = (card.getAttribute('data-color') || '').toLowerCase().split(',').map(c=>c.trim()).filter(Boolean);
+    const gsm = (card.getAttribute('data-gsm') || '').toLowerCase();
+    const fabric = (card.getAttribute('data-fabric') || '').toLowerCase().split(',').map(f=>f.trim()).filter(Boolean);
+    const fit = (card.getAttribute('data-fit') || '').toLowerCase();
+
+    // Electronics data
+    const wattage = (card.getAttribute('data-wattage') || '').toLowerCase();
+    const connectors = (card.getAttribute('data-connector') || '').toLowerCase().split(',').map(c=>c.trim()).filter(Boolean);
+    const certs = (card.getAttribute('data-certification') || '').toLowerCase().split(',').map(c=>c.trim()).filter(Boolean);
+
+    // 1. Category & Subcategory
     let matchCat = (activeCategory === 'all' || cardCat === activeCategory);
     let matchSubcat = (activeSubcategory === 'all' || cardSubcat === activeSubcategory);
-    let matchSearch = (searchQuery === '' || cardTitle.includes(searchQuery) || cardCat.includes(searchQuery) || cardSubcat.includes(searchQuery));
-    let matchUrgent = (!urgentOnly || progress >= 80);
 
-    if (matchCat && matchSubcat && matchSearch && matchUrgent) {
+    // 2. Search
+    let matchSearch = (searchQuery === '' || cardTitle.includes(searchQuery) || cardCat.includes(searchQuery) || cardSubcat.includes(searchQuery));
+
+    // 3. Price
+    let matchPrice = true;
+    if (selectedPriceTier === 'under-25') matchPrice = (price < 25);
+    else if (selectedPriceTier === '25-60') matchPrice = (price >= 25 && price <= 60);
+    else if (selectedPriceTier === '60-150') matchPrice = (price > 60 && price <= 150);
+    else if (selectedPriceTier === 'over-150') matchPrice = (price > 150);
+    else if (selectedPriceTier === 'custom') {
+      if (customMinPrice !== null && price < customMinPrice) matchPrice = false;
+      if (customMaxPrice !== null && price > customMaxPrice) matchPrice = false;
+    }
+
+    // 4. MOQ
+    let matchMoq = true;
+    if (selectedMoqTier === 'under-50') matchMoq = (moq < 50);
+    else if (selectedMoqTier === '50-150') matchMoq = (moq >= 50 && moq <= 150);
+    else if (selectedMoqTier === '150-500') matchMoq = (moq > 150 && moq <= 500);
+    else if (selectedMoqTier === 'over-500') matchMoq = (moq > 500);
+
+    // 5. Stage
+    let matchStage = true;
+    if (selectedPoolStage === 'closing-soon') matchStage = (progress >= 80);
+    else if (selectedPoolStage === 'mid') matchStage = (progress >= 40 && progress < 80);
+    else if (selectedPoolStage === 'early') matchStage = (progress < 40);
+
+    // 6. Trust & Logistics
+    let matchTrust = true;
+    if (filterGst && !verified) matchTrust = false;
+    if (filterFactory && !isFactory) matchTrust = false;
+    if (filterReady && leadTime !== 'ready') matchTrust = false;
+    if (filterProd && leadTime !== 'production') matchTrust = false;
+
+    // 7. Fashion Attributes (if user selected any fashion filters)
+    let matchFashion = true;
+    if (selectedSizes.size > 0) {
+      matchFashion = matchFashion && (cardCat === 'fashion-apparel') && Array.from(selectedSizes).some(s => sizes.includes(s));
+    }
+    if (selectedColors.size > 0) {
+      matchFashion = matchFashion && (cardCat === 'fashion-apparel') && Array.from(selectedColors).some(c => colors.includes(c));
+    }
+    if (selectedGsms.size > 0) {
+      matchFashion = matchFashion && (cardCat === 'fashion-apparel') && selectedGsms.has(gsm);
+    }
+    if (selectedFabrics.size > 0) {
+      matchFashion = matchFashion && (cardCat === 'fashion-apparel') && Array.from(selectedFabrics).some(f => fabric.includes(f));
+    }
+    if (selectedFits.size > 0) {
+      matchFashion = matchFashion && (cardCat === 'fashion-apparel') && selectedFits.has(fit);
+    }
+
+    // 8. Electronics Attributes (if user selected any electronics filters)
+    let matchElec = true;
+    if (selectedWattages.size > 0) {
+      matchElec = matchElec && (cardCat === 'electronics-iot') && selectedWattages.has(wattage);
+    }
+    if (selectedConnectors.size > 0) {
+      matchElec = matchElec && (cardCat === 'electronics-iot') && Array.from(selectedConnectors).some(c => connectors.includes(c));
+    }
+    if (selectedCerts.size > 0) {
+      matchElec = matchElec && (cardCat === 'electronics-iot') && Array.from(selectedCerts).some(c => certs.includes(c));
+    }
+
+    if (matchCat && matchSubcat && matchSearch && matchPrice && matchMoq && matchStage && matchTrust && matchFashion && matchElec) {
       card.style.display = 'flex';
       visibleCount++;
     } else {
@@ -2035,11 +2742,11 @@ function applyFilters() {
   if (grid) {
     const sortedCards = cards.filter(c => c.style.display !== 'none');
     if (currentSort === 'price-asc') {
-      sortedCards.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+      sortedCards.sort((a, b) => parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0));
     } else if (currentSort === 'price-desc') {
-      sortedCards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+      sortedCards.sort((a, b) => parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0));
     } else if (currentSort === 'progress-desc') {
-      sortedCards.sort((a, b) => parseFloat(b.dataset.progress) - parseFloat(a.dataset.progress));
+      sortedCards.sort((a, b) => parseFloat(b.dataset.progress || 0) - parseFloat(a.dataset.progress || 0));
     }
     sortedCards.forEach(c => grid.appendChild(c));
   }
@@ -2047,7 +2754,7 @@ function applyFilters() {
   // Update counter
   const counterEl = document.querySelector('.results-count');
   if (counterEl) {
-    counterEl.innerText = `Showing ${visibleCount} of ${cards.length} products`;
+    counterEl.innerText = `Showing ${visibleCount} of ${cards.length} wholesale products`;
   }
 
   updateActiveTags();
@@ -2069,12 +2776,6 @@ document.querySelectorAll('input[name="cat"]').forEach(radio => {
     }
   });
 });
-
-// Urgent checkbox listener
-const urgentCheckbox = document.getElementById('f-urgent');
-if (urgentCheckbox) {
-  urgentCheckbox.addEventListener('change', applyFilters);
-}
 
 // Search Input Listener
 const searchInput = document.querySelector('.search-input');
