@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #0F1D36;
+    --primary-dark: #091224;
+    --primary-light: #EEF3F9;
+    --accent: #E06214;
+    --gold: #C89D46;
+    --gold-dark: #B98A32;
+    --bg-page: #FAF8F5;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: #0F172A;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Material Symbols Icon Helper */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+}
+
+/* Progress bar pulse effect */
+.pool-progress-pulse {
+  position: relative;
+  overflow: hidden;
+}
+
+.pool-progress-pulse::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: pulseMove 2.2s infinite;
+}
+
+@keyframes pulseMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(500%); }
+}
+
+.glass-nav {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(15, 29, 54, 0.95);
+}

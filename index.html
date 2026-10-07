@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PoolBuy | Wholesale Marketplace Platform Portal</title>
+<meta name="description" content="Explore the full PoolBuy suite — 9 interconnected B2B wholesale procurement pages styled with the Rabreez luxury aesthetic, including the Super Admin &amp; Platform Control Center."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --primary:#0F1D36;
+  --primary-dark:#091224;
+  --primary-light:#EEF3F9;
+  --accent:#E06214;
+  --accent-dark:#C4510D;
+  --accent-light:#FFF4ED;
+  --gold:#C89D46;
+  --gold-dark:#B98A32;
+  --gold-light:#F5E8C7;
+  --text-dark:#0F172A;
+  --text-body:#334155;
+  --text-muted:#64748B;
+  --bg-page:#FAF8F5;
+  --bg-white:#FFFFFF;
+  --bg-warm:#F1ECE5;
+  --bg-section:#F5F1EB;
+  --border:#E2E6ED;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --radius-card:16px;
+  --radius-btn:30px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dark);min-height:100dvh;overflow-x:hidden;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-family:'Material Symbols Outlined';font-style:normal;display:inline-block;line-height:1;vertical-align:middle;}
+
+/* Announce Bar */
+.announce-bar{background:var(--primary);color:#fff;font-size:13px;text-align:center;padding:9px 40px;position:relative;}
+.announce-bar .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px;padding:4px 8px;}
+.announce-bar .nav-arrow.left{left:16px;}.announce-bar .nav-arrow.right{right:16px;}
+
+/* Header */
+.site-header{background:#fff;border-bottom:1px solid #E2E6ED;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(15,29,54,.04);}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:70px;gap:24px;}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:44px;height:44px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;}
+.logo-text{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-dark);}
+.logo-text span{color:var(--accent);}
+.main-nav{display:flex;align-items:center;gap:28px;list-style:none;}
+.main-nav a{font-size:14px;font-weight:400;color:var(--text-body);text-decoration:none;transition:color .2s;}
+.main-nav a:hover,.main-nav a.active{color:var(--accent);font-weight:600;}
+.header-icons{display:flex;align-items:center;gap:16px;}
+.header-icon-btn{background:none;border:none;color:var(--text-body);cursor:pointer;font-size:22px;padding:4px;transition:color .2s;text-decoration:none;display:flex;align-items:center;}
+.header-icon-btn:hover{color:var(--accent);}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* Ornament */
+.ornament{display:flex;align-items:center;gap:10px;margin:10px auto 0;width:fit-content;}
+.orn-line{width:40px;height:1px;background:var(--gold);}
+.orn-diamond{color:var(--gold);font-size:10px;}
+
+/* Hero */
+.hero{background:linear-gradient(110deg,#F5EFEB 0%,#ECE5DC 50%,#FAF5EE 100%);padding:80px 40px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:20px;border:1px solid rgba(224,98,20,.2);}
+.hero-title{font-family:var(--font-display);font-size:52px;font-weight:700;line-height:1.15;color:var(--text-dark);margin-bottom:12px;}
+.hero-title em{font-style:italic;color:var(--accent);}
+.hero-desc{font-size:16px;color:var(--text-body);line-height:1.7;max-width:680px;margin:18px auto 32px;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:14px 36px;border-radius:var(--radius-btn);font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;box-shadow:0 8px 24px rgba(224,98,20,.25);}
+.hero-cta:hover{background:var(--accent-dark);transform:translateY(-2px);}
+
+/* Grid Section */
+.pages-section{max-width:1280px;margin:0 auto;padding:70px 40px;}
+.section-hdr{text-align:center;margin-bottom:50px;}
+.section-hdr h2{font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--text-dark);}
+.section-hdr h2 em{font-style:italic;color:var(--accent);}
+.section-hdr p{font-size:15px;color:var(--text-body);margin-top:10px;}
+
+.pages-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.page-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;box-shadow:0 2px 10px rgba(15,29,54,.04);transition:all .3s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.page-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(15,29,54,.1);border-color:var(--accent);}
+.card-thumb{height:160px;background:var(--bg-section);display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--border);overflow:hidden;}
+.card-icon{font-size:48px;color:var(--primary);transition:transform .3s;}
+.page-card:hover .card-icon{transform:scale(1.15);color:var(--accent);}
+.card-num{position:absolute;top:12px;left:12px;background:var(--primary);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;}
+.card-badge{position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:50px;text-transform:uppercase;}
+.card-body{padding:22px 20px;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+.card-title{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--text-dark);margin-bottom:8px;}
+.card-desc{font-size:13px;color:var(--text-body);line-height:1.55;margin-bottom:18px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid #F0ECE8;}
+.card-action{font-size:13px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:4px;}
+.card-tag{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+
+/* Footer */
+.site-footer{background:var(--bg-warm);padding:60px 0 0;border-top:1px solid #D0C9BE;margin-top:60px;}
+.footer-inner{max-width:1280px;margin:0 auto;padding:0 40px;}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid #D0C9BE;}
+.footer-brand p{font-size:13px;color:var(--text-body);line-height:1.7;margin:14px 0 20px;}
+.social-icons{display:flex;gap:10px;}
+.social-btn{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background .2s;}
+.social-btn:hover{background:var(--accent);}
+.footer-col h4{font-size:14px;font-weight:700;color:var(--text-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-col ul a{font-size:13px;color:var(--text-body);text-decoration:none;transition:color .2s;}
+.footer-col ul a:hover{color:var(--accent);}
+.footer-bottom{max-width:1280px;margin:0 auto;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-copy{font-size:12px;color:var(--text-muted);}
+.payment-logos{display:flex;gap:8px;flex-wrap:wrap;}
+.pay-badge{background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--text-body);}
+
+/* FABs */
+.fab-whatsapp{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:26px;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:99;transition:transform .2s;}
+.fab-whatsapp:hover{transform:scale(1.1);}
+.fab-top{position:fixed;bottom:80px;left:20px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:18px;font-weight:700;box-shadow:0 4px 16px rgba(15,29,54,.3);z-index:99;transition:transform .2s;}
+
+@media(max-width:1100px){.pages-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.main-nav{display:none;}.hero-title{font-size:38px;}.pages-grid{grid-template-columns:1fr;}.footer-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="announce-bar">
+  <button class="nav-arrow left">‹</button>
+  🎉 GST Verified Wholesale Network — All 8 PoolBuy Pages Live in Rabreez Visual Design!
+  <button class="nav-arrow right">›</button>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo-wrap" href="stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html">
+      <div class="logo-icon"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:22px;">hub</span></div>
+      <span class="logo-text">Pool<span>Buy</span></span>
+    </a>
+    <nav>
+      <ul class="main-nav">
+        <li><a href="stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html">Landing Page</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html">Marketplace</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/product_details_pool_status/code.html">Product Details</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html">Checkout Flow</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html">Buyer Dashboard</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html">Seller Management</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/code.html">Executive Protocol</a></li>
+        <li><a href="stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html" style="color:var(--accent);font-weight:600;">Admin Center</a></li>
+      </ul>
+    </nav>
+    <div class="header-icons">
+      <a href="stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html" class="header-icon-btn"><span class="material-symbols-outlined">person</span></a>
+      <a href="stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html" class="header-icon-btn" style="position:relative;">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="cart-badge">3</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-tag">
+    <span class="material-symbols-outlined" style="font-size:15px;">palette</span>
+    Rabreez Luxury Design System Re-Engineered
+  </div>
+  <h1 class="hero-title">PoolBuy Wholesale <em>Platform Suite</em></h1>
+  <div class="ornament">
+    <span class="orn-line"></span><span class="orn-diamond">◆</span><span class="orn-line"></span>
+  </div>
+  <p class="hero-desc">
+    All 9 pages of the collaborative wholesale group-buying platform updated with the Deep Midnight Ink (#0F1D36) &amp; Warm Persimmon (#E06214) enterprise e-commerce palette — featuring 10 commercial categories, 48 subcategories, 48 realistic wholesale products with two-tier dynamic filtering, Super Admin &amp; Platform Control Center, gold ornaments (#C89D46), warm cream canvas (#FAF8F5), and Playfair Display typography.
+  </p>
+  <a class="hero-cta" href="stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html">
+    <span class="material-symbols-outlined">launch</span>
+    Launch Main Landing Page
+  </a>
+</section>
+
+<section class="pages-section">
+  <div class="section-hdr">
+    <h2>Interactive <em>Page Directory</em></h2>
+    <div class="ornament">
+      <span class="orn-line"></span><span class="orn-diamond">◆</span><span class="orn-line"></span>
+    </div>
+    <p>Click any page card below to test its full functionality and Rabreez styling.</p>
+  </div>
+
+  <div class="pages-grid">
+    <!-- 1. Landing Page -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html">
+      <div class="card-thumb">
+        <span class="card-num">01</span>
+        <span class="card-badge">Homepage</span>
+        <span class="material-symbols-outlined card-icon">home</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Main Landing Page</h3>
+          <p class="card-desc">Hero banner, 4-step collaborative buying process, 10 wholesale category cards, hot deals, and GST trust strip.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Landing</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 2. Marketplace -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html">
+      <div class="card-thumb">
+        <span class="card-num">02</span>
+        <span class="card-badge">Catalog</span>
+        <span class="material-symbols-outlined card-icon">storefront</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Marketplace Catalog</h3>
+          <p class="card-desc">10 commercial categories, 48 subcategories dynamic filtering, 48 wholesale products, slide-out cart drawer, and urgent pool filters.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Shopping</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 3. Product Details -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/product_details_pool_status/code.html">
+      <div class="card-thumb">
+        <span class="card-num">03</span>
+        <span class="card-badge">Product</span>
+        <span class="material-symbols-outlined card-icon">precision_manufacturing</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Product &amp; Pool Status</h3>
+          <p class="card-desc">Titan-X Industrial Pump details, live tier pricing unlocks, 75% progress tracker, specs bento, and verified seller factory photos.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Product View</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 4. Join Pool Checkout Flow -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html">
+      <div class="card-thumb">
+        <span class="card-num">04</span>
+        <span class="card-badge">Checkout</span>
+        <span class="material-symbols-outlined card-icon">shopping_cart_checkout</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Join Pool Checkout Flow</h3>
+          <p class="card-desc">Interactive 4-step modal workflow: Unit Selection, Cost Breakdown, Shipping &amp; GST Details, and Escrow Confirmation.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Checkout</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 5. Buyer Dashboard -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html">
+      <div class="card-thumb">
+        <span class="card-num">05</span>
+        <span class="card-badge">Dashboard</span>
+        <span class="material-symbols-outlined card-icon">dashboard</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Buyer Dashboard</h3>
+          <p class="card-desc">Procurement metrics, locked pools, fulfillment timeline, real-time savings calculator, and quick actions.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Buyer</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 6. Seller Pool Management -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html">
+      <div class="card-thumb">
+        <span class="card-num">06</span>
+        <span class="card-badge">Seller</span>
+        <span class="material-symbols-outlined card-icon">store</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Seller Pool Management</h3>
+          <p class="card-desc">Campaign volume metrics, cluster reservation trackers, SKU inventory management, and batch dispatch status.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Seller</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 7. B2B Wholesale Marketplace -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/poolbuy_wholesale_b2b_marketplace/code.html">
+      <div class="card-thumb">
+        <span class="card-num">07</span>
+        <span class="card-badge">Enterprise</span>
+        <span class="material-symbols-outlined card-icon">local_shipping</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">B2B Wholesale Hub</h3>
+          <p class="card-desc">SMB collaborative purchasing portal with live stats banner, hot deal categories, and manufacturer-direct pricing.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Wholesale</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 8. Executive Wholesale Protocol -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/code.html">
+      <div class="card-thumb">
+        <span class="card-num">08</span>
+        <span class="card-badge">Governance</span>
+        <span class="material-symbols-outlined card-icon">policy</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Executive Protocol &amp; SLA</h3>
+          <p class="card-desc">Institutional escrow custody, high-volume syndicate tiers, ISO certified QC checkpoints, and sovereign enterprise agreements.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag">Governance</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 9. Super Admin & Platform Control Center -->
+    <a class="page-card" href="stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html">
+      <div class="card-thumb">
+        <span class="card-num">09</span>
+        <span class="card-badge" style="background:#FEF3C7;color:#B45309;">Operator &bull; Admin</span>
+        <span class="material-symbols-outlined card-icon" style="color:var(--accent);">admin_panel_settings</span>
+      </div>
+      <div class="card-body">
+        <div>
+          <h3 class="card-title">Super Admin Control Center</h3>
+          <p class="card-desc">State machine lifecycle engine, seller KYC &amp; GSTIN approval hub, escrow custody reconciliation, and automated repricing governance.</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag" style="background:var(--accent-light);color:var(--accent);">Super Admin</span>
+          <span class="card-action">Open Page <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo-wrap" href="#" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;text-decoration:none;">
+          <div class="logo-icon" style="width:40px;height:40px;"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:20px;">hub</span></div>
+          <span class="logo-text" style="font-size:20px;">Pool<span>Buy</span></span>
+        </a>
+        <p>Bringing businesses together through smart collaborative wholesale procurement.</p>
+        <div class="social-icons">
+          <a href="#" class="social-btn"><span class="material-symbols-outlined" style="font-size:16px;">public</span></a>
+          <a href="#" class="social-btn"><span class="material-symbols-outlined" style="font-size:16px;">photo_camera</span></a>
+          <a href="#" class="social-btn"><span class="material-symbols-outlined" style="font-size:16px;">work</span></a>
+          <a href="#" class="social-btn"><span class="material-symbols-outlined" style="font-size:16px;">chat</span></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>All Pages</h4>
+        <ul>
+          <li><a href="stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html">Landing Page</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html">Marketplace Catalog</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/product_details_pool_status/code.html">Product Details</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html">Checkout Flow</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Enterprise &amp; Portals</h4>
+        <ul>
+          <li><a href="stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html">Buyer Dashboard</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html">Seller Management</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/poolbuy_wholesale_b2b_marketplace/code.html">Wholesale B2B</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/code.html">Executive Protocol</a></li>
+          <li><a href="stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html">Admin Control Center</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support &amp; Trust</h4>
+        <ul>
+          <li><a href="#">GST Compliance</a></li>
+          <li><a href="#">Escrow Security</a></li>
+          <li><a href="#">Terms of Protocol</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2024 PoolBuy Wholesale Marketplace. All rights reserved.</span>
+    <div class="payment-logos">
+      <span class="pay-badge">VISA</span>
+      <span class="pay-badge">Mastercard</span>
+      <span class="pay-badge">UPI</span>
+      <span class="pay-badge">RuPay</span>
+      <span class="pay-badge">NetBanking</span>
+    </div>
+  </div>
+</footer>
+
+<a class="fab-whatsapp" href="https://wa.me/" aria-label="WhatsApp">💬</a>
+<button class="fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+</body>
+</html>

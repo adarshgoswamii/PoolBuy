@@ -49,9 +49,11 @@
 .env
 .env.*
 !.env.example
+!.env.supabase.example
 
-# Node / JS tooling (not used by the app, but keep the tree clean)
+# Node / Next.js tooling
 node_modules/
+.next/
 dist/
 build/
 coverage/

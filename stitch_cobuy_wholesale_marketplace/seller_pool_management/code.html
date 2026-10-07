@@ -1,548 +1,710 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>PoolBuy Wholesale | Seller Pool Management</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>PoolBuy | Seller Pool Management</title>
+<meta name="description" content="Manage your active wholesale pool campaigns, track reservation progress and fulfillment on PoolBuy."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .progress-pulse {
-            animation: pulse-edge 2s infinite ease-in-out;
-        }
-        @keyframes pulse-edge {
-            0%, 100% { opacity: 0.6; transform: translateX(0); }
-            50% { opacity: 1; transform: translateX(4px); }
-        }
-        .glass-header {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #cbd5e1;
-        }
-    </style>
-<!-- Tailwind Configuration -->
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "inverse-on-surface": "#f0f0fb",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary-fixed": "#131b2e",
-                        "surface-variant": "#e1e2ed",
-                        "surface-dim": "#d9d9e5",
-                        "on-secondary-fixed-variant": "#3f465c",
-                        "primary-fixed-dim": "#b4c5ff",
-                        "tertiary": "#943700",
-                        "tertiary-container": "#bc4800",
-                        "surface-bright": "#faf8ff",
-                        "tertiary-fixed-dim": "#ffb596",
-                        "surface-tint": "#0053db",
-                        "error-container": "#ffdad6",
-                        "on-surface": "#191b23",
-                        "secondary-fixed-dim": "#bec6e0",
-                        "outline-variant": "#c3c6d7",
-                        "tertiary-fixed": "#ffdbcd",
-                        "on-tertiary-fixed": "#360f00",
-                        "on-primary-fixed": "#00174b",
-                        "primary-fixed": "#dbe1ff",
-                        "on-secondary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "inverse-surface": "#2e3039",
-                        "inverse-primary": "#b4c5ff",
-                        "surface-container-highest": "#e1e2ed",
-                        "surface-container-high": "#e7e7f3",
-                        "on-tertiary-container": "#ffede6",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-low": "#f3f3fe",
-                        "on-surface-variant": "#434655",
-                        "on-tertiary-fixed-variant": "#7d2d00",
-                        "outline": "#737686",
-                        "background": "#faf8ff",
-                        "secondary-container": "#dae2fd",
-                        "surface-container": "#ededf9",
-                        "secondary": "#565e74",
-                        "on-primary-container": "#eeefff",
-                        "on-error": "#ffffff",
-                        "on-primary-fixed-variant": "#003ea8",
-                        "secondary-fixed": "#dae2fd",
-                        "on-secondary-container": "#5c647a",
-                        "on-primary": "#ffffff",
-                        "primary": "#004ac6",
-                        "on-error-container": "#93000a",
-                        "primary-container": "#2563eb",
-                        "surface": "#faf8ff",
-                        "on-background": "#191b23"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xl": "32px",
-                        "xs": "4px",
-                        "sm": "8px",
-                        "margin": "32px",
-                        "gutter": "24px",
-                        "md": "16px",
-                        "2xl": "48px",
-                        "base": "4px",
-                        "lg": "24px"
-                    },
-                    "fontFamily": {
-                        "body-lg": ["Inter"],
-                        "display-lg": ["Inter"],
-                        "headline-sm": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "body-md": ["Inter"],
-                        "mono-sm": ["Inter"]
-                    },
-                    "fontSize": {
-                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
-                        "headline-lg": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                        "mono-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}]
-                    }
-                },
-            },
-        }
-    </script>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
-<!-- TopAppBar -->
-<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant dark:border-outline sticky top-0 z-50">
-<div class="flex justify-between items-center w-full px-margin py-md max-w-[1280px] mx-auto">
-<div class="flex items-center gap-md">
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-3xl">hub</span>
-<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed-dim tracking-tight">PoolBuy Wholesale</h1>
-</div>
-<nav class="hidden md:flex gap-xl items-center">
-<a class="text-primary dark:text-inverse-primary font-semibold border-b-2 border-primary py-1 font-body-md" href="#">Inventory</a>
-<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors font-body-md" href="#">Marketplace</a>
-<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors font-body-md" href="#">Analytics</a>
-<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full transition-all">notifications</button>
-<div class="w-10 h-10 rounded-full bg-secondary-container border border-outline-variant overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="A professional headshot of a business executive in a high-end corporate setting. The lighting is soft and flattering, emphasizing a clean and professional look with a neutral, light-gray background that fits a modern B2B interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX5BOgTsw_-jnkzxZf_2j67gFd__mEJ8gukBgpcIkxSbXY9fx696ftSo6lmsM44Yny352ejoyR0exqZ7hJy_B5Om_b1_Wzu_47qVjk_x76F9ayuaX4F1sunZgRjdrbqHfZjirge8veHnIXy3GB-jgAngDh7n2aLa0iutYWFT-ydrHZWa3D-FdjcdK2X3zsue-WDZhuYWL2jyMOOQN4cwHBTqBEYWryQ7S6Q_jnp49X7SOrwdnqFh8Ijg"/>
-</div>
-</nav>
-</div>
-</header>
-<div class="max-w-[1280px] mx-auto px-margin py-xl flex flex-col md:flex-row gap-lg">
-<!-- NavigationDrawer (Sidebar) -->
-<aside class="hidden lg:flex flex-col gap-sm w-72 shrink-0">
-<div class="p-md bg-surface-container-low dark:bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30">
-<div class="flex items-center gap-md mb-xl">
-<div class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
-<span class="material-symbols-outlined text-2xl">verified_user</span>
-</div>
-<div>
-<p class="font-headline-sm text-headline-sm text-primary">Wholesale Pro</p>
-<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">GST Verified Buyer</p>
-</div>
-</div>
-<nav class="flex flex-col gap-xs">
-<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-sm rounded-xl" href="#">
-<span class="material-symbols-outlined">storefront</span>
-<span class="font-label-md text-label-md">Marketplace</span>
-</a>
-<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-xl px-md py-sm translate-x-1 transition-transform" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
-<span class="font-label-md text-label-md">My Pools</span>
-</a>
-<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-sm rounded-xl" href="#">
-<span class="material-symbols-outlined">chat_bubble</span>
-<span class="font-label-md text-label-md">Messages</span>
-</a>
-<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-sm rounded-xl" href="#">
-<span class="material-symbols-outlined">inventory_2</span>
-<span class="font-label-md text-label-md">Inventory</span>
-</a>
-<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-sm rounded-xl" href="#">
-<span class="material-symbols-outlined">analytics</span>
-<span class="font-label-md text-label-md">Analytics</span>
-</a>
-</nav>
-</div>
-</aside>
-<!-- Main Content -->
-<main class="flex-1 min-w-0">
-<!-- Header Section -->
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
-<div>
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Active Pool Campaigns</h2>
-<p class="text-on-surface-variant font-body-md mt-1">Manage your wholesale clusters and track reservation progress.</p>
-</div>
-<button class="bg-primary hover:bg-surface-tint text-on-primary px-xl py-md rounded-xl font-headline-sm flex items-center gap-sm transition-all active:scale-95 shadow-lg shadow-primary/20">
-<span class="material-symbols-outlined">add_circle</span>
-                    Create New Pool
-                </button>
-</div>
-<!-- Dashboard Stats Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
-<div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm">
-<p class="text-on-surface-variant font-label-md mb-sm">TOTAL VOLUME</p>
-<p class="text-headline-lg font-bold text-primary">$452,300.00</p>
-<div class="flex items-center gap-xs mt-sm text-green-600 font-label-md">
-<span class="material-symbols-outlined text-sm">trending_up</span>
-<span>12.5% from last month</span>
-</div>
-</div>
-<div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm">
-<p class="text-on-surface-variant font-label-md mb-sm">ACTIVE POOLS</p>
-<p class="text-headline-lg font-bold text-primary">24</p>
-<div class="flex items-center gap-xs mt-sm text-on-surface-variant font-label-md">
-<span class="material-symbols-outlined text-sm">hourglass_empty</span>
-<span>8 reaching MOQ soon</span>
-</div>
-</div>
-<div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm">
-<p class="text-on-surface-variant font-label-md mb-sm">AVERAGE FILL RATE</p>
-<p class="text-headline-lg font-bold text-primary">84%</p>
-<div class="flex items-center gap-xs mt-sm text-tertiary font-label-md">
-<span class="material-symbols-outlined text-sm">speed</span>
-<span>4.2 days to fill</span>
-</div>
-</div>
-</div>
-<!-- Table Container -->
-<div class="bg-white border border-outline-variant rounded-2xl shadow-sm overflow-hidden mb-xl">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low border-b border-outline-variant">
-<th class="px-lg py-md font-label-md text-on-surface-variant">PRODUCT</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant">MOQ</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant">RESERVED</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant">PROGRESS</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant">TIME REMAINING</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant">STATUS</th>
-<th class="px-lg py-md font-label-md text-on-surface-variant text-right">ACTION</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/30">
-<!-- Row 1 -->
-<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group" onclick="toggleDetail('row-1')">
-<td class="px-lg py-xl">
-<div class="flex items-center gap-md">
-<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden shrink-0 border border-outline-variant/50">
-<img class="w-full h-full object-cover" data-alt="High-quality commercial water filtration unit for industrial pools, sleek metallic finish, studio lighting, clean white background, B2B product photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtsN8buYvVAk1GWB7eOU5xp6DkmbS8wNNn_0YQTB0Zmms8eA-B6fd6zO_EN_EwCIwzNVf1kUa5HBjee19rGFRJYoc6-diKHxStugtc6GVvSSopomaVHw8OVS_uXuBJkEtiQDUQcxbasMIWJ6CPN1v0WsL3WgMvYTKXZferyyX3LO_ONk-1e2ATHQiRI0l4kQZlK0x2G557WPP2NTeaC9eizAXhEo0MeY9CWOcTiNacPJhdOAasng304A"/>
-</div>
-<div>
-<p class="font-headline-sm text-primary group-hover:underline">AquaFlow Pro 500</p>
-<p class="text-on-surface-variant font-label-md">SKU: AQ-500-WHS</p>
-</div>
-</div>
-</td>
-<td class="px-lg py-xl font-body-md text-on-surface">50 Units</td>
-<td class="px-lg py-xl font-body-md text-on-surface font-semibold">42 Units</td>
-<td class="px-lg py-xl w-64">
-<div class="flex flex-col gap-xs">
-<div class="flex justify-between font-label-md mb-1">
-<span class="text-primary">84%</span>
-<span class="text-on-surface-variant">8 left</span>
-</div>
-<div class="h-2 w-full bg-secondary-container rounded-full overflow-hidden relative">
-<div class="h-full bg-primary w-[84%] rounded-full relative">
-<div class="absolute right-0 top-0 h-full w-4 bg-white/30 progress-pulse"></div>
-</div>
-</div>
-</div>
-</td>
-<td class="px-lg py-xl">
-<div class="flex items-center gap-xs text-tertiary">
-<span class="material-symbols-outlined text-sm">schedule</span>
-<span class="font-body-md font-medium">14h 22m</span>
-</div>
-</td>
-<td class="px-lg py-xl">
-<span class="px-sm py-1 bg-green-100 text-green-800 text-[10px] font-bold uppercase rounded-full border border-green-200">Active</span>
-</td>
-<td class="px-lg py-xl text-right">
-<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">more_vert</button>
-</td>
-</tr>
-<!-- Row 2 -->
-<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer group" onclick="toggleDetail('row-2')">
-<td class="px-lg py-xl">
-<div class="flex items-center gap-md">
-<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden shrink-0 border border-outline-variant/50">
-<img class="w-full h-full object-cover" data-alt="Industrial strength pool tiling set, mosaic azure patterns, luxurious texture, architectural lighting, focus on durability and premium quality for wholesale buyers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMiLIPqrj59gmNefI4vmvOT5LyuVZX3lqPgcG-pVRrVdU1oxMLLt-vYf8b4-ekChdhsZNd_bgq8kNFqqn99QckmPKOjq1m9SiWtX9ztOngdb-T-EMoKo9h47zYkSaAKCMYEpB_9xJcLAgEPI4yBC_fmVf3Kj2GPAv06DtBlDq8YSol7I_95DNYGSW6fAGBLlt_uYr0P87ZsdMNGD0ogOH8R_D7vkZQsboG8deW4P_graaw45O4rlxc5w"/>
-</div>
-<div>
-<p class="font-headline-sm text-primary group-hover:underline">Ceramic Mosaic XL</p>
-<p class="text-on-surface-variant font-label-md">SKU: CER-XL-10</p>
-</div>
-</div>
-</td>
-<td class="px-lg py-xl font-body-md text-on-surface">200 Boxes</td>
-<td class="px-lg py-xl font-body-md text-on-surface font-semibold">195 Boxes</td>
-<td class="px-lg py-xl w-64">
-<div class="flex flex-col gap-xs">
-<div class="flex justify-between font-label-md mb-1">
-<span class="text-primary">97%</span>
-<span class="text-on-surface-variant">5 left</span>
-</div>
-<div class="h-2 w-full bg-secondary-container rounded-full overflow-hidden">
-<div class="h-full bg-primary w-[97%] rounded-full"></div>
-</div>
-</div>
-</td>
-<td class="px-lg py-xl">
-<div class="flex items-center gap-xs text-on-surface-variant">
-<span class="material-symbols-outlined text-sm">schedule</span>
-<span class="font-body-md">2d 04h</span>
-</div>
-</td>
-<td class="px-lg py-xl">
-<span class="px-sm py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase rounded-full border border-tertiary-container/20">Closing</span>
-</td>
-<td class="px-lg py-xl text-right">
-<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">more_vert</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- Detail View (Initially Hidden) -->
-<div class="hidden animate-in fade-in slide-in-from-bottom-4 duration-300" id="pool-detail-panel">
-<div class="bg-white border-2 border-primary/20 rounded-2xl shadow-xl p-xl mb-xl">
-<div class="flex justify-between items-start mb-xl">
-<div class="flex items-center gap-xl">
-<div class="w-24 h-24 rounded-xl bg-surface-container overflow-hidden border border-outline-variant">
-<img class="w-full h-full object-cover" data-alt="High-quality commercial water filtration unit for industrial pools, sleek metallic finish, studio lighting, clean white background, B2B product photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAYlQnP4NnG8YxN8RPpiKSrC99imvr69hY-iICRgkMP_Q6Q4yK9lNWNTwJRxnDpJFuKp1r9qFHdRQohU3hZKPyBH89-oHLNArV6hf0xOChlHP_uJ5s51UouJqu0He1S-DM2Juy47T3L1ym-CG44uQBzTHSAJ6tQKXsqL9N3YVRPzZoAUJzodunhtXWdpD04Uy9WFuUZceCbz4OnKPOnXGqxpnZD_5UDNqteD1vC2LcKenCfyjLaVnMxQ"/>
-</div>
-<div>
-<h3 class="font-display-lg text-display-lg text-on-surface mb-xs">AquaFlow Pro 500</h3>
-<div class="flex gap-md">
-<span class="flex items-center gap-xs text-on-surface-variant font-label-md"><span class="material-symbols-outlined text-sm">location_on</span> Main Warehouse, NJ</span>
-<span class="flex items-center gap-xs text-on-surface-variant font-label-md"><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">stars</span> Top Tier Listing</span>
-</div>
-</div>
-</div>
-<button class="p-md hover:bg-surface-container rounded-full text-on-surface-variant" onclick="hideDetail()">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
-<!-- Left: Live Progress -->
-<div class="col-span-2 flex flex-col gap-xl">
-<div class="bg-surface-container-low p-xl rounded-xl">
-<div class="flex justify-between items-center mb-md">
-<span class="font-headline-sm text-on-surface">Reservation Map</span>
-<span class="text-primary font-bold">42/50 Units</span>
-</div>
-<div class="grid grid-cols-10 gap-sm">
-<!-- 50 units representation -->
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<!-- Row 2 -->
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<!-- Row 3-4 (Omitting for brevity, but logically filled) -->
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<!-- Last 10 partially filled -->
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-primary rounded-xs"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-<div class="h-6 bg-secondary-container rounded-xs border-2 border-dashed border-outline-variant"></div>
-</div>
-<p class="text-on-surface-variant font-label-md mt-md">8 slots remaining for Tier-1 bulk pricing ($340.00/unit).</p>
-</div>
-<!-- Anonymous Reservations -->
-<div>
-<h4 class="font-headline-sm text-on-surface mb-md">Recent Reservations</h4>
-<div class="space-y-sm">
-<div class="flex justify-between items-center bg-white border border-outline-variant p-md rounded-xl">
-<div class="flex items-center gap-md">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center font-bold text-primary">B1</div>
-<div>
-<p class="font-body-md font-semibold text-on-surface">Buyer #2841</p>
-<p class="text-on-surface-variant font-label-md">GST Verified • 5 Orders completed</p>
-</div>
-</div>
-<div class="text-right">
-<p class="font-headline-sm text-on-surface">12 Units</p>
-<p class="text-on-surface-variant font-label-md">2h ago</p>
-</div>
-</div>
-<div class="flex justify-between items-center bg-white border border-outline-variant p-md rounded-xl">
-<div class="flex items-center gap-md">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center font-bold text-primary">B2</div>
-<div>
-<p class="font-body-md font-semibold text-on-surface">Buyer #9902</p>
-<p class="text-on-surface-variant font-label-md">Gold Partner • 22 Orders completed</p>
-</div>
-</div>
-<div class="text-right">
-<p class="font-headline-sm text-on-surface">8 Units</p>
-<p class="text-on-surface-variant font-label-md">5h ago</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Right: Actions -->
-<div class="flex flex-col gap-lg">
-<div class="bg-surface-container p-lg rounded-2xl flex flex-col gap-md">
-<h4 class="font-headline-sm text-on-surface">Quick Actions</h4>
-<button class="w-full flex items-center justify-between p-md bg-white hover:bg-primary-container hover:text-on-primary-container transition-all rounded-xl border border-outline-variant">
-<span class="flex items-center gap-sm font-label-md"><span class="material-symbols-outlined">description</span> MANAGE QUOTES</span>
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-<button class="w-full flex items-center justify-between p-md bg-white hover:bg-primary-container hover:text-on-primary-container transition-all rounded-xl border border-outline-variant">
-<span class="flex items-center gap-sm font-label-md"><span class="material-symbols-outlined">local_shipping</span> SHIPPING UPDATES</span>
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-<button class="w-full flex items-center justify-between p-md bg-white hover:bg-primary-container hover:text-on-primary-container transition-all rounded-xl border border-outline-variant">
-<span class="flex items-center gap-sm font-label-md"><span class="material-symbols-outlined">mail</span> MESSAGE BUYERS</span>
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-<hr class="border-outline-variant my-1"/>
-<button class="w-full p-md text-error font-label-md border border-error/30 hover:bg-error/5 rounded-xl transition-all">
-                                    CLOSE POOL EARLY
-                                </button>
-</div>
-<div class="p-lg bg-tertiary-fixed/30 rounded-2xl border border-tertiary-fixed-dim">
-<div class="flex items-center gap-sm text-tertiary mb-sm">
-<span class="material-symbols-outlined">error</span>
-<span class="font-label-md font-bold uppercase tracking-widest">Order Readiness</span>
-</div>
-<p class="text-body-md text-on-tertiary-fixed-variant mb-md">This pool is at 84% capacity. Prepare your fulfillment logistics for immediate dispatch once the MOQ is reached.</p>
-<div class="flex items-center gap-md">
-<div class="flex -space-x-3">
-<div class="w-8 h-8 rounded-full border-2 border-white bg-primary"></div>
-<div class="w-8 h-8 rounded-full border-2 border-white bg-secondary"></div>
-<div class="w-8 h-8 rounded-full border-2 border-white bg-surface-variant"></div>
-</div>
-<span class="font-label-md text-tertiary">4 Warehouses notified</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-</div>
-<!-- Footer -->
-<footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant mt-2xl">
-<div class="max-w-[1280px] mx-auto px-margin py-2xl flex flex-col md:flex-row justify-between items-center gap-lg">
-<div class="flex flex-col gap-sm">
-<h3 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">PoolBuy B2B</h3>
-<p class="font-label-md text-label-md text-on-surface-variant">© 2024 PoolBuy B2B Marketplace. All rights reserved.</p>
-</div>
-<div class="flex flex-wrap justify-center gap-xl">
-<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
-<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
-<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">GST Compliance</a>
-<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Seller Support</a>
-</div>
-</div>
-</footer>
-<!-- Bottom Navigation (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface dark:bg-surface-dim border-t border-outline-variant flex justify-around items-center px-sm pb-safe h-16 shadow-lg">
-<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
-<span class="material-symbols-outlined">home</span>
-<span class="text-[10px] font-semibold">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
-<span class="material-symbols-outlined">shopping_bag</span>
-<span class="text-[10px] font-semibold">Market</span>
-</a>
-<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90" href="#">
-<span class="material-symbols-outlined">group_work</span>
-<span class="text-[10px] font-semibold">Pools</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
-<span class="material-symbols-outlined">mail</span>
-<span class="text-[10px] font-semibold">Chat</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
-<span class="material-symbols-outlined">person</span>
-<span class="text-[10px] font-semibold">Account</span>
-</a>
-</nav>
-<script>
-        function toggleDetail(rowId) {
-            const panel = document.getElementById('pool-detail-panel');
-            panel.classList.remove('hidden');
-            // Smooth scroll to the panel
-            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+:root{--primary:#0F1D36;--primary-dark:#091224;--primary-light:#EEF3F9;--accent:#E06214;--accent-dark:#C4510D;--accent-light:#FFF4ED;--gold:#C89D46;--text-dark:#1A1A1A;--text-body:#4A4A4A;--text-muted:#777777;--bg-page:#FAF8F5;--bg-white:#FFFFFF;--bg-warm:#F5EFE6;--bg-section:#F8FAFC;--border:#E2E6ED;--font-display:'Playfair Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--radius-card:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-dark);min-height:100dvh;overflow-x:hidden;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-family:'Material Symbols Outlined';font-style:normal;display:inline-block;line-height:1;vertical-align:middle;}
+/* Header */
+.announce-bar{background:var(--primary);color:#fff;font-size:13px;text-align:center;padding:9px 40px;}
+.site-header{background:#fff;border-bottom:1px solid #EBEBEB;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:70px;gap:24px;}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:44px;height:44px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;}
+.logo-text{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-dark);}
+.logo-text span{color:var(--accent);}
+.main-nav{display:flex;align-items:center;gap:28px;list-style:none;}
+.main-nav a{font-size:14px;color:var(--text-body);text-decoration:none;transition:color .2s;}
+.main-nav a:hover,.main-nav a.active{color:var(--accent);}
+.header-icons{display:flex;align-items:center;gap:16px;}
+.header-icon-btn{background:none;border:none;color:var(--text-body);cursor:pointer;font-size:22px;padding:4px;transition:color .2s;}
+.header-icon-btn:hover{color:var(--accent);}
+.user-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--border);}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+/* Layout */
+.page-layout{max-width:1280px;margin:0 auto;padding:32px 40px;display:flex;gap:28px;align-items:flex-start;}
+/* Sidebar */
+.page-sidebar{width:240px;flex-shrink:0;}
+.sidebar-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.seller-profile{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.seller-avatar{width:44px;height:44px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;}
+.seller-name{font-size:14px;font-weight:700;color:var(--text-dark);}
+.seller-tag{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;}
+.sidebar-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13px;font-weight:500;color:var(--text-body);cursor:pointer;transition:all .2s;margin-bottom:2px;text-decoration:none;}
+.sidebar-nav-item:hover{background:rgba(15,29,54,.05);color:var(--primary);}
+.sidebar-nav-item.active{background:var(--primary-light);color:var(--primary);border-left:3px solid var(--accent);font-weight:700;}
+.sidebar-nav-item .material-symbols-outlined{font-size:18px;}
+/* Main Content */
+.page-main{flex:1;min-width:0;}
+/* Page Header */
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+.page-header-text h1{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text-dark);margin-bottom:4px;}
+.page-header-text p{font-size:14px;color:var(--text-muted);}
+.create-pool-btn{background:var(--accent);color:#fff;border:none;border-radius:30px;padding:13px 24px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .2s;flex-shrink:0;}
+.create-pool-btn:hover{background:var(--accent-dark);}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:8px;}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.stat-trend{font-size:12px;font-weight:500;display:flex;align-items:center;gap:4px;}
+.trend-up{color:#16A34A;}.trend-warn{color:#D97706;}.trend-neutral{color:var(--text-muted);}
+/* Table */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.data-table{width:100%;border-collapse:collapse;text-align:left;}
+.data-table thead tr{background:var(--bg-section);}
+.data-table th{padding:12px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+.data-table tbody tr{border-top:1px solid var(--border);cursor:pointer;transition:background .2s;}
+.data-table tbody tr:hover{background:rgba(15,29,54,.02);}
+.data-table td{padding:16px 20px;}
+.product-cell{display:flex;align-items:center;gap:12px;}
+.product-thumb{width:44px;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;}
+.product-thumb img{width:100%;height:100%;object-fit:cover;}
+.product-cell-name{font-size:14px;font-weight:600;color:var(--primary);}
+.product-cell-name:hover{text-decoration:underline;}
+.product-cell-sku{font-size:11px;color:var(--text-muted);}
+.table-moq{font-size:13px;color:var(--text-body);}
+.table-reserved{font-size:13px;font-weight:700;color:var(--text-dark);}
+.progress-cell{min-width:160px;}
+.progress-pct-row{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:5px;}
+.progress-pct{color:var(--accent);}
+.progress-rem{color:var(--text-muted);}
+.pool-bar-bg{width:100%;height:7px;border-radius:50px;background:rgba(224,98,20,.15);overflow:hidden;}
+.pool-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--accent),#F59E0B);position:relative;overflow:hidden;}
+.pool-bar-fill::after{content:'';position:absolute;top:0;left:0;height:100%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 2s infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(300%);}}
+.time-cell{font-size:13px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:4px;}
+.time-cell.steady{color:var(--text-muted);}
+.status-badge{font-size:10px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:50px;}
+.status-active{background:#F0FFF4;color:#16A34A;border:1px solid #BBF7D0;}
+.status-closing{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;}
+.action-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);transition:color .2s;}
+.action-btn:hover{color:var(--accent);}
+/* Detail Panel */
+.detail-panel{background:#fff;border:2px solid rgba(224,98,20,.25);border-radius:var(--radius-card);padding:28px;margin-bottom:24px;box-shadow:0 4px 20px rgba(15,29,54,.06);}
+.detail-panel.hidden{display:none;}
+.detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+.detail-product-info{display:flex;align-items:center;gap:20px;}
+.detail-product-img{width:90px;height:90px;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.detail-product-img img{width:100%;height:100%;object-fit:cover;}
+.detail-product-name{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text-dark);margin-bottom:6px;}
+.detail-meta{display:flex;gap:16px;font-size:12px;color:var(--text-muted);}
+.detail-meta span{display:flex;align-items:center;gap:4px;}
+.close-detail{background:none;border:none;cursor:pointer;color:var(--text-muted);width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;}
+.close-detail:hover{background:var(--bg-section);}
+.detail-body{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
+/* Reservation Map */
+.res-map-section{background:var(--bg-section);border-radius:12px;padding:20px;}
+.res-map-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.res-map-title{font-size:14px;font-weight:700;color:var(--text-dark);}
+.res-map-count{font-size:14px;font-weight:700;color:var(--accent);}
+.res-map-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:12px;}
+.res-cell{height:22px;border-radius:4px;}
+.res-cell.filled{background:var(--accent);}
+.res-cell.empty{background:var(--border);border:1px dashed #CCC;}
+.res-map-note{font-size:12px;color:var(--text-muted);font-style:italic;}
+/* Reservations list */
+.reservations-section{}
+.res-title{font-size:14px;font-weight:700;color:var(--text-dark);margin-bottom:12px;}
+.reservation-item{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.res-buyer{display:flex;align-items:center;gap:10px;}
+.res-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:12px;}
+.res-buyer-name{font-size:13px;font-weight:700;color:var(--text-dark);}
+.res-buyer-meta{font-size:11px;color:var(--text-muted);}
+.res-units{text-align:right;}
+.res-count{font-size:14px;font-weight:700;color:var(--text-dark);}
+.res-ago{font-size:11px;color:var(--text-muted);}
+/* Quick Actions */
+.quick-actions{background:var(--bg-section);border-radius:12px;padding:16px;}
+.quick-actions-title{font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:12px;}
+.action-row-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:8px;transition:all .2s;font-family:var(--font-body);}
+.action-row-btn:hover{border-color:var(--accent);color:var(--accent);}
+.action-row-btn .btn-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:inherit;}
+.close-pool-btn{width:100%;padding:10px;color:#BA1A1A;border:1px solid rgba(186,26,26,.3);border-radius:10px;background:transparent;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;font-family:var(--font-body);}
+.close-pool-btn:hover{background:rgba(186,26,26,.05);}
+.readiness-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px;margin-top:12px;}
+.readiness-header{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#D97706;margin-bottom:8px;}
+.readiness-text{font-size:12px;color:#92400E;line-height:1.6;margin-bottom:12px;}
+.warehouse-dots{display:flex;gap:-4px;}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-6px;}
+.dot:first-child{margin-left:0;}
+.dot-1{background:var(--primary);}
+.dot-2{background:var(--text-muted);}
+.dot-3{background:var(--gold);}
+/* Footer */
+.site-footer{background:var(--bg-warm);border-top:1px solid var(--border);padding:18px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:40px;}
+.footer-copy{font-size:12px;color:var(--text-muted);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:12px;color:var(--text-muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--accent);}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid var(--border);height:60px;justify-content:space-around;align-items:center;box-shadow:0 -2px 8px rgba(0,0,0,.08);}
+.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;padding:4px 10px;border-radius:50px;transition:color .2s;}
+.mob-nav-btn.active{color:var(--accent);background:var(--accent-light);}
+.mob-nav-btn .material-symbols-outlined{font-size:22px;}
+.fab-whatsapp{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:26px;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:99;transition:transform .2s;}
+.fab-whatsapp:hover{transform:scale(1.1);}
+.fab-top{position:fixed;bottom:80px;left:20px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:18px;font-weight:700;box-shadow:0 4px 16px rgba(15,29,54,.3);z-index:99;transition:transform .2s;}
+.fab-top:hover{transform:scale(1.1);}
 
-        function hideDetail() {
-            const panel = document.getElementById('pool-detail-panel');
-            panel.classList.add('hidden');
-        }
-    </script>
-</body></html>
+/* Create Pool Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,29,54,.55);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease;padding:20px;}
+.modal-overlay.active{opacity:1;pointer-events:auto;}
+.modal-card{background:#fff;border-radius:18px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(15,29,54,.25);transform:translateY(20px);transition:transform .25s ease;border:1px solid var(--border);}
+.modal-overlay.active .modal-card{transform:translateY(0);}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-section);}
+.modal-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text-dark);display:flex;align-items:center;gap:10px;}
+.modal-close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}
+.modal-close-btn:hover{background:var(--border);color:var(--text-dark);}
+.modal-body{padding:24px;}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:12px;font-weight:700;color:var(--text-dark);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.form-input,.form-select{width:100%;border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;font-family:var(--font-body);color:var(--text-dark);background:#fff;transition:border-color .2s;}
+.form-input:focus,.form-select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(224,98,20,.12);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.modal-footer{padding:18px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px;background:var(--bg-section);}
+.btn-cancel{background:none;border:1px solid var(--border);border-radius:30px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-body);}
+.btn-submit{background:var(--accent);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-submit:hover{background:var(--accent-dark);}
+/* Toast */
+.toast-notice{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--primary);color:#fff;padding:12px 24px;border-radius:50px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(15,29,54,.3);z-index:400;opacity:0;transition:all .3s ease;font-size:13px;font-weight:600;}
+.toast-notice.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast-icon{color:var(--accent);font-size:18px;}
+
+@media(max-width:1024px){.page-sidebar{display:none;}.stats-grid{grid-template-columns:repeat(2,1fr);}.detail-body{grid-template-columns:1fr;}}
+@media(max-width:768px){.main-nav{display:none;}.header-inner,.page-layout,.site-footer{padding-left:20px;padding-right:20px;}.stats-grid{grid-template-columns:1fr;}.mobile-nav{display:flex;}body{padding-bottom:60px;}.page-header{flex-direction:column;gap:12px;}.announce-bar{padding:9px 20px;}}
+</style>
+</head>
+<body>
+<div class="announce-bar">🎉 GST Verified Seller Network — Manage Your Pools & Track Fulfillment</div>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo-wrap" href="../poolbuy_landing_page/code.html">
+      <div class="logo-icon"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;font-size:22px;">hub</span></div>
+      <span class="logo-text">Pool<span>Buy</span></span>
+    </a>
+    <nav><ul class="main-nav">
+      <li><a href="../poolbuy_landing_page/code.html">Home</a></li>
+      <li><a href="../poolbuy_marketplace/code.html">Marketplace</a></li>
+      <li><a href="../buyer_dashboard/code.html">Buyer Dashboard</a></li>
+      <li><a href="../executive_wholesale_protocol/code.html">Executive Protocol</a></li>
+      <li><a href="code.html" class="active">Seller Center</a></li>
+      <li><a href="../poolbuy_wholesale_b2b_marketplace/code.html">B2B Wholesale</a></li>
+      <li><a href="../admin_dashboard/code.html" style="color:var(--accent);font-weight:600;">Admin</a></li>
+    </ul></nav>
+    <div class="header-icons">
+      <a href="../buyer_dashboard/code.html" class="header-icon-btn"><span class="material-symbols-outlined">person</span></a>
+      <div class="user-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX5BOgTsw_-jnkzxZf_2j67gFd__mEJ8gukBgpcIkxSbXY9fx696ftSo6lmsM44Yny352ejoyR0exqZ7hJy_B5Om_b1_Wzu_47qVjk_x76F9ayuaX4F1sunZgRjdrbqHfZjirge8veHnIXy3GB-jgAngDh7n2aLa0iutYWFT-ydrHZWa3D-FdjcdK2X3zsue-WDZhuYWL2jyMOOQN4cwHBTqBEYWryQ7S6Q_jnp49X7SOrwdnqFh8Ijg" alt="Seller Avatar"/></div>
+    </div>
+  </div>
+</header>
+
+<div class="page-layout">
+  <!-- Sidebar -->
+  <aside class="page-sidebar">
+    <div class="sidebar-card">
+      <div class="seller-profile">
+        <div class="seller-avatar">WP</div>
+        <div>
+          <div class="seller-name">Wholesale Pro</div>
+          <div class="seller-tag">GST Verified Seller</div>
+        </div>
+      </div>
+      <a class="sidebar-nav-item" href="../poolbuy_marketplace/code.html"><span class="material-symbols-outlined">storefront</span>Marketplace</a>
+      <a class="sidebar-nav-item active" href="code.html"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">groups</span>My Pools</a>
+      <a class="sidebar-nav-item" href="../executive_wholesale_protocol/code.html"><span class="material-symbols-outlined">policy</span>Protocol SLA</a>
+      <a class="sidebar-nav-item" href="../buyer_dashboard/code.html"><span class="material-symbols-outlined">inventory_2</span>Buyer View</a>
+      <a class="sidebar-nav-item" href="../poolbuy_wholesale_b2b_marketplace/code.html"><span class="material-symbols-outlined">analytics</span>B2B Network</a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="page-main">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>Active Pool <em style="color:var(--accent);font-style:italic;">Campaigns</em></h1>
+        <p>Manage your wholesale clusters and track reservation progress.</p>
+      </div>
+      <button class="create-pool-btn" onclick="openCreatePoolModal()">
+        <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
+        Create New Pool
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Volume</div>
+        <div class="stat-value">$452,300</div>
+        <div class="stat-trend trend-up"><span class="material-symbols-outlined" style="font-size:14px;">trending_up</span>+12.5% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Pools</div>
+        <div class="stat-value" id="activePoolsStat">24</div>
+        <div class="stat-trend trend-warn"><span class="material-symbols-outlined" style="font-size:14px;">hourglass_empty</span>8 reaching MOQ soon</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average Fill Rate</div>
+        <div class="stat-value">84%</div>
+        <div class="stat-trend trend-neutral"><span class="material-symbols-outlined" style="font-size:14px;">speed</span>4.2 days to fill</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>MOQ</th>
+              <th>Reserved</th>
+              <th>Progress</th>
+              <th>Time Remaining</th>
+              <th>Status</th>
+              <th style="text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="poolsTableBody">
+            <tr onclick="toggleDetail('row-1')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR8PFmc8FQG4ghbrpk4HWNVLWsbtxeWv2YpvtkolGEtWK654LJr1ldtpO0sTFFFunMGkoDwSIxgxZlHw5l1GZzdbATT6xrXTjLyF_SHls_EFMOvYMx4JsBC8lODE5_1mAwlSmwnHd-L8HXkfuJHlmHiLNFIVvxbK6073HX2oyZs1nxtynlMJO2zrfUo_U7Ji0bHGBX7mUb2tnk09yEa3cJyZNK8XA3xDBjl7sgolGbOdg4OD_eolfoJA" alt="Titan-X Pump"/></div>
+                  <div><div class="product-cell-name">Titan-X Commercial 5HP Submersible Pump</div><div class="product-cell-sku">Machinery &bull; SKU: TX-5HP-PMP</div></div>
+                </div>
+              </td>
+              <td class="table-moq">50 Units</td>
+              <td class="table-reserved">31 Units</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct">62%</span><span class="progress-rem">19 left</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:62%;"></div></div>
+              </td>
+              <td><div class="time-cell"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>3d 08h</div></td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+            <tr onclick="toggleDetail('row-2')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80" alt="Caustic Soda"/></div>
+                  <div><div class="product-cell-name">Caustic Soda Flakes 99% Pure (25kg Bag)</div><div class="product-cell-sku">Chemicals &bull; SKU: CHM-CS99-BAG</div></div>
+                </div>
+              </td>
+              <td class="table-moq">100 Bags</td>
+              <td class="table-reserved">78 Bags</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct">78%</span><span class="progress-rem">22 left</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:78%;"></div></div>
+              </td>
+              <td><div class="time-cell steady"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>2d 14h</div></td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+            <tr onclick="toggleDetail('row-3')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80" alt="Shipping Cartons"/></div>
+                  <div><div class="product-cell-name">5-Ply Heavy-Duty Shipping Cartons (Bundle 50)</div><div class="product-cell-sku">Packaging &bull; SKU: PKG-5PLY-BND</div></div>
+                </div>
+              </td>
+              <td class="table-moq">40 Bundles</td>
+              <td class="table-reserved">37 Bundles</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct">92%</span><span class="progress-rem">3 left</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:92%;"></div></div>
+              </td>
+              <td><div class="time-cell" style="color:var(--primary);"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>5h 18m</div></td>
+              <td><span class="status-badge status-closing">Closing</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+            <tr onclick="toggleDetail('row-4')">
+              <td>
+                <div class="product-cell">
+                  <div class="product-thumb"><img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80" alt="A4 Paper"/></div>
+                  <div><div class="product-cell-name">75 GSM Copier Paper A4 (Box 5 Reams)</div><div class="product-cell-sku">Office &bull; SKU: OFF-PPR-75G</div></div>
+                </div>
+              </td>
+              <td class="table-moq">50 Boxes</td>
+              <td class="table-reserved">47 Boxes</td>
+              <td class="progress-cell">
+                <div class="progress-pct-row"><span class="progress-pct">94%</span><span class="progress-rem">3 left</span></div>
+                <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:94%;"></div></div>
+              </td>
+              <td><div class="time-cell" style="color:var(--primary);"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>4h 02m</div></td>
+              <td><span class="status-badge status-closing">Closing</span></td>
+              <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Detail Panel (Initially Hidden) -->
+    <div class="detail-panel hidden" id="pool-detail-panel">
+      <div class="detail-header">
+        <div class="detail-product-info">
+          <div class="detail-product-img"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAYlQnP4NnG8YxN8RPpiKSrC99imvr69hY-iICRgkMP_Q6Q4yK9lNWNTwJRxnDpJFuKp1r9qFHdRQohU3hZKPyBH89-oHLNArV6hf0xOChlHP_uJ5s51UouJqu0He1S-DM2Juy47T3L1ym-CG44uQBzTHSAJ6tQKXsqL9N3YVRPzZoAUJzodunhtXWdpD04Uy9WFuUZceCbz4OnKPOnXGqxpnZD_5UDNqteD1vC2LcKenCfyjLaVnMxQ" alt="Pool Product"/></div>
+          <div>
+            <div class="detail-product-name">AquaFlow Pro 500</div>
+            <div class="detail-meta">
+              <span><span class="material-symbols-outlined" style="font-size:14px;">location_on</span>Main Warehouse, NJ</span>
+              <span><span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1;">stars</span>Top Tier Listing</span>
+            </div>
+          </div>
+        </div>
+        <button class="close-detail" onclick="hideDetail()"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="detail-body">
+        <!-- Left: Map + Reservations -->
+        <div>
+          <div class="res-map-section">
+            <div class="res-map-header"><span class="res-map-title">Reservation Map</span><span class="res-map-count">42/50 Units</span></div>
+            <div class="res-map-grid" id="resMapGrid"></div>
+            <div class="res-map-note">8 slots remaining for Tier-1 bulk pricing ($340.00/unit).</div>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="res-title">Recent Reservations</div>
+            <div class="reservation-item">
+              <div class="res-buyer"><div class="res-avatar">B1</div><div><div class="res-buyer-name">Buyer #2841</div><div class="res-buyer-meta">GST Verified • 5 Orders completed</div></div></div>
+              <div class="res-units"><div class="res-count">12 Units</div><div class="res-ago">2h ago</div></div>
+            </div>
+            <div class="reservation-item">
+              <div class="res-buyer"><div class="res-avatar">B2</div><div><div class="res-buyer-name">Buyer #9902</div><div class="res-buyer-meta">Gold Partner • 22 Orders completed</div></div></div>
+              <div class="res-units"><div class="res-count">8 Units</div><div class="res-ago">5h ago</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Quick Actions -->
+        <div>
+          <div class="quick-actions">
+            <div class="quick-actions-title">Quick Actions</div>
+            <button class="action-row-btn"><span class="btn-label"><span class="material-symbols-outlined" style="font-size:18px;">description</span>Manage Quotes</span><span class="material-symbols-outlined" style="font-size:18px;">chevron_right</span></button>
+            <button class="action-row-btn"><span class="btn-label"><span class="material-symbols-outlined" style="font-size:18px;">local_shipping</span>Shipping Updates</span><span class="material-symbols-outlined" style="font-size:18px;">chevron_right</span></button>
+            <button class="action-row-btn"><span class="btn-label"><span class="material-symbols-outlined" style="font-size:18px;">mail</span>Message Buyers</span><span class="material-symbols-outlined" style="font-size:18px;">chevron_right</span></button>
+            <div style="border-top:1px solid var(--border);margin:10px 0;"></div>
+            <button class="close-pool-btn">CLOSE POOL EARLY</button>
+          </div>
+          <div class="readiness-box">
+            <div class="readiness-header"><span class="material-symbols-outlined" style="font-size:18px;">error</span>Order Readiness</div>
+            <div class="readiness-text">This pool is at 84% capacity. Prepare fulfillment logistics for immediate dispatch once MOQ is reached.</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="warehouse-dots">
+                <div class="dot dot-1"></div>
+                <div class="dot dot-2"></div>
+                <div class="dot dot-3"></div>
+              </div>
+              <span style="font-size:12px;color:#D97706;font-weight:600;">4 Warehouses notified</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <span class="footer-copy">© 2024 PoolBuy B2B Marketplace. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="#">Terms of Service</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">GST Compliance</a>
+    <a href="#">Seller Support</a>
+  </div>
+</footer>
+
+<nav class="mobile-nav">
+  <button class="mob-nav-btn"><span class="material-symbols-outlined">home</span>Home</button>
+  <button class="mob-nav-btn"><span class="material-symbols-outlined">shopping_bag</span>Market</button>
+  <button class="mob-nav-btn active"><span class="material-symbols-outlined">group_work</span>Pools</button>
+  <button class="mob-nav-btn"><span class="material-symbols-outlined">mail</span>Chat</button>
+  <button class="mob-nav-btn"><span class="material-symbols-outlined">person</span>Account</button>
+</nav>
+<a class="fab-whatsapp" href="https://wa.me/" aria-label="WhatsApp">💬</a>
+<button class="fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Create New Pool Modal -->
+<div class="modal-overlay" id="createPoolModal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-title">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:24px;">add_box</span>
+        Launch New Wholesale Pool
+      </div>
+      <button class="modal-close-btn" onclick="closeCreatePoolModal()" aria-label="Close modal">✕</button>
+    </div>
+    <form id="createPoolForm" onsubmit="submitCreatePool(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Product Name / Title *</label>
+          <input type="text" id="poolProdName" class="form-input" placeholder="e.g. Industrial Digital Pressure Gauges 0-100 PSI" required />
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="poolCategory" class="form-select" onchange="onSellerCategoryChange()" required>
+              <option value="Chemicals">1. Chemicals</option>
+              <option value="Industrial and Tooling" selected>2. Industrial and Tooling</option>
+              <option value="Electronics and IoT">3. Electronics and IoT</option>
+              <option value="Fashion and Apparel">4. Fashion and Apparel</option>
+              <option value="Metals and Raw Materials">5. Metals and Raw Materials</option>
+              <option value="Machinery and Equipment">6. Machinery and Equipment</option>
+              <option value="Packaging and Printing">7. Packaging and Printing</option>
+              <option value="Building and Construction">8. Building and Construction</option>
+              <option value="Office, Stationery and Furniture">9. Office, Stationery & Furniture</option>
+              <option value="Housekeeping and Hospitality Supplies">10. Housekeeping & Hospitality Supplies</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subcategory *</label>
+            <select id="poolSubcategory" class="form-select" required>
+              <option value="Hand Tools">Hand Tools</option>
+              <option value="Power Tools">Power Tools</option>
+              <option value="Fasteners and Fittings">Fasteners and Fittings</option>
+              <option value="Safety Equipment (PPE)">Safety Equipment (PPE)</option>
+              <option value="Bearings and Power Transmission">Bearings and Power Transmission</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Warehouse Hub *</label>
+            <select id="poolHub" class="form-select" required>
+              <option value="Bhiwandi Hub (MH)">Bhiwandi Hub (MH)</option>
+              <option value="Manesar Center (HR)">Manesar Center (HR)</option>
+              <option value="Chennai Port (TN)">Chennai Port (TN)</option>
+              <option value="Kolkata Logistics (WB)">Kolkata Logistics (WB)</option>
+            </select>
+          </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Target MOQ *</label>
+            <input type="number" id="poolMoq" class="form-input" placeholder="100" min="5" value="100" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Packaging Unit *</label>
+            <input type="text" id="poolUnit" class="form-input" placeholder="Units / Boxes / Drums" value="Units" required />
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Wholesale Price ($/unit) *</label>
+            <input type="number" id="poolPrice" class="form-input" placeholder="45.00" step="0.01" min="0.5" value="48.50" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Campaign Duration *</label>
+            <select id="poolDuration" class="form-select">
+              <option value="72h">3 Days (Fast-Track)</option>
+              <option value="7d" selected>7 Days (Standard)</option>
+              <option value="14d">14 Days (Extended)</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:var(--accent-light);border:1px solid rgba(224,98,20,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--text-body);display:flex;gap:10px;align-items:flex-start;">
+          <span class="material-symbols-outlined" style="color:var(--accent);font-size:18px;margin-top:2px;">shield</span>
+          <span>Buyers commit a <strong>20% Escrow deposit</strong> upfront via ICICI Trustee. Funds release upon fulfillment verification.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeCreatePoolModal()">Cancel</button>
+        <button type="submit" class="btn-submit">
+          <span class="material-symbols-outlined" style="font-size:18px;">rocket_launch</span>
+          Publish Campaign
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notice" id="toastNotice">
+  <span class="material-symbols-outlined toast-icon" id="toastIcon">check_circle</span>
+  <span id="toastMsg">Campaign published!</span>
+</div>
+
+<script>
+// Build reservation map
+const grid=document.getElementById('resMapGrid');
+if(grid){for(let i=0;i<50;i++){const cell=document.createElement('div');cell.className='res-cell '+(i<42?'filled':'empty');grid.appendChild(cell);}}
+function toggleDetail(rowId){
+  const panel=document.getElementById('pool-detail-panel');
+  if(panel){
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+function hideDetail(){
+  const panel=document.getElementById('pool-detail-panel');
+  if(panel) panel.classList.add('hidden');
+}
+
+// Modal handling
+function openCreatePoolModal() {
+  const modal = document.getElementById('createPoolModal');
+  if (modal) modal.classList.add('active');
+}
+function closeCreatePoolModal() {
+  const modal = document.getElementById('createPoolModal');
+  if (modal) modal.classList.remove('active');
+}
+function handleModalOverlayClick(e) {
+  if (e.target.id === 'createPoolModal') {
+    closeCreatePoolModal();
+  }
+}
+
+// Toast
+let toastTimer = null;
+function showToast(msg, icon='check_circle') {
+  const t = document.getElementById('toastNotice');
+  const m = document.getElementById('toastMsg');
+  const ic = document.getElementById('toastIcon');
+  if(!t) return;
+  m.innerText = msg;
+  ic.innerText = icon;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+  }, 3000);
+}
+
+const sellerSubcategories = {
+  'Chemicals': [
+    'Industrial Chemicals',
+    'Cleaning and Sanitation Chemicals',
+    'Water Treatment Chemicals',
+    'Lubricants and Greases'
+  ],
+  'Industrial and Tooling': [
+    'Hand Tools',
+    'Power Tools',
+    'Fasteners and Fittings',
+    'Safety Equipment (PPE)',
+    'Bearings and Power Transmission'
+  ],
+  'Electronics and IoT': [
+    'Cables, Wires and Connectors',
+    'Switches, Relays and Protection',
+    'Sensors and Modules',
+    'Microcontrollers and Dev Boards',
+    'Enclosures and Mounting'
+  ],
+  'Fashion and Apparel': [
+    'Uniforms and Workwear',
+    'T-Shirts and Polos (bulk)',
+    'Footwear',
+    'Bags and Accessories'
+  ],
+  'Metals and Raw Materials': [
+    'Steel Pipes and Tubes',
+    'Sheets, Plates and Coils',
+    'Aluminium Profiles and Sections',
+    'Copper, Brass and Bronze',
+    'Wire Mesh and Wire Rope'
+  ],
+  'Machinery and Equipment': [
+    'Pumps and Motors',
+    'Air Compressors',
+    'Welding Machines',
+    'Material Handling (trolleys, pallet trucks)',
+    'Packaging Machines'
+  ],
+  'Packaging and Printing': [
+    'Corrugated Boxes',
+    'Stretch Film and Tapes',
+    'Pouches and Bags',
+    'Labels and Stickers',
+    'Pallets and Crates'
+  ],
+  'Building and Construction': [
+    'Plumbing Pipes and Fittings',
+    'Tiles and Flooring',
+    'Hardware and Locks',
+    'Electrical Fittings and Conduits',
+    'Sanitaryware'
+  ],
+  'Office, Stationery and Furniture': [
+    'Paper and Notebooks',
+    'Writing Instruments',
+    'Filing and Storage',
+    'Office Furniture',
+    'Printing Consumables (paper rolls, labels)'
+  ],
+  'Housekeeping and Hospitality Supplies': [
+    'Cleaning Tools (mops, brooms, dispensers)',
+    'Towels and Linen',
+    'Disposables (cups, plates, gloves)',
+    'Kitchenware',
+    'Waste Management (bins, bags)'
+  ]
+};
+
+function onSellerCategoryChange() {
+  const cat = document.getElementById('poolCategory').value;
+  const subSelect = document.getElementById('poolSubcategory');
+  if (!subSelect) return;
+  const list = sellerSubcategories[cat] || [];
+  subSelect.innerHTML = list.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+// Submit Create Pool
+function submitCreatePool(e) {
+  e.preventDefault();
+  const name = document.getElementById('poolProdName').value;
+  const category = document.getElementById('poolCategory').value;
+  const subcategory = document.getElementById('poolSubcategory') ? document.getElementById('poolSubcategory').value : '';
+  const moq = document.getElementById('poolMoq').value;
+  const unit = document.getElementById('poolUnit').value;
+  const price = parseFloat(document.getElementById('poolPrice').value).toFixed(2);
+  const duration = document.getElementById('poolDuration').value;
+
+  const tbody = document.getElementById('poolsTableBody');
+  if (tbody) {
+    const tr = document.createElement('tr');
+    tr.style.background = 'rgba(224,98,20,.05)';
+    tr.innerHTML = `
+      <td>
+        <div class="product-cell">
+          <div class="product-thumb" style="background:var(--accent-light);display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-outlined" style="color:var(--accent);font-size:24px;">inventory_2</span>
+          </div>
+          <div>
+            <div class="product-cell-name">${name}</div>
+            <div class="product-cell-sku">${category} › ${subcategory} &bull; $${price}/${unit}</div>
+          </div>
+        </div>
+      </td>
+      <td class="table-moq">${moq} ${unit}</td>
+      <td class="table-reserved">0 ${unit}</td>
+      <td class="progress-cell">
+        <div class="progress-pct-row"><span class="progress-pct">0%</span><span class="progress-rem">${moq} left</span></div>
+        <div class="pool-bar-bg"><div class="pool-bar-fill" style="width:0%;"></div></div>
+      </td>
+      <td><div class="time-cell steady"><span class="material-symbols-outlined" style="font-size:16px;">schedule</span>${duration}</div></td>
+      <td><span class="status-badge" style="background:#E0F2FE;color:#0284C7;border:1px solid #BAE6FD;">Just Listed</span></td>
+      <td style="text-align:right;"><button class="action-btn"><span class="material-symbols-outlined">more_vert</span></button></td>
+    `;
+    tbody.prepend(tr);
+  }
+
+  // Increment stat counter
+  const statEl = document.getElementById('activePoolsStat');
+  if (statEl) {
+    const cur = parseInt(statEl.innerText) || 24;
+    statEl.innerText = cur + 1;
+  }
+
+  closeCreatePoolModal();
+  document.getElementById('createPoolForm').reset();
+  showToast(`🎉 "${name}" wholesale campaign published successfully!`);
+}
+</script>
+</body>
+</html>
