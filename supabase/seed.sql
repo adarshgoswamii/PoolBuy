@@ -117,6 +117,21 @@ SET name = EXCLUDED.name, filter_schema = EXCLUDED.filter_schema, description = 
 
 
 -- 3. SEED SELLER & BUYER PROFILES (With synthetic demo IDs)
+-- Ensure matching auth.users records exist in Supabase Auth to satisfy foreign key constraints
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'auth' AND tablename = 'users') THEN
+        INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+        VALUES 
+            ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@poolbuy.io', crypt('Admin@123', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"admin","company_name":"PoolBuy Marketplace Operations"}', NOW(), NOW()),
+            ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'textiles@apexmills.com', crypt('Seller@123', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"seller","company_name":"Apex TexFab Mills Ltd."}', NOW(), NOW()),
+            ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'sales@novavolt.in', crypt('Seller@123', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"seller","company_name":"NovaVolt Power Electronics"}', NOW(), NOW()),
+            ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'procure@urbanstreet.in', crypt('Buyer@123', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"buyer","company_name":"UrbanStreet Apparel Retail"}', NOW(), NOW()),
+            ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'stock@gadgetden.com', crypt('Buyer@123', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', '{"role":"buyer","company_name":"GadgetDen Wholesale Distribution"}', NOW(), NOW())
+        ON CONFLICT (id) DO NOTHING;
+    END IF;
+END $$;
+
 INSERT INTO public.profiles (id, email, role, company_name, contact_name, gstin, phone, is_verified)
 VALUES
     -- Admin User
