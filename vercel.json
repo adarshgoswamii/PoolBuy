@@ -1,4 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/landing", "destination": "/stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html" },
+    { "source": "/marketplace", "destination": "/stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html" },
+    { "source": "/b2b-marketplace", "destination": "/stitch_cobuy_wholesale_marketplace/poolbuy_wholesale_b2b_marketplace/code.html" },
+    { "source": "/product", "destination": "/stitch_cobuy_wholesale_marketplace/product_details_pool_status/code.html" },
+    { "source": "/join", "destination": "/stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html" },
+    { "source": "/checkout", "destination": "/stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html" },
+    { "source": "/buyer", "destination": "/stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html" },
+    { "source": "/buyer/dashboard", "destination": "/stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html" },
+    { "source": "/buyer-dashboard", "destination": "/stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html" },
+    { "source": "/seller", "destination": "/stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html" },
+    { "source": "/seller/pools", "destination": "/stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html" },
+    { "source": "/admin", "destination": "/stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html" },
+    { "source": "/admin/dashboard", "destination": "/stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html" },
+    { "source": "/protocol", "destination": "/stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/code.html" }
+  ]
 }
