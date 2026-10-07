@@ -69,7 +69,9 @@ class Poolbuy extends \Opencart\System\Engine\Model {
 		$columns = [
 			// Pool-level freight, split across participants when the pool closes.
 			'poolbuy_pool' => [
-				'freight_total' => "ADD COLUMN `freight_total` decimal(15,4) NOT NULL DEFAULT '0.0000' AFTER `shipping_terms`"
+				'freight_total' => "ADD COLUMN `freight_total` decimal(15,4) NOT NULL DEFAULT '0.0000' AFTER `shipping_terms`",
+				'attributes'    => "ADD COLUMN `attributes` text DEFAULT NULL AFTER `freight_total`",
+				'climate_safe'  => "ADD COLUMN `climate_safe` tinyint(1) NOT NULL DEFAULT '1' AFTER `attributes`"
 			],
 			// Which promotion (if any) discounted this commitment, and by how much.
 			'poolbuy_reservation' => [
@@ -193,6 +195,8 @@ class Poolbuy extends \Opencart\System\Engine\Model {
 			`lead_time` varchar(64) NOT NULL DEFAULT '',
 			`shipping_terms` varchar(64) NOT NULL DEFAULT '',
 			`freight_total` decimal(15,4) NOT NULL DEFAULT '0.0000',
+			`attributes` text,
+			`climate_safe` tinyint(1) NOT NULL DEFAULT '1',
 			`date_added` datetime NOT NULL,
 			`date_modified` datetime NOT NULL,
 			PRIMARY KEY (`pool_id`),

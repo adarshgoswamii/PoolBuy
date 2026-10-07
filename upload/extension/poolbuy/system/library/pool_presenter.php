@@ -230,6 +230,8 @@ class PoolPresenter {
 			'seller_rating_count' => (int)($pool['seller_rating_count'] ?? 0),
 			'gst_verified'        => !empty($pool['gst_verified']),
 			'verified_seller'     => !empty($pool['verified_seller']),
+			'climate_safe'        => !isset($pool['climate_safe']) || !empty($pool['climate_safe']),
+			'attributes'          => !empty($pool['attributes']) ? json_decode((string)$pool['attributes'], true) : [],
 
 			'lead_time'      => (string)($pool['lead_time'] ?? ''),
 			'shipping_terms' => (string)($pool['shipping_terms'] ?? ''),

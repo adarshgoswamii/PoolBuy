@@ -12,6 +12,9 @@
             {% if pool.verified_seller %}
               <span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_verified }}</span>
             {% endif %}
+            {% if pool.climate_safe %}
+              <span class="pb-badge" style="background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE;"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Climate Safe</span>
+            {% endif %}
             {% if pool.gst_verified %}
               <span class="pb-badge pb-badge--gst">{{ text_gst }}</span>
             {% endif %}
