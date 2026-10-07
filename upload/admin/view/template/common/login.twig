@@ -1,45 +1,234 @@
 {{ header }}
+<style>
+/* Executive Rabreez Super Admin Login Overrides */
+#header, footer { display: none !important; }
+body {
+  background: #091224 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  color: #FAF8F5 !important;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+#content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: radial-gradient(circle at 50% 20%, rgba(224, 98, 20, 0.12), transparent 45%),
+              radial-gradient(circle at 80% 80%, rgba(200, 157, 70, 0.08), transparent 40%),
+              #091224;
+}
+.pb-login-wrap {
+  width: 100%;
+  max-width: 480px;
+}
+.pb-login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(200, 157, 70, 0.15);
+  border: 1px solid rgba(200, 157, 70, 0.35);
+  border-radius: 30px;
+  color: #C89D46;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+.pb-login-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 10px #22C55E;
+}
+.pb-login-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #FAF8F5;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.pb-login-title span {
+  color: #E06214;
+}
+.pb-login-subtitle {
+  color: #94A3B8;
+  font-size: 14px;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+.pb-login-card {
+  background: #0F1D36;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+.pb-field-group {
+  margin-bottom: 20px;
+}
+.pb-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #CBD5E1;
+  margin-bottom: 8px;
+}
+.pb-input-box {
+  display: flex;
+  align-items: center;
+  background: #091224;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: all 0.2s ease;
+}
+.pb-input-box:focus-within {
+  border-color: #E06214;
+  box-shadow: 0 0 0 3px rgba(224, 98, 20, 0.2);
+}
+.pb-input-box i {
+  color: #64748B;
+  font-size: 15px;
+  margin-right: 12px;
+}
+.pb-input-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 13px 0;
+  color: #FAF8F5;
+  font-size: 14px;
+  outline: none;
+}
+.pb-btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #E06214, #C4510D);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(224, 98, 20, 0.35);
+  margin-top: 10px;
+}
+.pb-btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(224, 98, 20, 0.45);
+}
+.pb-btn-submit:active {
+  transform: translateY(0);
+}
+.pb-preset-hint {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: rgba(200, 157, 70, 0.08);
+  border: 1px dashed rgba(200, 157, 70, 0.3);
+  border-radius: 10px;
+  font-size: 12px;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pb-preset-hint code {
+  color: #C89D46;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.pb-footer-note {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #64748B;
+}
+.pb-footer-note a {
+  color: #C89D46;
+  text-decoration: none;
+}
+.pb-footer-note a:hover {
+  text-decoration: underline;
+}
+</style>
+
 <div id="content">
-  <div class="container-fluid">
-    <br/>
-    <br/>
-    <div class="row justify-content-sm-center">
-      <div class="col-sm-10 col-md-8 col-lg-5">
-        <div class="card">
-          <div class="card-header"><i class="fa-solid fa-lock"></i> {{ text_login }}</div>
-          <div class="card-body">
-            <form id="form-login" action="{{ login }}" method="post" data-oc-toggle="ajax">
-              {% if error_warning %}
-                <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-              {% endif %}
-              {% if success %}
-                <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-check-circle"></i> {{ success }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-              {% endif %}
-              <div class="mb-3">
-                <label for="input-username" class="form-label">{{ entry_username }}</label>
-                <div class="input-group">
-                  <div class="input-group-text"><i class="fa-solid fa-user"></i></div>
-                  <input type="text" name="username" value="" placeholder="{{ entry_username }}" id="input-username" class="form-control"/>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="input-password" class="form-label">{{ entry_password }}</label>
-                <div class="input-group mb-2">
-                  <div class="input-group-text"><i class="fa-solid fa-lock"></i></div>
-                  <input type="password" name="password" value="" placeholder="{{ entry_password }}" id="input-password" class="form-control"/>
-                </div>
-                {% if forgotten %}
-                <div class="mb-3"><a href="{{ forgotten }}">{{ text_forgotten }}</a></div>
-                {% endif %}
-              </div>
-              <div class="text-end">
-                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> {{ button_login }}</button>
-              </div>
-            </form>
+  <div class="pb-login-wrap">
+    <div style="text-align: center;">
+      <div class="pb-login-badge">
+        <span class="dot"></span>
+        <span>Rabreez Protocol V4.1 &middot; Active</span>
+      </div>
+      <h1 class="pb-login-title">PoolBuy <span>Admin</span></h1>
+      <p class="pb-login-subtitle">Super Admin &amp; Platform Control Center &middot; Wholesale Governance Engine</p>
+    </div>
+
+    <div class="pb-login-card">
+      <form id="form-login" action="{{ login }}" method="post" data-oc-toggle="ajax">
+        {% if error_warning %}
+          <div class="alert alert-danger alert-dismissible" style="background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.4); color: #FCA5A5; font-size: 13px; border-radius: 10px; margin-bottom: 20px;">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+          </div>
+        {% endif %}
+        {% if success %}
+          <div class="alert alert-success alert-dismissible" style="background: rgba(22, 163, 74, 0.2); border: 1px solid rgba(22, 163, 74, 0.4); color: #86EFAC; font-size: 13px; border-radius: 10px; margin-bottom: 20px;">
+            <i class="fa-solid fa-check-circle"></i> {{ success }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+          </div>
+        {% endif %}
+
+        <div class="pb-field-group">
+          <label class="pb-field-label" for="input-username">Operator Username</label>
+          <div class="pb-input-box">
+            <i class="fa-solid fa-shield-halved"></i>
+            <input type="text" name="username" value="admin" placeholder="{{ entry_username }}" id="input-username" required autocomplete="username"/>
           </div>
         </div>
-      </div>
+
+        <div class="pb-field-group">
+          <label class="pb-field-label" for="input-password">Master Key / Password</label>
+          <div class="pb-input-box">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" name="password" value="admin" placeholder="{{ entry_password }}" id="input-password" required autocomplete="current-password"/>
+          </div>
+        </div>
+
+        <button type="submit" class="pb-btn-submit">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Enter Super Admin Control Center</span>
+        </button>
+
+        <div class="pb-preset-hint">
+          <span><i class="fa-solid fa-key" style="color: #C89D46; margin-right: 6px;"></i> Preset Root Access:</span>
+          <span><code>admin</code> / <code>admin</code></span>
+        </div>
+      </form>
+    </div>
+
+    <div class="pb-footer-note">
+      <span>PoolBuy B2B Wholesale Engine &middot; Running on OpenCart 4 Core &middot; </span>
+      <a href="http://localhost/index.php?route=extension/poolbuy/pool">View Storefront</a>
     </div>
   </div>
 </div>
 {{ footer }}
+
