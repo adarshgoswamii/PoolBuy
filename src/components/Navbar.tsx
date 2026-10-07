@@ -77,6 +77,10 @@ export default function Navbar() {
               <span className="material-symbols-outlined text-[18px]">storefront</span>
               Marketplace
             </Link>
+            <Link href="/protocol" className="hover:text-white transition flex items-center gap-1">
+              <span className="material-symbols-outlined text-[18px]">gavel</span>
+              Protocol
+            </Link>
             <Link href="/marketplace?category=apparel-fashion" className="hover:text-white transition">
               Apparel Blanks
             </Link>

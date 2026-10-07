@@ -14,6 +14,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Pool State Machine', href: '/admin/pools', icon: 'hub' },
     { label: 'Seller KYC & Verification', href: '/admin/sellers', icon: 'verified_user' },
     { label: 'Taxonomy & Dynamic Filters', href: '/admin/taxonomy', icon: 'schema' },
+    { label: 'Settlement & Escrow Ledger', href: '/admin/settlements', icon: 'account_balance' },
+    { label: 'Platform Settings', href: '/admin/settings', icon: 'settings' },
   ];
 
   return (
