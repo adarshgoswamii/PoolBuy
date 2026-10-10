@@ -111,6 +111,35 @@ Buyers see active, completed and unfulfilled commitments on their dashboard, can
 withdraw while a pool is still filling, and can export a CSV. Sellers see fill progress
 and a commitment list — with buyer identities replaced by opaque `Buyer #NNNN` handles.
 
+### 6. Sellers run their own shop
+
+The portal has three tabs, all scoped to the signed-in seller:
+
+**Pools** — create and edit pool campaigns, watch fill progress, read the reservation map.
+
+**Products** — the seller's own catalogue. Add and edit products with a name,
+description, product code, price, stock figure, status and a primary image. Ownership
+lives in `oc_poolbuy_product_seller`, so the tenancy check is a join rather than a
+convention: seller B opening seller A's product gets "could not be found", and a crafted
+save updates zero rows. An unapproved seller may add products but cannot enable them,
+mirroring the rule for publishing pools. New products immediately become attachable to a
+pool.
+
+Note OpenCart 4.1's `oc_product` has no separate `sku` column — `model` is the single
+product code — so the form presents one "Model / SKU" field rather than inventing a
+second identifier.
+
+**Orders** — the orders the seller's pools generated. Advance an order through
+Processing, Shipped or Complete and record a carrier tracking reference. Each change
+writes an `oc_order_history` row, so it shows up in Admin → Sales → Orders and to the
+buyer, plus a `order_status_changed` event on the pool's audit trail. Statuses outside
+that working set (refunds, chargebacks) stay with the operator and are refused.
+
+Buyer privacy holds on these screens too: the order list shows only `Buyer #NNNN`, and
+the delivery address appears on the order detail **only once the pool is fulfilled** —
+the model blanks those fields until then, rather than relying on the template to hide
+them.
+
 ---
 
 ## Design decisions worth knowing
@@ -120,8 +149,21 @@ quantity, not an individual buyer's line. Collective volume unlocks the price fo
 everyone. The source designs were ambiguous here; this is the only reading under which
 retroactive repricing is coherent.
 
-**Reserve now, pay on MOQ.** Joining a pool is a binding commitment, not a payment. No
-gateway is involved; orders are raised unpaid with a `poolbuy.invoice` payment method.
+**Reserve now, pay on MOQ.** Joining a pool is a binding commitment, not a payment.
+Nothing is charged while a pool is filling, so a pool that expires below MOQ costs its
+participants nothing. Once the pool reaches MOQ and closes, each commitment becomes a
+real order and payment is requested through the configured gateway
+(`system/library/gateway_factory.php` selects between the Razorpay gateway and a mock
+gateway for tests). Where no gateway is configured the order is raised unpaid against
+the `poolbuy.invoice` method. Refunds for a pool that does not proceed after payment are
+issued back through the original gateway.
+
+**Sellers apply, administrators approve.** A shopper applies through
+`extension/poolbuy/seller.register`, supplying the business name, GSTIN and location.
+The profile is created unapproved: `status`, `gst_verified` and `verified_seller` are
+forced to 0 server-side, so an applicant cannot self-approve or award themselves a
+badge. An administrator promotes the account from Admin → PoolBuy → Sellers. Until then
+the seller may prepare drafts but never publish.
 
 **Join is a page, not a modal.** The design showed a JavaScript modal. A binding
 purchase commitment should not depend on client-side state, so it is a server-rendered
@@ -137,8 +179,9 @@ production. The theme is a hand-written token-driven stylesheet
 bundled with OpenCart; Inter is self-hosted. There are zero external CDN or font
 requests in the rendered HTML.
 
-**Multi-vendor is phased.** Administrators manage sellers; sellers manage their own
-pools through the portal. A seller is a customer account linked to a seller profile.
+**Multi-vendor is phased.** Sellers manage their own pools, catalogue and orders through
+the portal. A seller is a customer account linked to a seller profile. Platform-wide
+payment and settlement monitoring stays with the administrator.
 
 ---
 
@@ -147,7 +190,7 @@ pools through the portal. A seller is a customer account linked to a seller prof
 ```
 upload/extension/poolbuy/
   admin/      controller|model|language|view   operator screens (sellers, pools)
-  catalog/    controller|model|language|view   storefront (marketplace, join, account, seller portal, cron)
+  catalog/    controller|model|language|view   storefront (marketplace, join, account, seller portal, seller catalogue, seller orders, cron)
   system/library/                              framework-free domain logic
 ```
 
@@ -160,13 +203,40 @@ OpenCart:
 | `PoolLifecycle` | the state machine and which transitions are legal |
 | `PoolPresenter` | formatting and display decoration |
 
-Seven tables, all `InnoDB` / `utf8mb4`: `oc_poolbuy_seller`, `oc_poolbuy_product_seller`,
+Eleven tables, all `InnoDB` / `utf8mb4`: `oc_poolbuy_seller`, `oc_poolbuy_product_seller`,
 `oc_poolbuy_pool`, `oc_poolbuy_pool_tier`, `oc_poolbuy_reservation`,
-`oc_poolbuy_pool_event`.
+`oc_poolbuy_pool_event`, `oc_poolbuy_payment`, `oc_poolbuy_settlement`,
+`oc_poolbuy_promotion`, `oc_poolbuy_promotion_redemption`, `oc_poolbuy_review`.
+
+The authoritative list is `$tables` in
+`upload/extension/poolbuy/admin/model/module/poolbuy.php`; `verify_install.ps1`
+asserts the installed set matches it exactly, so adding a table without updating
+both is caught by the gate rather than silently under-tested.
 
 Settings live under the `module_poolbuy` group: currency code and symbol, GST rate,
 platform fee, default pool duration, retroactive pricing, and the cron token.
 `module_poolbuy_status` must be `1` or the storefront features stay hidden.
+
+### Currency
+
+Two independent layers, deliberately:
+
+- **PoolBuy pool prices are never converted.** Each pool carries its own
+  `currency_code`, and converted orders are written with `currency_value = 1.0`. A pool
+  priced at ₹1,550 is ₹1,550 whatever the shopper has selected in the switcher, because
+  a wholesale commitment is denominated in the currency the deal was struck in.
+- **Stock OpenCart product prices do convert**, from the base currency (USD, the row
+  with `value = 1.0`) into whatever the shopper selects.
+
+A stock OpenCart install ships Indian Rupee in `oc_currency` with `status = 0`, so it
+never appears in the switcher — while PoolBuy is configured for INR and stamps orders
+with `currencyId('INR')`. `tools\poolbuy\seed_currency.ps1` enables it (and is called by
+`seed_all.ps1`), which also clears the cache, since OpenCart caches the currency list.
+
+To make rupees the store default as well, set **System → Settings → edit store → Local →
+Currency** to Indian Rupee. That converts stock product prices for display at the stored
+rate; it does not touch pool pricing. Note `config_currency_auto` is `1`, so OpenCart
+refreshes exchange rates on its own schedule.
 
 ### Core files touched
 
@@ -187,7 +257,7 @@ extension restores stock behaviour:
 
 | Gate | Covers |
 |---|---|
-| PHPUnit | 84 tests over the domain logic |
+| PHPUnit | 151 tests over the domain logic |
 | PHPStan level 6 | zero errors from PoolBuy code |
 | php-cs-fixer | zero PoolBuy style violations |
 | `verify_install.ps1` | install / uninstall / reinstall (**destructive** — reseed after) |
@@ -195,7 +265,14 @@ extension restores stock behaviour:
 | `verify_race.ps1` | six parallel buyers cannot oversubscribe a pool |
 | `verify_account.ps1` | buyer dashboard, including cross-buyer isolation |
 | `verify_lifecycle.ps1` | cron, repricing, order conversion, idempotency, expiry |
-| `verify_seller.ps1` | seller portal and cross-tenant isolation |
+| `verify_freight.ps1` | pool freight quoting and the split across participants |
+| `verify_promotions.ps1` | coupon eligibility, thresholds, and per-code refusal reasons |
+| `verify_reviews.ps1` | review eligibility, moderation, and reviewer anonymity |
+| `verify_currency.ps1` | multi-currency pricing and per-currency settlement totals |
+| `verify_payment.ps1` | gateway checkout, webhooks, and refunds |
+| `verify_progress.ps1` | live pool progress updates |
+| `verify_discovery.ps1` | marketplace search, filters, trending and ending-soon rails |
+| `verify_seller.ps1` | seller portal, onboarding, catalogue, order processing, and cross-tenant isolation |
 | `verify_security.ps1` | authorisation, CSRF, XSS, SQL injection, price and quantity trust |
 | `verify_accessibility.ps1` | landmarks, labels, ARIA, focus, no-JavaScript operation |
 

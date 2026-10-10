@@ -142,6 +142,12 @@
                     <span>{{ text_subtotal|format(breakdown.quantity, breakdown.unit_price_text) }}</span>
                     <strong class="pb-tnum">{{ breakdown.subtotal_text }}</strong>
                   </div>
+                  {% if breakdown.has_discount %}
+                    <div class="pb-summary-row">
+                      <span>{{ text_promo_discount }}{% if promo.name %} &mdash; {{ promo.name|escape }}{% endif %}</span>
+                      <strong class="pb-tnum">&minus;{{ breakdown.discount_text }}</strong>
+                    </div>
+                  {% endif %}
                   <div class="pb-summary-row">
                     <span>{{ text_gst|format(breakdown.gst_rate) }}</span>
                     <strong class="pb-tnum">{{ breakdown.gst_text }}</strong>
@@ -153,6 +159,33 @@
                   <div class="pb-summary-row pb-summary-row--total">
                     <span>{{ text_total }}</span>
                     <strong class="pb-tnum">{{ breakdown.total_text }}</strong>
+                  </div>
+
+                  {# ---- Discount code. A pool-level promotion applies to everyone,
+                         so the field is replaced by a statement rather than
+                         inviting a code that would be refused. ---- #}
+                  <div class="pb-field pb-mt-md pb-mb-md">
+                    {% if promo.pool_level %}
+                      <p class="pb-body-md pb-mb-0"><i class="fa-solid fa-tags" aria-hidden="true"></i> {{ text_promo_pool_level }}</p>
+                      {# The buyer typed a code that this pool overrides. Saying so
+                         is the whole point of the precedence rule. #}
+                      {% if promo.error %}
+                        <p class="pb-body-sm pb-mb-0" role="alert" style="color: var(--pb-danger, #b42318);">{{ promo.error }}</p>
+                      {% endif %}
+                    {% else %}
+                      <label class="pb-label" for="pb-promo">{{ entry_promo_code }}</label>
+                      <div class="pb-flex pb-gap-sm">
+                        <input class="pb-input" type="text" id="pb-promo" name="promo_code" value="{{ promo.code|escape }}" placeholder="{{ text_promo_placeholder }}" aria-describedby="pb-promo-help"/>
+                        <button class="pb-btn pb-btn--light" type="submit" name="step" value="1">{{ button_apply_promo }}</button>
+                      </div>
+                      {% if promo.applied %}
+                        <p class="pb-body-sm pb-mb-0" style="color: var(--pb-success, #1a7f37);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_promo_applied }}: &minus;{{ promo.discount_text }}</p>
+                      {% elseif promo.error %}
+                        <p class="pb-body-sm pb-mb-0" role="alert" style="color: var(--pb-danger, #b42318);">{{ promo.error }}</p>
+                      {% else %}
+                        <p class="pb-body-sm pb-muted pb-mb-0" id="pb-promo-help">{{ text_promo_optional }}</p>
+                      {% endif %}
+                    {% endif %}
                   </div>
 
                   <div class="pb-note pb-mt-md pb-mb-md">
@@ -176,6 +209,14 @@
                     <i class="fa-solid fa-truck" aria-hidden="true"></i>
                     <div>
                       <p class="pb-body-md pb-mb-xs" style="font-weight: 600;">{{ text_freight_title }}</p>
+                      {% if freight.has_freight %}
+                        <p class="pb-body-md pb-mb-xs">
+                          <strong>{{ text_freight_estimate|format(breakdown.quantity) }}: {{ freight.estimate_text }}</strong>
+                          <span class="pb-muted">&mdash; {{ text_freight_per_unit|format(freight.per_unit_text) }}</span>
+                        </p>
+                        <p class="pb-body-sm pb-muted pb-mb-xs">{{ text_freight_pool_total }}: {{ freight.pool_total_text }}</p>
+                        <p class="pb-body-sm pb-mb-xs">{{ text_freight_estimate_note }}</p>
+                      {% endif %}
                       <p class="pb-mb-0">{{ text_freight_note }}</p>
                     </div>
                   </div>
@@ -218,6 +259,10 @@
                   <p class="pb-body-md pb-muted pb-mt-sm">{{ text_commit_note }}</p>
 
                   <input type="hidden" name="quantity" value="{{ quantity }}"/>
+                  {# Carried forward so a refresh or a back-and-forward does not
+                     silently drop the discount. The code is re-resolved from the
+                     database on commit; this value is never trusted as an amount. #}
+                  <input type="hidden" name="promo_code" value="{{ promo.code|escape }}"/>
                   <div class="pb-flex pb-justify-between pb-items-center">
                     <button class="pb-btn pb-btn--light" type="submit" name="step" value="1">{{ button_back }}</button>
                     <button class="pb-btn pb-btn--primary" type="submit" name="step" value="3"{% if not addresses %} disabled{% endif %}>{{ button_confirm }}</button>

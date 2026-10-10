@@ -1,0 +1,92 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {{ tabs }}
+
+  {% if success %}
+    <div class="pb-alert pb-alert--success pb-mb-lg" role="status">
+      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+      <span>{{ success }}</span>
+    </div>
+  {% endif %}
+
+  {% if error %}
+    <div class="pb-alert pb-alert--error pb-mb-lg" role="alert">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ error }}</span>
+    </div>
+  {% endif %}
+
+  <div class="pb-mb-xl">
+    <h1 class="pb-display-lg pb-mb-xs">{{ heading_title }}</h1>
+    <p class="pb-body-lg pb-muted pb-mb-0">{{ seller_name|escape }} &middot; {{ text_subtitle }}</p>
+  </div>
+
+  {% if orders_list %}
+    <div class="pb-card">
+      <div class="pb-card__body">
+        <div style="overflow-x: auto;">
+          <table class="pb-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ column_order }}</th>
+                <th scope="col">{{ column_pool }}</th>
+                <th scope="col">{{ column_buyer }}</th>
+                <th scope="col">{{ column_quantity }}</th>
+                <th scope="col">{{ column_total }}</th>
+                <th scope="col">{{ column_status }}</th>
+                <th scope="col">{{ column_tracking }}</th>
+                <th scope="col">{{ column_date }}</th>
+                <th scope="col">{{ column_action }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders_list %}
+                <tr>
+                  <td class="pb-tnum">#{{ order.order_id }}</td>
+                  <td>
+                    <a class="pb-link" href="{{ order.view }}">{{ order.pool }}</a>
+                    <span class="pb-body-md pb-muted" style="display: block;">{{ order.pool_title|escape }}</span>
+                  </td>
+                  {# The opaque handle, never a name or an email address. #}
+                  <td>{{ order.handle }}</td>
+                  <td class="pb-tnum">{{ text_units|format(order.quantity, order.unit_label) }}</td>
+                  <td class="pb-tnum">{{ order.total }}</td>
+                  <td><span class="pb-badge pb-badge--soft">{{ order.status }}</span></td>
+                  <td>{% if order.tracking %}{{ order.tracking|escape }}{% else %}{{ text_none|raw }}{% endif %}</td>
+                  <td>{{ order.date_added }}</td>
+                  <td><a class="pb-btn pb-btn--light pb-btn--sm" href="{{ order.view }}">{{ button_view }}</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md pb-mt-lg">
+      <p class="pb-body-md pb-muted pb-mb-0">{{ results }}</p>
+      <div>{{ pagination }}</div>
+    </div>
+  {% else %}
+    <div class="pb-card">
+      <div class="pb-card__body pb-text-center">
+        <div class="pb-empty__icon" style="font-size: 40px;"><i class="fa-solid fa-receipt" aria-hidden="true"></i></div>
+        <h2 class="pb-headline-sm pb-mb-sm">{{ text_no_orders }}</h2>
+        <p class="pb-body-md pb-muted pb-mb-0">{{ text_no_orders_body }}</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{{ footer }}

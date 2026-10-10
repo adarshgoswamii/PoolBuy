@@ -1,63 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
 /**
- * PoolBuy - Executive Wholesale Protocol
- *
- * The design system from stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/DESIGN.md
- * expressed as static CSS. Tokens are CSS custom properties; everything else is a
- * small set of semantic component classes.
- *
- * This is deliberately not a Tailwind build. The Stitch exports rely on the
- * Tailwind CDN, which must never ship to production, and reproducing the whole
- * utility framework would be far more CSS than these screens need. Component
- * classes keep the markup readable and the payload small while rendering the
- * same design.
- *
- * Loaded after OpenCart's bootstrap.css so it can override the stock theme.
+ * PoolBuy - Executive Wholesale Protocol (Rabreez Design System)
+ * High-fidelity styling for OpenCart 4.1.0.4.
  */
 
-/* ==========================================================================
-   Tokens
-   ========================================================================== */
-
 :root {
+    /* Rabreez Executive Palette */
+    --primary: #0F1D36;
+    --primary-dark: #091224;
+    --primary-light: #EEF3F9;
+    --accent: #E06214;
+    --accent-dark: #C4510D;
+    --accent-light: #FFF4ED;
+    --gold: #C89D46;
+    --gold-dark: #B98A32;
+    --gold-light: #FBF6EB;
+    --bg-page: #FAF8F5;
+    --bg-white: #FFFFFF;
+    --bg-warm: #F4EFEA;
+    --bg-section: #F8FAFC;
+    --text-dark: #0F172A;
+    --text-body: #334155;
+    --text-muted: #64748B;
+    --border: #E2E8F0;
+    --border-subtle: #EDF2F7;
+    --success: #16A34A;
+    --success-light: #DCFCE7;
+    --error: #DC2626;
+
+    /* Fonts */
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
     /* Surfaces */
-    --pb-surface: #faf8ff;
-    --pb-surface-dim: #d9d9e5;
-    --pb-surface-bright: #faf8ff;
+    --pb-surface: var(--bg-page);
+    --pb-surface-dim: #ede9e3;
+    --pb-surface-bright: #ffffff;
     --pb-surface-container-lowest: #ffffff;
-    --pb-surface-container-low: #f3f3fe;
-    --pb-surface-container: #ededf9;
-    --pb-surface-container-high: #e7e7f3;
-    --pb-surface-container-highest: #e1e2ed;
-    --pb-surface-variant: #e1e2ed;
-    --pb-surface-tint: #0053db;
+    --pb-surface-container-low: #f8f6f2;
+    --pb-surface-container: #f4efea;
+    --pb-surface-container-high: #eae4dd;
+    --pb-surface-container-highest: #e0d8cf;
+    --pb-surface-variant: #e2e8f0;
+    --pb-surface-tint: var(--primary);
 
     /* Content */
-    --pb-on-surface: #191b23;
-    --pb-on-surface-variant: #434655;
-    --pb-inverse-surface: #2e3039;
-    --pb-inverse-on-surface: #f0f0fb;
-    --pb-outline: #737686;
-    --pb-outline-variant: #c3c6d7;
+    --pb-on-surface: var(--text-dark);
+    --pb-on-surface-variant: var(--text-body);
+    --pb-inverse-surface: #0f172a;
+    --pb-inverse-on-surface: #f8fafc;
+    --pb-outline: var(--border);
+    --pb-outline-variant: var(--border-subtle);
 
-    /* Primary - Trust Blue */
-    --pb-primary: #004ac6;
+    /* Primary - Executive Navy */
+    --pb-primary: var(--primary);
     --pb-on-primary: #ffffff;
-    --pb-primary-container: #2563eb;
-    --pb-on-primary-container: #eeefff;
-    --pb-inverse-primary: #b4c5ff;
-    --pb-primary-fixed: #dbe1ff;
-    --pb-primary-fixed-dim: #b4c5ff;
-    --pb-on-primary-fixed: #00174b;
-    --pb-on-primary-fixed-variant: #003ea8;
+    --pb-primary-container: var(--primary-dark);
+    --pb-on-primary-container: #ffffff;
+    --pb-inverse-primary: #94a3b8;
+    --pb-primary-fixed: var(--primary-light);
+    --pb-primary-fixed-dim: #cbd5e1;
+    --pb-on-primary-fixed: var(--primary-dark);
+    --pb-on-primary-fixed-variant: var(--primary);
 
-    /* Secondary - Deep Slate */
-    --pb-secondary: #565e74;
+    /* Secondary - Slate / Gold */
+    --pb-secondary: #334155;
     --pb-on-secondary: #ffffff;
-    --pb-secondary-container: #dae2fd;
-    --pb-on-secondary-container: #5c647a;
-    --pb-secondary-fixed: #dae2fd;
-    --pb-secondary-fixed-dim: #bec6e0;
-    --pb-on-secondary-fixed: #131b2e;
+    --pb-secondary-container: var(--gold-light);
+    --pb-on-secondary-container: var(--gold-dark);
+    --pb-secondary-fixed: #e2e8f0;
+    --pb-secondary-fixed-dim: #cbd5e1;
+    --pb-on-secondary-fixed: #1e293b;
     --pb-on-secondary-fixed-variant: #3f465c;
 
     /* Tertiary - Accent Orange, used for pool urgency */
@@ -183,6 +199,26 @@ body.pb {
 .pb-tertiary-text { color: var(--pb-tertiary); }
 .pb-strike { text-decoration: line-through; }
 
+/* Key/value detail lists, used by the seller order screen. A two column grid so
+   labels and values line up without a table, which keeps the markup semantic for
+   what is genuinely descriptive data rather than tabular data. */
+.pb-dl {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: var(--pb-xs) var(--pb-md);
+    margin: 0;
+}
+
+.pb-dl dt {
+    color: var(--pb-on-surface-variant);
+    font-size: 13px;
+}
+
+.pb-dl dd {
+    margin: 0;
+    font-size: 14px;
+}
+
 /* ==========================================================================
    Layout
    ========================================================================== */
@@ -221,6 +257,53 @@ body.pb {
 .pb-grid-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .pb-grid-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .pb-grid-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+
+/* Main content beside a secondary column.
+   Declared as a class rather than an inline style so it can actually collapse on
+   small screens: an inline grid-template-columns cannot be overridden by a media
+   query, which previously forced a cramped two-column layout onto phones. */
+.pb-grid-main-aside {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+}
+
+@media (min-width: 992px) {
+    .pb-grid-main-aside { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+}
+
+/* Discovery rails: a compact strip above the marketplace grid. Two across on
+   mobile so a rail reads as a strip rather than a second full-width list, then
+   four across once there is room. */
+.pb-grid-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pb-md);
+}
+
+@media (min-width: 768px) {
+    .pb-grid-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+    .pb-grid-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.pb-rail-card__media {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-start-start-radius: var(--pb-radius);
+    border-start-end-radius: var(--pb-radius);
+}
+
+.pb-rail-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* The rail card body is tighter than a full marketplace card. */
+.pb-rail-card .pb-card__body { padding: var(--pb-md); }
 
 @media (min-width: 768px) {
     .pb-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -489,6 +572,17 @@ body.pb {
 .pb-btn--danger:hover { background: rgba(186, 26, 26, 0.06); color: var(--pb-error); }
 
 .pb-btn--sm { padding: 8px 14px; font-size: 12px; }
+
+/* Touch devices get a comfortable tap target. Scoped to coarse pointers so the
+   tighter desktop density is preserved, and expressed as a minimum so nothing
+   that is already large enough changes. Buttons are inline-flex, so min-height
+   applies; it would be ignored on plain inline links. */
+@media (hover: none) and (pointer: coarse) {
+    .pb-btn,
+    .pb-btn--sm {
+        min-height: 44px;
+    }
+}
 .pb-btn--lg { padding: 14px 28px; font-size: 16px; }
 .pb-btn--block { width: 100%; }
 

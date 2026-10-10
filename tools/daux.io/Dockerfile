@@ -37,4 +37,4 @@ WORKDIR /build
 
 EXPOSE 8085
 
-CMD ["daux"]
+CMD ["daux", "serve", "--host", "0.0.0.0", "--port", "8085"]

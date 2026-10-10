@@ -29,7 +29,7 @@
 
       <div id="pb-filters" class="pb-side">
         <form action="{{ action }}" method="get">
-          {# Sort is part of the same form so it survives an Apply #}
+          {# Search #}
           <div class="pb-field">
             <label class="pb-label" for="pb-search">{{ text_search }}</label>
             <div class="pb-search">
@@ -38,6 +38,61 @@
             </div>
           </div>
 
+          {# Campaign Quick Filters #}
+          <div class="pb-field">
+            <label class="pb-label">Campaign Type</label>
+            <div class="pb-flex pb-wrap pb-gap-xs">
+              <a href="{{ action }}&filter_campaign=" class="pb-badge {% if not filter.filter_campaign %}pb-badge--primary{% else %}pb-badge--soft{% endif %}" style="text-decoration:none;">All</a>
+              <a href="{{ action }}&filter_campaign=near_moq" class="pb-badge {% if filter.filter_campaign == 'near_moq' %}pb-badge--primary{% else %}pb-badge--soft{% endif %}" style="text-decoration:none;">⚡ &gt;80% MOQ</a>
+              <a href="{{ action }}&filter_campaign=ending_soon" class="pb-badge {% if filter.filter_campaign == 'ending_soon' %}pb-badge--primary{% else %}pb-badge--soft{% endif %}" style="text-decoration:none;">⏳ Ending 72h</a>
+              <a href="{{ action }}&filter_campaign=reached" class="pb-badge {% if filter.filter_campaign == 'reached' %}pb-badge--primary{% else %}pb-badge--soft{% endif %}" style="text-decoration:none;">🎯 MOQ Unlocked</a>
+            </div>
+          </div>
+
+          {# Dynamic Apparel Filters #}
+          <div class="pb-field">
+            <label class="pb-label">Apparel Sizes</label>
+            <div class="pb-flex pb-wrap pb-gap-xs">
+              {% for s in ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'] %}
+                <label style="cursor: pointer;">
+                  <input type="radio" name="filter_size" value="{{ s }}" {% if filter.filter_size == s %}checked{% endif %} style="display:none;" onchange="this.form.submit()"/>
+                  <span class="pb-badge {% if filter.filter_size == s %}pb-badge--primary{% else %}pb-badge--soft{% endif %}" style="padding: 4px 10px;">{{ s }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Apparel GSM #}
+          <div class="pb-field">
+            <label class="pb-label">Fabric Weight (GSM)</label>
+            <select class="pb-select" name="filter_gsm" onchange="this.form.submit()">
+              <option value="">Any GSM</option>
+              <option value="180 GSM" {% if filter.filter_gsm == '180 GSM' %}selected{% endif %}>180 GSM Light Combed</option>
+              <option value="220 GSM" {% if filter.filter_gsm == '220 GSM' %}selected{% endif %}>220 GSM Bio-Washed</option>
+              <option value="240 GSM" {% if filter.filter_gsm == '240 GSM' %}selected{% endif %}>240 GSM Heavy Blanks</option>
+              <option value="280 GSM" {% if filter.filter_gsm == '280 GSM' %}selected{% endif %}>280 GSM Premium Streetwear</option>
+              <option value="360 GSM" {% if filter.filter_gsm == '360 GSM' %}selected{% endif %}>360 GSM Heavy Fleece</option>
+            </select>
+          </div>
+
+          {# Warehouse-Safe Electronics Protocol #}
+          <div class="pb-field" style="background: #F8FAFC; padding: 12px; border-radius: 8px; border: 1px solid #E2E8F0;">
+            <div class="pb-flex pb-items-center pb-gap-xs pb-mb-xs">
+              <i class="fa-solid fa-shield-halved" style="color: #4338CA;"></i>
+              <span class="pb-label" style="color: #1E1B4B; margin: 0;">Warehouse Climate Safe</span>
+            </div>
+            <p style="font-size: 11px; color: #64748B; margin-bottom: 8px;">Strictly solid-state GaN &amp; braided interconnects. Zero heat-degradable raw Li-Po cells.</p>
+            <label class="pb-label">GaN Power Rating</label>
+            <select class="pb-select" name="filter_wattage" onchange="this.form.submit()">
+              <option value="">All Power Ratings</option>
+              <option value="20W" {% if filter.filter_wattage == '20W' %}selected{% endif %}>20W Compact</option>
+              <option value="45W" {% if filter.filter_wattage == '45W' %}selected{% endif %}>45W Dual USB-C</option>
+              <option value="65W" {% if filter.filter_wattage == '65W' %}selected{% endif %}>65W GaN III Fast</option>
+              <option value="100W" {% if filter.filter_wattage == '100W' %}selected{% endif %}>100W Commercial Multi-Port</option>
+            </select>
+          </div>
+
+          {# Location #}
           <div class="pb-field">
             <label class="pb-label" for="pb-location">{{ text_location }}</label>
             <select class="pb-select" id="pb-location" name="filter_location">
@@ -48,6 +103,7 @@
             </select>
           </div>
 
+          {# MOQ Range #}
           <div class="pb-field">
             <span class="pb-label">{{ text_moq_range }}</span>
             <div class="pb-flex pb-gap-sm">
@@ -58,6 +114,7 @@
             </div>
           </div>
 
+          {# Checkboxes #}
           <div class="pb-field">
             <label class="pb-check">
               <input type="checkbox" name="filter_available" value="1"{% if filter.filter_available %} checked{% endif %}/>
@@ -67,8 +124,13 @@
               <input type="checkbox" name="filter_gst_verified" value="1"{% if filter.filter_gst_verified %} checked{% endif %}/>
               <span class="pb-body-md">{{ text_filter_gst }}</span>
             </label>
+            <label class="pb-check">
+              <input type="checkbox" name="filter_climate_safe" value="1"{% if filter.filter_climate_safe %} checked{% endif %}/>
+              <span class="pb-body-md">Climate Safe Certified</span>
+            </label>
           </div>
 
+          {# Sort #}
           <div class="pb-field">
             <label class="pb-label" for="pb-sort">{{ text_sort }}</label>
             <select class="pb-select" id="pb-sort" name="sort">
@@ -115,6 +177,15 @@
           {% endfor %}
           <a class="pb-link pb-label-md" href="{{ clear_href }}">{{ text_clear }}</a>
         </div>
+      {% endif %}
+
+      {# --- Discovery rails.
+             Only shown on the unfiltered feed, where they help a shopper start;
+             once a search or filter is active the grid itself is the answer. --- #}
+      {% if has_rails %}
+        {{ ending_soon_rail }}
+        {{ trending_rail }}
+        <h2 class="pb-headline-sm pb-mb-md">{{ text_rail_all_pools }}</h2>
       {% endif %}
 
       <div id="pb-pool-list">{{ list }}</div>

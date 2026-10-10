@@ -1,0 +1,106 @@
+{{ header }}
+<div class="pb-container pb-section">
+  <nav aria-label="Breadcrumb" class="pb-mb-lg">
+    <ol class="pb-flex pb-wrap pb-gap-sm pb-label-md pb-muted" style="list-style: none; padding: 0; margin: 0;">
+      {% for breadcrumb in breadcrumbs %}
+        <li>
+          {% if not loop.last %}<a class="pb-link" href="{{ breadcrumb.href }}">{{ breadcrumb.text }}{% if breadcrumb.text|striptags|trim is empty %}<span class="pb-visually-hidden">Home</span>{% endif %}</a>
+            <i class="fa-solid fa-chevron-right" style="font-size: 9px; margin-inline: 4px;" aria-hidden="true"></i>
+          {% else %}<span aria-current="page">{{ breadcrumb.text }}</span>{% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {{ tabs }}
+
+  {% if success %}
+    <div class="pb-alert pb-alert--success pb-mb-lg" role="status">
+      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+      <span>{{ success }}</span>
+    </div>
+  {% endif %}
+
+  {% if error %}
+    <div class="pb-alert pb-alert--error pb-mb-lg" role="alert">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ error }}</span>
+    </div>
+  {% endif %}
+
+  {% if not is_approved %}
+    <div class="pb-alert pb-alert--warning pb-mb-lg" role="status">
+      <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+      <div>
+        <p class="pb-body-md pb-mb-xs" style="font-weight: 600;">{{ text_pending_approval }}</p>
+        <p class="pb-mb-0">{{ text_pending_body }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="pb-flex pb-justify-between pb-items-end pb-wrap pb-gap-md pb-mb-xl">
+    <div>
+      <h1 class="pb-display-lg pb-mb-xs">{{ heading_title }}</h1>
+      <p class="pb-body-lg pb-muted pb-mb-0">{{ seller_name|escape }} &middot; {{ text_subtitle }}</p>
+    </div>
+    <a class="pb-btn pb-btn--primary" href="{{ add }}"><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> {{ button_add_product }}</a>
+  </div>
+
+  {% if products %}
+    <div class="pb-card">
+      <div class="pb-card__body">
+        <h2 class="pb-headline-sm pb-mb-md">{{ text_catalogue }}</h2>
+
+        <div style="overflow-x: auto;">
+          <table class="pb-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ column_image }}</th>
+                <th scope="col">{{ column_name }}</th>
+                <th scope="col">{{ column_model }}</th>
+                <th scope="col">{{ column_price }}</th>
+                <th scope="col">{{ column_quantity }}</th>
+                <th scope="col">{{ column_status }}</th>
+                <th scope="col">{{ column_action }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+                <tr>
+                  <td><img src="{{ product.thumb }}" alt="" width="40" height="40" loading="lazy"></td>
+                  <td>{{ product.name|escape }}</td>
+                  <td>{{ product.model|escape }}</td>
+                  <td class="pb-tnum">{{ product.price }}</td>
+                  <td class="pb-tnum">{{ product.quantity }}</td>
+                  <td>
+                    {% if product.status %}
+                      <span class="pb-badge pb-badge--primary">{{ text_enabled }}</span>
+                    {% else %}
+                      <span class="pb-badge pb-badge--muted">{{ text_disabled }}</span>
+                    {% endif %}
+                  </td>
+                  <td><a class="pb-btn pb-btn--ghost pb-btn--sm" href="{{ product.edit }}">{{ button_edit }}</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pb-flex pb-justify-between pb-items-center pb-wrap pb-gap-md pb-mt-lg">
+      <p class="pb-body-md pb-muted pb-mb-0">{{ results }}</p>
+      <div>{{ pagination }}</div>
+    </div>
+  {% else %}
+    <div class="pb-card">
+      <div class="pb-card__body pb-text-center">
+        <div class="pb-empty__icon" style="font-size: 40px;"><i class="fa-solid fa-box-open" aria-hidden="true"></i></div>
+        <h2 class="pb-headline-sm pb-mb-sm">{{ text_no_products }}</h2>
+        <p class="pb-body-md pb-muted pb-mb-lg">{{ text_no_products_body }}</p>
+        <a class="pb-btn pb-btn--primary" href="{{ add }}">{{ button_add_product }}</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{{ footer }}

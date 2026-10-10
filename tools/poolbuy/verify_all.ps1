@@ -78,8 +78,23 @@ $suites = [ordered]@{
     'Join concurrency'    = 'verify_race.ps1'
     'Buyer dashboard'     = 'verify_account.ps1'
     'Pool lifecycle'      = 'verify_lifecycle.ps1'
+    'Pool freight'        = 'verify_freight.ps1'
+    'Promotions'          = 'verify_promotions.ps1'
+    'Multi-currency'      = 'verify_currency.ps1'
+    'Payments'            = 'verify_payment.ps1'
+    # Reviews requires a purchase that is converted, on a fulfilled pool, with a
+    # SETTLED payment. Only verify_payment.ps1 produces a paid row, so Reviews has
+    # to follow Payments or it exits early having asserted nothing.
+    'Reviews'             = 'verify_reviews.ps1'
+    'Live progress'       = 'verify_progress.ps1'
+    'Discovery surfaces'  = 'verify_discovery.ps1'
     'Seller portal'       = 'verify_seller.ps1'
+    'Payments admin'      = 'verify_settlement.ps1'
     'Security hardening'  = 'verify_security.ps1'
+    # Runs late because it temporarily lowers the rate limit; it restores the
+    # original values in a finally block, but keeping it after the suites that
+    # hammer the cron endpoint avoids any chance of throttling them.
+    'API rate limiting'   = 'verify_ratelimit.ps1'
     'Accessibility'       = 'verify_accessibility.ps1'
 }
 
@@ -93,6 +108,12 @@ foreach ($name in $suites.Keys) {
     "     $pass passed, $fail failed"
     if ($fail -gt 0) {
         ($out -split "`n") | Where-Object { $_ -match '  FAIL' } | ForEach-Object { "       " + $_.Trim() }
+    } elseif ($pass -eq 0) {
+        # A suite that asserted nothing at all has bailed out before its first
+        # check, usually because a prerequisite dataset was missing. Surface the
+        # tail so the reason is visible instead of a silent "0 passed, 0 failed".
+        "       suite asserted nothing - last output follows:"
+        ($out -split "`n") | Where-Object { $_.Trim() } | Select-Object -Last 6 | ForEach-Object { "       " + $_.Trim() }
     }
 }
 

@@ -84,6 +84,57 @@ class Dashboard extends \Opencart\System\Engine\Controller {
 			$data['rows'][] = $column;
 		}
 
+		// PoolBuy Super Admin Metrics & Data
+		$data['poolbuy_active'] = false;
+		$check = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "poolbuy_pool'");
+		if ($check->num_rows) {
+			$data['poolbuy_active'] = true;
+
+			// Metrics
+			$q_pools = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "poolbuy_pool` WHERE `status` = 'active'");
+			$data['metric_active_pools'] = (int)($q_pools->row['total'] ?? 0);
+
+			$q_total_pools = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "poolbuy_pool`");
+			$data['metric_total_pools'] = (int)($q_total_pools->row['total'] ?? 0);
+
+			$q_escrow = $this->db->query("SELECT COALESCE(SUM(p.`reserved_qty` * (SELECT COALESCE(MIN(t.`price`), 500) FROM `" . DB_PREFIX . "poolbuy_pool_tier` t WHERE t.`pool_id` = p.`pool_id`)), 0) AS total FROM `" . DB_PREFIX . "poolbuy_pool` p");
+			$data['metric_escrow_val'] = (float)($q_escrow->row['total'] ?? 0);
+
+			$q_sellers = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "poolbuy_seller` WHERE `verified_seller` = 1");
+			$data['metric_verified_sellers'] = (int)($q_sellers->row['total'] ?? 0);
+
+			$q_moq = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "poolbuy_pool` WHERE `reserved_qty` >= `moq_target`");
+			$data['metric_moq_unlocked'] = (int)($q_moq->row['total'] ?? 0);
+
+			// Real Pool Governance Records
+			$q_list = $this->db->query("SELECT p.*, s.`name` AS seller_name, s.`location` AS seller_location, s.`rating` AS seller_rating FROM `" . DB_PREFIX . "poolbuy_pool` p LEFT JOIN `" . DB_PREFIX . "poolbuy_seller` s ON (s.`seller_id` = p.`seller_id`) ORDER BY p.`pool_id` DESC LIMIT 20");
+			$data['poolbuy_pools'] = [];
+			foreach ($q_list->rows as $row) {
+				$moq = max(1, (int)$row['moq_target']);
+				$reserved = (int)$row['reserved_qty'];
+				$pct = min(100, (int)round(($reserved / $moq) * 100));
+				$data['poolbuy_pools'][] = [
+					'pool_id'         => (int)$row['pool_id'],
+					'reference'       => $row['reference'],
+					'title'           => $row['title'],
+					'seller_name'     => $row['seller_name'] ?: 'Direct Manufacturer',
+					'seller_location' => $row['seller_location'] ?: 'Warehouse',
+					'seller_rating'   => $row['seller_rating'] ?: '4.8',
+					'moq_target'      => $moq,
+					'reserved_qty'    => $reserved,
+					'progress_pct'    => $pct,
+					'status'          => $row['status'],
+					'climate_safe'    => (int)($row['climate_safe'] ?? 0),
+					'unit_label'      => $row['unit_label'] ?: 'Units',
+					'date_end'        => date('M d, Y', strtotime($row['date_end']))
+				];
+			}
+
+			// Sellers list
+			$q_sellers_list = $this->db->query("SELECT * FROM `" . DB_PREFIX . "poolbuy_seller` ORDER BY `seller_id` ASC LIMIT 8");
+			$data['poolbuy_sellers'] = $q_sellers_list->rows;
+		}
+
 		if ($this->user->hasPermission('access', 'common/developer')) {
 			$data['developer_status'] = true;
 		} else {

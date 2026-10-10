@@ -1,5 +1,8 @@
 <?php
 namespace Opencart\Admin\Model\Extension\Poolbuy\Poolbuy;
+
+use Opencart\System\Library\Extension\Poolbuy\GatewayFactory;
+
 /**
  * Class Pool
  *
@@ -279,6 +282,52 @@ class Pool extends \Opencart\System\Engine\Model {
 	}
 
 	/**
+	 * Refund Pool Payments
+	 *
+	 * Refunds every paid payment behind a pool that an administrator expires. Only
+	 * payments still 'paid' are touched and each row transitions to 'refunded'
+	 * only after the gateway confirms, so the operation is idempotent. Buyers who
+	 * never paid are untouched.
+	 *
+	 * @param int $pool_id
+	 *
+	 * @return int number of payments refunded
+	 */
+	public function refundPoolPayments(int $pool_id): int {
+		$sql = "SELECT pm.`payment_id`, pm.`gateway_ref`, pm.`amount`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_payment` pm";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "poolbuy_reservation` r ON (pm.`reservation_id` = r.`reservation_id`)";
+		$sql .= " WHERE r.`pool_id` = '" . (int)$pool_id . "' AND pm.`status` = 'paid'";
+
+		$gateway = GatewayFactory::make([
+			'gateway'         => (string)$this->config->get('module_poolbuy_gateway'),
+			'razorpay_key'    => (string)$this->config->get('module_poolbuy_razorpay_key'),
+			'razorpay_secret' => (string)$this->config->get('module_poolbuy_razorpay_secret'),
+			'base_url'        => (string)$this->config->get('config_url') . 'index.php?route=extension/poolbuy/payment.pay'
+		]);
+
+		$refunded = 0;
+
+		foreach ($this->db->query($sql)->rows as $payment) {
+			$refund_ref = $gateway->refund((string)$payment['gateway_ref'], (float)$payment['amount'], (string)($payment['currency'] ?? ''));
+
+			if ($refund_ref === null) {
+				$this->log->write('PoolBuy admin refund failed for payment ' . (int)$payment['payment_id'] . ' on pool ' . $pool_id);
+
+				continue;
+			}
+
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_payment` SET `status` = 'refunded', `refund_ref` = '" . $this->db->escape($refund_ref) . "', `date_modified` = NOW() WHERE `payment_id` = '" . (int)$payment['payment_id'] . "' AND `status` = 'paid'");
+
+			if ($this->db->countAffected()) {
+				$refunded++;
+			}
+		}
+
+		return $refunded;
+	}
+
+	/**
 	 * Add Event
 	 *
 	 * Appends to the pool's audit trail.
@@ -385,7 +434,10 @@ class Pool extends \Opencart\System\Engine\Model {
 			"`min_qty_per_buyer` = '" . max(1, (int)($data['min_qty_per_buyer'] ?? 1)) . "'",
 			"`max_qty_per_buyer` = '" . max(0, (int)($data['max_qty_per_buyer'] ?? 0)) . "'",
 			"`lead_time` = '" . $this->db->escape((string)($data['lead_time'] ?? '')) . "'",
-			"`shipping_terms` = '" . $this->db->escape((string)($data['shipping_terms'] ?? '')) . "'"
+			"`shipping_terms` = '" . $this->db->escape((string)($data['shipping_terms'] ?? '')) . "'",
+			// Clamped here as well as validated in the controller: a negative freight
+			// total would invert every buyer's allocated share at close.
+			"`freight_total` = '" . max(0.0, (float)($data['freight_total'] ?? 0)) . "'"
 		];
 
 		return implode(', ', $assignments);

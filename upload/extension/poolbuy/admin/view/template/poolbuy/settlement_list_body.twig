@@ -1,0 +1,236 @@
+{# Payments, settlements and their per-currency summaries.
+
+   Loaded through load->view() from the controller and refreshed over ajax by the
+   filter form, matching how the review and promotion lists work. #}
+
+<div class="row mb-4">
+  <div class="col-lg-6">
+    <h5>{{ text_revenue }}</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>{{ text_currency }}</th>
+            <th>{{ column_status }}</th>
+            <th class="text-end">{{ text_count }}</th>
+            <th class="text-end">{{ text_value }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if payment_totals %}
+            {% for row in payment_totals %}
+              <tr>
+                <td>{{ row.currency }}</td>
+                <td>{{ row.status_text }}</td>
+                <td class="text-end">{{ row.count }}</td>
+                <td class="text-end">{{ row.value }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="4" class="text-center">{{ text_no_payments }}</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <h5>{{ text_liability }}</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>{{ text_currency }}</th>
+            <th>{{ column_status }}</th>
+            <th class="text-end">{{ text_count }}</th>
+            <th class="text-end">{{ column_gross }}</th>
+            <th class="text-end">{{ column_fee }}</th>
+            <th class="text-end">{{ column_net }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if settlement_totals %}
+            {% for row in settlement_totals %}
+              <tr>
+                <td>{{ row.currency }}</td>
+                <td>{{ row.status_text }}</td>
+                <td class="text-end">{{ row.count }}</td>
+                <td class="text-end">{{ row.gross }}</td>
+                <td class="text-end">{{ row.platform_fee }}</td>
+                <td class="text-end">{{ row.net }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" class="text-center">{{ text_no_settlements }}</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    {% if pending_settlements %}
+      <div class="alert alert-warning mb-0"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> {{ text_pending_settlements|format(pending_settlements) }}</div>
+    {% endif %}
+  </div>
+</div>
+
+<p class="text-muted small">{{ text_currency_note }}</p>
+
+<fieldset class="mb-4">
+  <legend class="h6">{{ text_filter }}</legend>
+  <div class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label for="input-status" class="form-label">{{ entry_status }}</label>
+      <select name="filter_status" id="input-status" class="form-select">
+        <option value=""{% if not filter_status %} selected{% endif %}>{{ text_all }}</option>
+        <option value="pending"{% if filter_status == 'pending' %} selected{% endif %}>{{ text_payment_pending }}</option>
+        <option value="paid"{% if filter_status == 'paid' %} selected{% endif %}>{{ text_payment_paid }}</option>
+        <option value="failed"{% if filter_status == 'failed' %} selected{% endif %}>{{ text_payment_failed }}</option>
+        <option value="refunded"{% if filter_status == 'refunded' %} selected{% endif %}>{{ text_payment_refunded }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="input-settlement-status" class="form-label">{{ entry_settlement_status }}</label>
+      <select name="filter_settlement_status" id="input-settlement-status" class="form-select">
+        <option value=""{% if not filter_settlement_status %} selected{% endif %}>{{ text_all }}</option>
+        <option value="pending"{% if filter_settlement_status == 'pending' %} selected{% endif %}>{{ text_settlement_pending }}</option>
+        <option value="paid"{% if filter_settlement_status == 'paid' %} selected{% endif %}>{{ text_settlement_paid }}</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label for="input-order-id" class="form-label">{{ entry_order_id }}</label>
+      <input type="text" name="filter_order_id" value="{{ filter_order_id }}" id="input-order-id" class="form-control"/>
+    </div>
+    <div class="col-md-2">
+      <label for="input-reference" class="form-label">{{ entry_reference }}</label>
+      <input type="text" name="filter_reference" value="{{ filter_reference }}" id="input-reference" class="form-control"/>
+    </div>
+    <div class="col-md-2">
+      <button type="button" id="button-filter" class="btn btn-light w-100"><i class="fa-solid fa-filter" aria-hidden="true"></i> {{ button_filter }}</button>
+    </div>
+  </div>
+</fieldset>
+
+<h5>{{ text_payments }}</h5>
+<div class="table-responsive mb-2">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>{{ column_payment }}</th>
+        <th><a href="{{ sort_order_id }}">{{ column_order }}</a></th>
+        <th>{{ column_pool }}</th>
+        <th>{{ column_seller }}</th>
+        <th>{{ column_gateway }}</th>
+        <th>{{ column_reference }}</th>
+        <th class="text-end"><a href="{{ sort_amount }}">{{ column_amount }}</a></th>
+        <th><a href="{{ sort_status }}">{{ column_status }}</a></th>
+        <th><a href="{{ sort_date_added }}">{{ column_date }}</a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if payments %}
+        {% for payment in payments %}
+          <tr>
+            <td>#{{ payment.payment_id }}</td>
+            <td>{% if payment.order_id %}<a href="{{ payment.order_href }}">#{{ payment.order_id }}</a>{% else %}{{ text_none|raw }}{% endif %}</td>
+            <td>{{ payment.pool_reference }}</td>
+            <td>{{ payment.seller_name }}</td>
+            <td>{{ payment.gateway }}</td>
+            <td>
+              {% if payment.gateway_ref %}<code>{{ payment.gateway_ref }}</code>{% else %}{{ text_none|raw }}{% endif %}
+              {% if payment.refund_ref %}<br><small class="text-muted">{{ text_payment_refunded }}: <code>{{ payment.refund_ref }}</code></small>{% endif %}
+            </td>
+            <td class="text-end">{{ payment.amount }}</td>
+            <td>{{ payment.status_text }}</td>
+            <td>{{ payment.date_added }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="9" class="text-center">{{ text_no_payments }}</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+<div class="row mb-4">
+  <div class="col-sm-6 text-start">{{ pagination }}</div>
+  <div class="col-sm-6 text-end">{{ results }}</div>
+</div>
+
+<h5>{{ text_settlements }}</h5>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>{{ column_settlement }}</th>
+        <th>{{ column_seller }}</th>
+        <th>{{ column_pool }}</th>
+        <th class="text-end">{{ column_orders }}</th>
+        <th class="text-end">{{ column_gross }}</th>
+        <th class="text-end">{{ column_fee }}</th>
+        <th class="text-end">{{ column_net }}</th>
+        <th>{{ column_status }}</th>
+        <th>{{ column_date }}</th>
+        <th class="text-end">{{ column_action }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if settlements %}
+        {% for settlement in settlements %}
+          <tr>
+            <td>#{{ settlement.settlement_id }}</td>
+            <td>{{ settlement.seller_name }}</td>
+            <td>{{ settlement.pool_reference }}</td>
+            <td class="text-end">{{ settlement.order_count }}</td>
+            <td class="text-end">{{ settlement.gross }}</td>
+            <td class="text-end">{{ settlement.platform_fee }}</td>
+            <td class="text-end">{{ settlement.net }}</td>
+            <td>{{ settlement.status_text }}</td>
+            <td>{{ settlement.date_added }}</td>
+            <td class="text-end">
+              {% if settlement.is_pending %}
+                <button type="button" class="btn btn-primary btn-sm pb-mark-paid" data-oc-url="{{ settlement.pay }}" data-oc-confirm="{{ text_confirm_pay }}">{{ button_mark_paid }}</button>
+              {% else %}
+                {{ text_none|raw }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="10" class="text-center">{{ text_no_settlements }}</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<script type="text/javascript"><!--
+(function () {
+    // Refresh the list over ajax, matching the review and promotion screens.
+    var filter = document.getElementById('button-filter');
+
+    if (filter) {
+        filter.addEventListener('click', function () {
+            var params = new URLSearchParams();
+
+            ['filter_status', 'filter_settlement_status', 'filter_order_id', 'filter_reference'].forEach(function (name) {
+                var field = document.querySelector('[name="' + name + '"]');
+                if (field && field.value) { params.append(name, field.value); }
+            });
+
+            fetch('{{ list_url }}' + (params.toString() ? '&' + params.toString() : ''), { credentials: 'same-origin' })
+                .then(function (response) { return response.text(); })
+                .then(function (html) { document.getElementById('settlement').innerHTML = html; });
+        });
+    }
+
+    document.querySelectorAll('.pb-mark-paid').forEach(function (button) {
+        button.addEventListener('click', function () {
+            if (!confirm(this.getAttribute('data-oc-confirm'))) { return; }
+
+            fetch(this.getAttribute('data-oc-url'), { credentials: 'same-origin' })
+                .then(function (response) { return response.json(); })
+                .then(function (json) {
+                    if (json.error && json.error.warning) { alert(json.error.warning); return; }
+                    document.getElementById('button-filter').click();
+                });
+        });
+    });
+}());
+//--></script>

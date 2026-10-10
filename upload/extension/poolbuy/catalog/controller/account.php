@@ -44,6 +44,7 @@ class Account extends \Opencart\System\Engine\Controller {
 
 		$this->load->model('extension/poolbuy/poolbuy/reservation');
 		$this->load->model('extension/poolbuy/poolbuy/pool');
+		$this->load->model('extension/poolbuy/poolbuy/payment');
 		$this->load->model('tool/image');
 
 		$data['heading_title'] = $this->language->get('heading_title');
@@ -147,6 +148,29 @@ class Account extends \Opencart\System\Engine\Controller {
 				'can_cancel' => (string)$row['pool_status'] === 'active' && (string)$row['status'] === 'confirmed',
 				'cancel'     => $this->url->link('extension/poolbuy/account.cancel', 'language=' . $language . '&reservation_id=' . (int)$row['reservation_id'])
 			];
+
+			// Payment state for a converted commitment. A commitment still filling
+			// carries no order and therefore no payment, so nothing is shown.
+			$order_id = (int)$row['order_id'];
+
+			$data['reservations'][count($data['reservations']) - 1] += [
+				'order_id'        => $order_id,
+				'can_pay'         => false,
+				'pay_status_text' => '',
+				'pay'             => ''
+			];
+
+			if ($order_id > 0) {
+				$payment = $this->model_extension_poolbuy_poolbuy_payment->getByOrder($order_id);
+
+				if ($payment) {
+					$last = count($data['reservations']) - 1;
+
+					$data['reservations'][$last]['pay_status_text'] = $this->language->get('text_payment_' . $payment['status']);
+					$data['reservations'][$last]['can_pay'] = (string)$payment['status'] === 'pending' && (string)$payment['link_url'] !== '';
+					$data['reservations'][$last]['pay'] = $this->url->link('extension/poolbuy/payment.link', 'language=' . $language . '&order_id=' . $order_id);
+				}
+			}
 		}
 
 		$total = $this->model_extension_poolbuy_poolbuy_reservation->getTotalReservationsByCustomer($customer_id, $filter_data);
@@ -212,6 +236,41 @@ class Account extends \Opencart\System\Engine\Controller {
 		}
 
 		$data['success'] = '';
+
+		// ---- Reviews.
+		//
+		// Only purchases that are genuinely reviewable are offered: converted,
+		// fulfilled and paid, with no review yet. The eligibility rule lives in the
+		// model and is re-checked on submit, so this list is a convenience for the
+		// buyer rather than the thing that authorises anything.
+		$this->load->model('extension/poolbuy/poolbuy/review');
+
+		$data['reviewable'] = [];
+
+		foreach ($this->model_extension_poolbuy_poolbuy_review->getReviewable($customer_id) as $row) {
+			$data['reviewable'][] = [
+				'reservation_id' => (int)$row['reservation_id'],
+				'reference'      => (string)$row['reference'],
+				'pool_reference' => (string)$row['pool_reference'],
+				'title'          => (string)$row['title'],
+				'action'         => $this->url->link('extension/poolbuy/review.add', 'language=' . $language)
+			];
+		}
+
+		$data['own_reviews'] = [];
+
+		foreach ($this->model_extension_poolbuy_poolbuy_review->getOwnReviews($customer_id) as $row) {
+			$data['own_reviews'][] = [
+				'review_id'      => (int)$row['review_id'],
+				'pool_reference' => (string)($row['pool_reference'] ?? ''),
+				'title'          => (string)$row['title'],
+				'text'           => (string)$row['text'],
+				'rating'         => (int)$row['rating'],
+				'status'         => (string)$row['status'],
+				'status_text'    => $this->language->get('text_review_' . $row['status']),
+				'date_added'     => date($this->language->get('date_format_short'), strtotime((string)$row['date_added']))
+			];
+		}
 
 		if (isset($this->session->data['poolbuy_success'])) {
 			$data['success'] = $this->session->data['poolbuy_success'];

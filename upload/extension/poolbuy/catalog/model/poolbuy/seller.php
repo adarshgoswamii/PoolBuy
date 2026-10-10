@@ -2,6 +2,7 @@
 namespace Opencart\Catalog\Model\Extension\Poolbuy\Poolbuy;
 
 use Opencart\System\Library\Extension\Poolbuy\PoolCalculator;
+use Opencart\System\Library\Extension\Poolbuy\PoolLifecycle;
 
 /**
  * Class Seller
@@ -35,6 +36,76 @@ class Seller extends \Opencart\System\Engine\Model {
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "poolbuy_seller` WHERE `customer_id` = '" . (int)$customer_id . "'");
 
 		return $query->row;
+	}
+
+	/**
+	 * Add Seller
+	 *
+	 * Creates a seller profile from a storefront application.
+	 *
+	 * The profile is deliberately created unapproved: `status`, `gst_verified` and
+	 * `verified_seller` are all forced to 0 here rather than taken from $data, so a
+	 * crafted post cannot self-approve an account or award itself a verified badge.
+	 * An administrator promotes the account from Admin -> PoolBuy -> Sellers, and
+	 * until then the portal allows drafts but refuses to publish.
+	 *
+	 * @param int                  $customer_id the signed-in account making the application
+	 * @param array<string, mixed> $data        validated application fields
+	 *
+	 * @return int the new seller_id
+	 */
+	public function addSeller(int $customer_id, array $data): int {
+		$name = trim((string)($data['name'] ?? ''));
+
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "poolbuy_seller` SET
+			`customer_id` = '" . (int)$customer_id . "',
+			`name` = '" . $this->db->escape($name) . "',
+			`slug` = '" . $this->db->escape($this->uniqueSlug($name)) . "',
+			`gst_number` = '" . $this->db->escape(strtoupper(trim((string)($data['gst_number'] ?? '')))) . "',
+			`gst_verified` = '0',
+			`verified_seller` = '0',
+			`description` = '" . $this->db->escape(trim((string)($data['description'] ?? ''))) . "',
+			`location` = '" . $this->db->escape(trim((string)($data['location'] ?? ''))) . "',
+			`status` = '0',
+			`date_added` = NOW(),
+			`date_modified` = NOW()");
+
+		return (int)$this->db->getLastId();
+	}
+
+	/**
+	 * Unique Slug
+	 *
+	 * Derives a URL-safe slug from the business name and suffixes it until it is
+	 * free, because `slug` carries a UNIQUE key and two applicants may well share
+	 * a trading name.
+	 *
+	 * @param string $name
+	 *
+	 * @return string
+	 */
+	private function uniqueSlug(string $name): string {
+		$base = strtolower((string)preg_replace('/[^a-z0-9]+/i', '-', $name));
+		$base = trim($base, '-');
+
+		if ($base === '') {
+			$base = 'seller';
+		}
+
+		$base = substr($base, 0, 110);
+		$slug = $base;
+		$suffix = 1;
+
+		while (true) {
+			$query = $this->db->query("SELECT `seller_id` FROM `" . DB_PREFIX . "poolbuy_seller` WHERE `slug` = '" . $this->db->escape($slug) . "'");
+
+			if (!$query->num_rows) {
+				return $slug;
+			}
+
+			$suffix++;
+			$slug = $base . '-' . $suffix;
+		}
 	}
 
 	/**
@@ -293,6 +364,51 @@ class Seller extends \Opencart\System\Engine\Model {
 	}
 
 	/**
+	 * Get Settlements
+	 *
+	 * The seller's settlement rows, scoped to their own seller_id so one seller can
+	 * never read another's payouts. Read only from the portal.
+	 *
+	 * @param int $seller_id
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getSettlements(int $seller_id): array {
+		$sql = "SELECT s.*, p.`title`, p.`reference` AS `pool_reference`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_settlement` s";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (s.`pool_id` = p.`pool_id`)";
+		$sql .= " WHERE s.`seller_id` = '" . (int)$seller_id . "'";
+		$sql .= " ORDER BY s.`date_added` DESC";
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
+	 * Get Settlement Totals By Currency
+	 *
+	 * What the platform owes a seller, GROUPED BY CURRENCY.
+	 *
+	 * Summing settlements across currencies would produce a meaningless number -
+	 * adding yen to rupees - so the totals are only ever aggregated within a single
+	 * currency and the caller renders one row per currency.
+	 *
+	 * @param int $seller_id
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getSettlementTotals(int $seller_id): array {
+		$sql = "SELECT `currency`, COUNT(*) AS `pools`, SUM(`order_count`) AS `orders`,";
+		$sql .= " SUM(`gross`) AS `gross`, SUM(`platform_fee`) AS `platform_fee`, SUM(`net`) AS `net`,";
+		$sql .= " SUM(CASE WHEN `status` = 'pending' THEN `net` ELSE 0 END) AS `net_pending`,";
+		$sql .= " SUM(CASE WHEN `status` = 'paid' THEN `net` ELSE 0 END) AS `net_paid`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_settlement`";
+		$sql .= " WHERE `seller_id` = '" . (int)$seller_id . "'";
+		$sql .= " GROUP BY `currency` ORDER BY `currency` ASC";
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
 	 * Build Assignments
 	 *
 	 * Note what is absent: seller_id, reserved_qty and reference are never taken
@@ -318,7 +434,10 @@ class Seller extends \Opencart\System\Engine\Model {
 			"`min_qty_per_buyer` = '" . max(1, (int)($data['min_qty_per_buyer'] ?? 1)) . "'",
 			"`max_qty_per_buyer` = '" . max(0, (int)($data['max_qty_per_buyer'] ?? 0)) . "'",
 			"`lead_time` = '" . $this->db->escape((string)($data['lead_time'] ?? '')) . "'",
-			"`shipping_terms` = '" . $this->db->escape((string)($data['shipping_terms'] ?? '')) . "'"
+			"`shipping_terms` = '" . $this->db->escape((string)($data['shipping_terms'] ?? '')) . "'",
+			// Clamped so a hand-crafted POST cannot push a negative freight total
+			// into the pool and invert every participant's allocated share.
+			"`freight_total` = '" . max(0.0, (float)($data['freight_total'] ?? 0)) . "'"
 		];
 
 		// A reference is only set on creation, and only when one was generated.
@@ -372,5 +491,393 @@ class Seller extends \Opencart\System\Engine\Model {
 			'fill'      => PoolCalculator::fillPercentage($reserved, $moq),
 			'remaining' => PoolCalculator::unitsRemaining($reserved, $moq)
 		];
+	}
+
+	/**
+	 * Get Own Products
+	 *
+	 * The seller's own catalogue. Tenancy lives in the join against
+	 * poolbuy_product_seller, so a seller can only ever list their own rows.
+	 *
+	 * @param int                  $seller_id
+	 * @param array<string, mixed> $data      start/limit
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getOwnProducts(int $seller_id, array $data = []): array {
+		$sql = "SELECT p.`product_id`, p.`model`, p.`price`, p.`quantity`, p.`status`, p.`image`, pd.`name`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_product_seller` ps";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "product` p ON (ps.`product_id` = p.`product_id`)";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.`product_id` = pd.`product_id` AND pd.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
+		$sql .= " WHERE ps.`seller_id` = '" . (int)$seller_id . "'";
+		$sql .= " ORDER BY pd.`name` ASC";
+
+		$start = max(0, (int)($data['start'] ?? 0));
+		$limit = (int)($data['limit'] ?? 20);
+
+		if ($limit < 1) {
+			$limit = 20;
+		}
+
+		$sql .= " LIMIT " . $start . ", " . $limit;
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
+	 * Get Total Own Products
+	 *
+	 * @param int $seller_id
+	 *
+	 * @return int
+	 */
+	public function getTotalOwnProducts(int $seller_id): int {
+		$query = $this->db->query("SELECT COUNT(*) AS `total` FROM `" . DB_PREFIX . "poolbuy_product_seller` ps INNER JOIN `" . DB_PREFIX . "product` p ON (ps.`product_id` = p.`product_id`) WHERE ps.`seller_id` = '" . (int)$seller_id . "'");
+
+		return (int)$query->row['total'];
+	}
+
+	/**
+	 * Get Own Product
+	 *
+	 * One product, but only if it belongs to this seller. The seller_id sits in the
+	 * WHERE clause rather than being checked afterwards, so a crafted product_id
+	 * belonging to somebody else simply finds nothing.
+	 *
+	 * @param int $product_id
+	 * @param int $seller_id
+	 *
+	 * @return array<string, mixed> empty when the product is not this seller's
+	 */
+	public function getOwnProduct(int $product_id, int $seller_id): array {
+		$sql = "SELECT p.*, pd.`name`, pd.`description`, pd.`meta_title`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_product_seller` ps";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "product` p ON (ps.`product_id` = p.`product_id`)";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.`product_id` = pd.`product_id` AND pd.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
+		$sql .= " WHERE ps.`product_id` = '" . (int)$product_id . "' AND ps.`seller_id` = '" . (int)$seller_id . "'";
+
+		return $this->db->query($sql)->row;
+	}
+
+	/**
+	 * Add Product
+	 *
+	 * Creates a product owned by this seller and maps it in one transaction, so a
+	 * product row can never exist without its ownership mapping (which would make it
+	 * an orphan nobody could edit).
+	 *
+	 * `status` is forced to 0 for an unapproved seller: publishing is gated on
+	 * approval exactly as pool publishing is.
+	 *
+	 * @param int                  $seller_id
+	 * @param array<string, mixed> $data
+	 *
+	 * @return int the new product_id
+	 */
+	public function addProduct(int $seller_id, array $data): int {
+		$language_id = (int)$this->config->get('config_language_id');
+		$stock_status_id = (int)$this->config->get('config_stock_status_id');
+
+		if ($stock_status_id < 1) {
+			$stock_status_id = 5;
+		}
+
+		$this->db->query("START TRANSACTION");
+
+		try {
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "product` SET
+				`model` = '" . $this->db->escape((string)($data['model'] ?? '')) . "',
+				`quantity` = '" . (int)($data['quantity'] ?? 0) . "',
+				`minimum` = '1',
+				`subtract` = '1',
+				`stock_status_id` = '" . $stock_status_id . "',
+				`shipping` = '1',
+				`price` = '" . (float)($data['price'] ?? 0) . "',
+				`tax_class_id` = '0',
+				`image` = '" . $this->db->escape((string)($data['image'] ?? '')) . "',
+				`date_available` = NOW(),
+				`weight_class_id` = '1',
+				`length_class_id` = '1',
+				`status` = '" . (int)($data['status'] ?? 0) . "',
+				`sort_order` = '0',
+				`date_added` = NOW(),
+				`date_modified` = NOW()");
+
+			$product_id = (int)$this->db->getLastId();
+
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET
+				`product_id` = '" . $product_id . "',
+				`language_id` = '" . $language_id . "',
+				`name` = '" . $this->db->escape((string)($data['name'] ?? '')) . "',
+				`description` = '" . $this->db->escape((string)($data['description'] ?? '')) . "',
+				`tag` = '',
+				`meta_title` = '" . $this->db->escape((string)($data['name'] ?? '')) . "',
+				`meta_description` = '',
+				`meta_keyword` = ''");
+
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "product_to_store` SET `product_id` = '" . $product_id . "', `store_id` = '0'");
+
+			// The ownership mapping is what makes this the seller's product.
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "poolbuy_product_seller` SET `product_id` = '" . $product_id . "', `seller_id` = '" . (int)$seller_id . "' ON DUPLICATE KEY UPDATE `seller_id` = '" . (int)$seller_id . "'");
+
+			$this->db->query("COMMIT");
+		} catch (\Exception $e) {
+			$this->db->query("ROLLBACK");
+
+			throw $e;
+		}
+
+		return $product_id;
+	}
+
+	/**
+	 * Edit Product
+	 *
+	 * The UPDATE is constrained by an EXISTS against the ownership mapping, so an
+	 * attempt to edit another seller's product updates zero rows rather than
+	 * erroring, and the caller can tell the difference.
+	 *
+	 * @param int                  $product_id
+	 * @param int                  $seller_id
+	 * @param array<string, mixed> $data
+	 *
+	 * @return bool whether the product was actually this seller's
+	 */
+	public function editProduct(int $product_id, int $seller_id, array $data): bool {
+		if (!$this->ownsProduct($product_id, $seller_id)) {
+			return false;
+		}
+
+		$language_id = (int)$this->config->get('config_language_id');
+
+		$assignments = [
+			"`model` = '" . $this->db->escape((string)($data['model'] ?? '')) . "'",
+			"`quantity` = '" . (int)($data['quantity'] ?? 0) . "'",
+			"`price` = '" . (float)($data['price'] ?? 0) . "'",
+			"`status` = '" . (int)($data['status'] ?? 0) . "'",
+			"`date_modified` = NOW()"
+		];
+
+		// Only overwrite the image when a new one was supplied, so saving the form
+		// without re-uploading does not wipe the existing picture.
+		if (!empty($data['image'])) {
+			$assignments[] = "`image` = '" . $this->db->escape((string)$data['image']) . "'";
+		}
+
+		$this->db->query("UPDATE `" . DB_PREFIX . "product` SET " . implode(', ', $assignments) . " WHERE `product_id` = '" . (int)$product_id . "'");
+
+		$this->db->query("UPDATE `" . DB_PREFIX . "product_description` SET `name` = '" . $this->db->escape((string)($data['name'] ?? '')) . "', `description` = '" . $this->db->escape((string)($data['description'] ?? '')) . "' WHERE `product_id` = '" . (int)$product_id . "' AND `language_id` = '" . $language_id . "'");
+
+		return true;
+	}
+
+	/**
+	 * Get Orders
+	 *
+	 * Orders raised against this seller's pools.
+	 *
+	 * Buyer identity is deliberately absent: the same opaque handle used on the
+	 * reservation map is returned instead of a name, email or customer_id, so the
+	 * order list cannot become a way around buyer privacy.
+	 *
+	 * @param int                  $seller_id
+	 * @param array<string, mixed> $data      start/limit
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getOrders(int $seller_id, array $data = []): array {
+		$sql = "SELECT o.`order_id`, o.`order_status_id`, o.`total`, o.`currency_code`, o.`tracking`, o.`date_added`,";
+		$sql .= " r.`quantity`, r.`unit_price_locked`, r.`reference` AS `commitment_reference`,";
+		$sql .= " p.`reference` AS `pool_reference`, p.`title` AS `pool_title`, p.`status` AS `pool_status`, p.`unit_label`,";
+		$sql .= " (1000 + r.`customer_id`) AS `handle`,";
+		$sql .= " os.`name` AS `order_status`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_reservation` r";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`)";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "order` o ON (r.`order_id` = o.`order_id`)";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "order_status` os ON (o.`order_status_id` = os.`order_status_id` AND os.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
+		$sql .= " WHERE p.`seller_id` = '" . (int)$seller_id . "' AND r.`order_id` > '0'";
+		$sql .= " ORDER BY o.`order_id` DESC";
+
+		$start = max(0, (int)($data['start'] ?? 0));
+		$limit = (int)($data['limit'] ?? 20);
+
+		if ($limit < 1) {
+			$limit = 20;
+		}
+
+		$sql .= " LIMIT " . $start . ", " . $limit;
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
+	 * Get Total Orders
+	 *
+	 * @param int $seller_id
+	 *
+	 * @return int
+	 */
+	public function getTotalOrders(int $seller_id): int {
+		$sql = "SELECT COUNT(*) AS `total` FROM `" . DB_PREFIX . "poolbuy_reservation` r";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`)";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "order` o ON (r.`order_id` = o.`order_id`)";
+		$sql .= " WHERE p.`seller_id` = '" . (int)$seller_id . "' AND r.`order_id` > '0'";
+
+		return (int)$this->db->query($sql)->row['total'];
+	}
+
+	/**
+	 * Get Order
+	 *
+	 * One order, but only if it was raised against one of this seller's pools.
+	 *
+	 * The buyer's delivery details are included, because the seller has to ship to
+	 * them, but ONLY once the pool is fulfilled. Until then the caller gets the
+	 * opaque handle and nothing else, which is the promise made on the reservation
+	 * map: full delivery details arrive with the order once the pool is fulfilled.
+	 *
+	 * @param int $order_id
+	 * @param int $seller_id
+	 *
+	 * @return array<string, mixed> empty when the order is not this seller's
+	 */
+	public function getOrder(int $order_id, int $seller_id): array {
+		$sql = "SELECT o.`order_id`, o.`order_status_id`, o.`total`, o.`currency_code`, o.`tracking`, o.`date_added`,";
+		$sql .= " o.`shipping_firstname`, o.`shipping_lastname`, o.`shipping_address_1`, o.`shipping_address_2`,";
+		$sql .= " o.`shipping_city`, o.`shipping_postcode`, o.`shipping_zone`, o.`shipping_country`, o.`telephone`,";
+		$sql .= " o.`shipping_method`, o.`comment`,";
+		$sql .= " r.`quantity`, r.`unit_price_locked`, r.`reference` AS `commitment_reference`, r.`shipping_cost`,";
+		$sql .= " p.`pool_id`, p.`reference` AS `pool_reference`, p.`title` AS `pool_title`, p.`status` AS `pool_status`, p.`unit_label`,";
+		$sql .= " (1000 + r.`customer_id`) AS `handle`,";
+		$sql .= " os.`name` AS `order_status`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_reservation` r";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`)";
+		$sql .= " INNER JOIN `" . DB_PREFIX . "order` o ON (r.`order_id` = o.`order_id`)";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "order_status` os ON (o.`order_status_id` = os.`order_status_id` AND os.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
+		$sql .= " WHERE o.`order_id` = '" . (int)$order_id . "' AND p.`seller_id` = '" . (int)$seller_id . "' AND r.`order_id` > '0'";
+
+		$row = $this->db->query($sql)->row;
+
+		if (!$row) {
+			return [];
+		}
+
+		// Withhold the delivery details until the pool is fulfilled.
+		if ((string)$row['pool_status'] !== PoolLifecycle::FULFILLED) {
+			foreach (['shipping_firstname', 'shipping_lastname', 'shipping_address_1', 'shipping_address_2', 'shipping_city', 'shipping_postcode', 'shipping_zone', 'shipping_country', 'telephone'] as $field) {
+				$row[$field] = '';
+			}
+
+			$row['address_released'] = false;
+		} else {
+			$row['address_released'] = true;
+		}
+
+		return $row;
+	}
+
+	/**
+	 * Get Order Totals
+	 *
+	 * The order's own total lines, so the seller sees the same breakdown the buyer
+	 * was invoiced. Ownership is proven again here rather than trusted from the
+	 * caller.
+	 *
+	 * @param int $order_id
+	 * @param int $seller_id
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getOrderTotals(int $order_id, int $seller_id): array {
+		$sql = "SELECT ot.`title`, ot.`value` FROM `" . DB_PREFIX . "order_total` ot";
+		$sql .= " WHERE ot.`order_id` = '" . (int)$order_id . "'";
+		$sql .= " AND EXISTS (SELECT 1 FROM `" . DB_PREFIX . "poolbuy_reservation` r INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`) WHERE r.`order_id` = ot.`order_id` AND p.`seller_id` = '" . (int)$seller_id . "')";
+		$sql .= " ORDER BY ot.`sort_order` ASC";
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
+	 * Get Order Statuses
+	 *
+	 * The statuses a seller is allowed to move an order into, read from the store's
+	 * own installed list rather than hardcoded, so a store that has renamed or
+	 * removed a status does not end up offering something that does not exist.
+	 *
+	 * @param array<int, int> $allowed order_status_id values to offer
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getOrderStatuses(array $allowed): array {
+		$ids = array_values(array_filter(array_map('intval', $allowed), static fn (int $id): bool => $id > 0));
+
+		if (!$ids) {
+			return [];
+		}
+
+		$sql = "SELECT `order_status_id`, `name` FROM `" . DB_PREFIX . "order_status`";
+		$sql .= " WHERE `language_id` = '" . (int)$this->config->get('config_language_id') . "'";
+		$sql .= " AND `order_status_id` IN (" . implode(', ', $ids) . ")";
+		$sql .= " ORDER BY FIELD(`order_status_id`, " . implode(', ', $ids) . ")";
+
+		return $this->db->query($sql)->rows;
+	}
+
+	/**
+	 * Update Order Status
+	 *
+	 * Advances one of this seller's orders and records the change in the order's
+	 * history, which is what Admin -> Sales -> Orders reads.
+	 *
+	 * The UPDATE carries an EXISTS against the seller's own pools, so a crafted
+	 * order_id belonging to another seller updates zero rows and the method reports
+	 * failure without revealing whether the order exists.
+	 *
+	 * @param int    $order_id
+	 * @param int    $seller_id
+	 * @param int    $order_status_id
+	 * @param string $tracking
+	 * @param string $comment
+	 *
+	 * @return bool whether the order was this seller's and was updated
+	 */
+	public function updateOrderStatus(int $order_id, int $seller_id, int $order_status_id, string $tracking = '', string $comment = ''): bool {
+		$owned = "EXISTS (SELECT 1 FROM `" . DB_PREFIX . "poolbuy_reservation` r INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`) WHERE r.`order_id` = `" . DB_PREFIX . "order`.`order_id` AND p.`seller_id` = '" . (int)$seller_id . "')";
+
+		$assignments = [
+			"`order_status_id` = '" . (int)$order_status_id . "'",
+			"`date_modified` = NOW()"
+		];
+
+		if ($tracking !== '') {
+			$assignments[] = "`tracking` = '" . $this->db->escape($tracking) . "'";
+		}
+
+		$this->db->query("UPDATE `" . DB_PREFIX . "order` SET " . implode(', ', $assignments) . " WHERE `order_id` = '" . (int)$order_id . "' AND " . $owned);
+
+		if (!$this->db->countAffected()) {
+			// Either not this seller's order, or nothing changed. Re-check ownership so
+			// a no-op update on an owned order is not reported as a permission failure.
+			$check = $this->db->query("SELECT 1 AS `ok` FROM `" . DB_PREFIX . "poolbuy_reservation` r INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`) WHERE r.`order_id` = '" . (int)$order_id . "' AND p.`seller_id` = '" . (int)$seller_id . "'");
+
+			if (!$check->num_rows) {
+				return false;
+			}
+		}
+
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "order_history` SET `order_id` = '" . (int)$order_id . "', `order_status_id` = '" . (int)$order_status_id . "', `notify` = '0', `comment` = '" . $this->db->escape($comment) . "', `date_added` = NOW()");
+
+		$pool = $this->db->query("SELECT p.`pool_id` FROM `" . DB_PREFIX . "poolbuy_reservation` r INNER JOIN `" . DB_PREFIX . "poolbuy_pool` p ON (r.`pool_id` = p.`pool_id`) WHERE r.`order_id` = '" . (int)$order_id . "' AND p.`seller_id` = '" . (int)$seller_id . "'");
+
+		if ($pool->num_rows) {
+			$this->addEvent((int)$pool->row['pool_id'], 'order_status_changed', [
+				'order_id'        => $order_id,
+				'order_status_id' => $order_status_id,
+				'by'              => 'seller',
+				'tracking'        => $tracking !== '' ? 'set' : 'unchanged'
+			]);
+		}
+
+		return true;
 	}
 }

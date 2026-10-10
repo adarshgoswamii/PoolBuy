@@ -1,8 +1,30 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": null,
-  "outputDirectory": "showcase",
-  "framework": null,
-  "cleanUrls": true,
-  "trailingSlash": true
+  "services": {
+    "web": {
+      "root": ".",
+      "framework": "container",
+      "runtime": "container",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "dauxio",
+          "format": "url",
+          "env": "DAUXIO_URL"
+        }
+      ]
+    },
+    "dauxio": {
+      "root": "tools/daux.io",
+      "runtime": "container"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
+    }
+  ]
 }

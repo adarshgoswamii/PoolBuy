@@ -59,3 +59,11 @@ $_['text_lead_time_body']  = 'After the pool closes and payment is confirmed.';
 $_['text_shipping']        = 'Shipping terms';
 $_['text_shipping_body']   = 'Shipped directly to your own location.';
 $_['text_not_specified']   = 'Not specified';
+
+// Reviews
+$_['text_reviews_title']    = 'Buyer reviews';
+$_['text_buyer_handle']     = 'Buyer #%04d';
+$_['text_review_average']   = '%s out of 5';
+$_['text_review_count']     = 'from %d verified purchases';
+$_['text_no_reviews']       = 'No reviews yet. Reviews can only be left by buyers whose pool has been fulfilled and paid.';
+$_['text_review_verified']  = 'Verified purchase';

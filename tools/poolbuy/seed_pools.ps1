@@ -33,10 +33,10 @@ $pools = @(
        tiers=@(@{min=10;max=99;price=165},@{min=100;max=199;price=152},@{min=200;max='';price=145}) }
     @{ ref='PB-88302'; title='CrystalPure Chlorine Tablets (25kg)';                     seller=3; moq=500; unit='Buckets'; fill=420; days=2;  lead='7-10 Days';  terms='Ex Works Surat';
        tiers=@(@{min=25;max=199;price=94},@{min=200;max=499;price=88},@{min=500;max='';price=82}) }
-    @{ ref='PB-88303'; title='LumiPool RGB Smart LED Kits';                             seller=4; moq=100; unit='Kits';    fill=12;  days=12; lead='20-25 Days'; terms='FOB Shenzhen';
-       tiers=@(@{min=5;max=49;price=240},@{min=50;max=99;price=225},@{min=100;max='';price=210}) }
-    @{ ref='PB-88304'; title='Li-Ion Enterprise Cells (Batch 42)';                      seller=5; moq=1000; unit='Units';  fill=780; days=1;  lead='18-22 Days'; terms='FOB Chennai';
-       tiers=@(@{min=50;max=499;price=64},@{min=500;max=999;price=58},@{min=1000;max='';price=52}) }
+    @{ ref='PB-88304'; title='NovaVolt 65W GaN Dual USB-C Fast Charger (BIS Certified)'; seller=5; moq=200; unit='Units';  fill=180; days=4;  lead='10-14 Days'; terms='FOB Bengaluru';
+       tiers=@(@{min=10;max=49;price=1250},@{min=50;max=149;price=1050},@{min=150;max=199;price=950},@{min=200;max='';price=890}) }
+    @{ ref='PB-APP-7014'; title='Heavyweight 240 GSM Combed Cotton Oversized T-Shirt Blanks'; seller=1; moq=500; unit='Units'; fill=380; days=7; lead='10-14 Days'; terms='Ex Works Tirupur';
+       tiers=@(@{min=25;max=199;price=420},@{min=200;max=399;price=380},@{min=400;max=499;price=340},@{min=500;max='';price=295}) }
     @{ ref='PB-88305'; title='Brushed Al-Chassis (Model X-5)';                          seller=1; moq=500; unit='Units';   fill=420; days=3;  lead='14-18 Days'; terms='FOB Mumbai';
        tiers=@(@{min=25;max=249;price=310},@{min=250;max=499;price=288},@{min=500;max='';price=265}) }
     @{ ref='PB-88306'; title='Ceramic Mosaic XL';                                       seller=3; moq=200; unit='Boxes';   fill=195; days=2;  lead='9-12 Days';  terms='Ex Works Morbi';

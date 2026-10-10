@@ -52,7 +52,7 @@
   </div>
 
   <div class="pb-grid" style="grid-template-columns: minmax(0, 1fr); gap: var(--pb-gutter);">
-    <div class="pb-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--pb-gutter); align-items: start;">
+    <div class="pb-grid pb-grid-main-aside" style="gap: var(--pb-gutter);">
 
       {# ---- Commitments ---- #}
       <div>
@@ -123,6 +123,11 @@
                         {% if row.can_cancel %}
                           <a class="pb-btn pb-btn--danger pb-btn--sm" href="{{ row.cancel }}" onclick="return confirm('{{ text_withdraw_confirm }}');">{{ button_withdraw }}</a>
                         {% endif %}
+                        {% if row.can_pay %}
+                          <a class="pb-btn pb-btn--primary pb-btn--sm" href="{{ row.pay }}"><i class="fa-solid fa-credit-card" aria-hidden="true"></i> {{ button_pay_now }}</a>
+                        {% elseif row.pay_status_text %}
+                          <span class="pb-badge pb-badge--soft">{{ row.pay_status_text }}</span>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
@@ -164,7 +169,7 @@
               <div class="pb-flex pb-flex-col pb-gap-md">
                 {% for rec in recommendations %}
                   <div style="border: 1px solid var(--pb-outline-variant); border-radius: var(--pb-radius); overflow: hidden;">
-                    <img src="{{ rec.thumb }}" alt="{{ rec.title|escape }}" loading="lazy" style="width: 100%; height: 110px; object-fit: cover; display: block;"/>
+                    <img src="{{ rec.thumb }}" alt="{{ rec.title|escape }}" width="320" height="200" loading="lazy" style="width: 100%; height: 110px; object-fit: cover; display: block;"/>
                     <div style="padding: var(--pb-md);">
                       <h3 class="pb-body-md pb-mb-xs" style="font-weight: 600;"><a class="pb-link" href="{{ rec.href }}" style="color: var(--pb-on-surface);">{{ rec.title|escape }}</a></h3>
                       <div class="pb-flex pb-justify-between pb-items-end pb-gap-sm">
@@ -226,6 +231,61 @@
         </div>
       </aside>
     </div>
+
+    {# ---- Reviews. Only purchases that are fulfilled AND paid appear here; the
+           eligibility rule is enforced again on submit. ---- #}
+    <section class="pb-card pb-mt-xl" aria-labelledby="pb-reviews-heading">
+      <h2 class="pb-headline-sm pb-mb-xs" id="pb-reviews-heading">{{ text_reviews_heading }}</h2>
+      <p class="pb-body-md pb-muted">{{ text_reviews_intro }}</p>
+
+      {% if reviewable %}
+        {% for item in reviewable %}
+          <form class="pb-review-form pb-mb-lg" action="{{ item.action }}" method="post">
+            <h3 class="pb-label-md pb-mb-sm">{{ text_review_for|format(item.title ?: item.pool_reference)|escape }}</h3>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-rating-{{ item.reservation_id }}">{{ entry_review_rating }}</label>
+              <select class="pb-input" id="pb-rating-{{ item.reservation_id }}" name="rating" required>
+                {% for star in [5, 4, 3, 2, 1] %}
+                  <option value="{{ star }}">{{ star }} / 5</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-title-{{ item.reservation_id }}">{{ entry_review_title }}</label>
+              <input class="pb-input" type="text" id="pb-title-{{ item.reservation_id }}" name="title" maxlength="128"/>
+            </div>
+
+            <div class="pb-field">
+              <label class="pb-label" for="pb-text-{{ item.reservation_id }}">{{ entry_review_text }}</label>
+              <textarea class="pb-input" id="pb-text-{{ item.reservation_id }}" name="text" rows="4" maxlength="5000" required aria-describedby="pb-text-help-{{ item.reservation_id }}"></textarea>
+              <p class="pb-body-sm pb-muted pb-mb-0" id="pb-text-help-{{ item.reservation_id }}">{{ help_review_text }}</p>
+            </div>
+
+            <input type="hidden" name="reservation_id" value="{{ item.reservation_id }}"/>
+            <button class="pb-btn pb-btn--primary" type="submit">{{ button_submit_review }}</button>
+          </form>
+        {% endfor %}
+      {% else %}
+        <p class="pb-body-md pb-muted">{{ text_no_reviewable }}</p>
+      {% endif %}
+
+      {% if own_reviews %}
+        <h3 class="pb-label-md pb-mt-lg pb-mb-sm">{{ text_your_reviews }}</h3>
+        <ul class="pb-list">
+          {% for review in own_reviews %}
+            <li class="pb-mb-sm">
+              <strong>{{ review.rating }} / 5</strong>
+              {% if review.title %} &mdash; {{ review.title|escape }}{% endif %}
+              <span class="pb-muted">({{ review.pool_reference }}, {{ review.date_added }})</span>
+              <span class="pb-badge">{{ review.status_text }}</span>
+              <p class="pb-body-md pb-mb-0">{{ review.text|escape }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
   </div>
 </div>
 

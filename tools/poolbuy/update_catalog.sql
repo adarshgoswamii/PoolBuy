@@ -1,0 +1,11 @@
+UPDATE oc_poolbuy_pool SET title='Titan-X Industrial Grade 5HP Submersible Drainage Pump', climate_safe=1, attributes='{"category":"machinery","power":"5HP","voltage":"415V"}' WHERE pool_id=1;
+UPDATE oc_poolbuy_pool SET title='Industrial Grade Filtration Units - Q4 Procurement', climate_safe=1, attributes='{"category":"machinery","flow_rate":"50 m3/hr"}' WHERE pool_id=2;
+UPDATE oc_poolbuy_pool SET title='EliteFlow Filtration Pro-7 Commercial Pump', climate_safe=1, attributes='{"category":"machinery","power":"3.5HP"}' WHERE pool_id=3;
+UPDATE oc_poolbuy_pool SET title='CrystalPure Chlorine Tablets (25kg Pail)', climate_safe=1, attributes='{"category":"chemicals","form":"Tablets"}' WHERE pool_id=4;
+UPDATE oc_poolbuy_pool SET title='LumiPool RGB Smart LED Kits (IP68)', climate_safe=1, attributes='{"category":"electronics","wattage":"45W"}' WHERE pool_id=5;
+UPDATE oc_poolbuy_pool SET title='NovaVolt 65W GaN Dual USB-C Fast Charger (BIS Certified)', climate_safe=1, attributes='{"category":"electronics","wattage":"65W","ports":"Dual USB-C","solid_state":true}' WHERE pool_id=6;
+UPDATE oc_poolbuy_pool SET title='MasterPack 5-Ply Heavy Duty Corrugated Master Cartons (50-Pack)', climate_safe=1, attributes='{"category":"packaging","box_ply":"5-Ply Heavy Duty"}' WHERE pool_id=7;
+UPDATE oc_poolbuy_pool SET title='Ceramic Mosaic XL Pool & Architectural Tiles', climate_safe=1, attributes='{"category":"raw_materials","slip_resistance":"R11"}' WHERE pool_id=8;
+UPDATE oc_poolbuy_pool SET title='Braided Kevlar-Armored 100W USB-C Interconnect Cable (2m Bulk Reel)', climate_safe=1, attributes='{"category":"electronics","wattage":"100W","ports":"Single USB-C"}' WHERE pool_id=9;
+UPDATE oc_poolbuy_pool SET title='Medical Grade Borosilicate Glass Vials (Case of 1000)', climate_safe=1, attributes='{"category":"packaging","material":"Borosilicate"}' WHERE pool_id=10;
+UPDATE oc_poolbuy_pool SET title='Heavyweight 240 GSM Combed Cotton Oversized T-Shirt Blanks', climate_safe=1, attributes='{"category":"apparel","size":"L","color":"Jet Black","fabric":"100% Combed Cotton","gsm":"240 GSM"}' WHERE pool_id=11;

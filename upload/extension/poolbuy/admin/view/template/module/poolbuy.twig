@@ -19,6 +19,20 @@
     {% else %}
       <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ text_schema_missing }}</div>
     {% endif %}
+    <div class="card mb-3">
+      <div class="card-header"><i class="fa-solid fa-compass" aria-hidden="true"></i> {{ text_nav_manage }}</div>
+      <div class="card-body">
+        <div class="row g-2">
+          {% for item in nav %}
+            <div class="col-sm-6 col-lg-3">
+              <a href="{{ item.href }}" class="btn btn-outline-primary w-100 text-start">
+                <i class="fa-solid {{ item.icon }}" aria-hidden="true"></i> {{ item.text }}
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-header"><i class="fa-solid fa-pencil" aria-hidden="true"></i> {{ text_edit }}</div>
       <div class="card-body">
@@ -91,7 +105,54 @@
           </fieldset>
 
           <fieldset>
+            <legend>{{ text_payments }}</legend>
+            <div class="row mb-3">
+              <label for="input-gateway" class="col-sm-3 col-form-label">{{ entry_gateway }}</label>
+              <div class="col-sm-9">
+                <select name="module_poolbuy_gateway" id="input-gateway" class="form-select">
+                  <option value="mock"{% if module_poolbuy_gateway == 'mock' %} selected{% endif %}>{{ text_gateway_mock }}</option>
+                  <option value="razorpay"{% if module_poolbuy_gateway == 'razorpay' %} selected{% endif %}>{{ text_gateway_razorpay }}</option>
+                </select>
+                <div class="form-text">{{ help_gateway }}</div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-razorpay-key" class="col-sm-3 col-form-label">{{ entry_razorpay_key }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_razorpay_key" value="{{ module_poolbuy_razorpay_key }}" placeholder="rzp_test_..." id="input-razorpay-key" class="form-control" autocomplete="off"/>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-razorpay-secret" class="col-sm-3 col-form-label">{{ entry_razorpay_secret }}</label>
+              <div class="col-sm-9">
+                <input type="password" name="module_poolbuy_razorpay_secret" value="{{ module_poolbuy_razorpay_secret }}" id="input-razorpay-secret" class="form-control" autocomplete="new-password"/>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-razorpay-webhook-secret" class="col-sm-3 col-form-label">{{ entry_razorpay_webhook_secret }}</label>
+              <div class="col-sm-9">
+                <input type="password" name="module_poolbuy_razorpay_webhook_secret" value="{{ module_poolbuy_razorpay_webhook_secret }}" id="input-razorpay-webhook-secret" class="form-control" autocomplete="new-password"/>
+                <div class="form-text">{{ help_razorpay_webhook_secret }}</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
             <legend>{{ text_automation }}</legend>
+            <div class="row mb-3">
+              <label for="input-rate-limit" class="col-sm-3 col-form-label">{{ entry_rate_limit }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_rate_limit" value="{{ module_poolbuy_rate_limit }}" id="input-rate-limit" class="form-control"/>
+                <div class="form-text">{{ help_rate_limit }}</div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-rate-window" class="col-sm-3 col-form-label">{{ entry_rate_window }}</label>
+              <div class="col-sm-9">
+                <input type="text" name="module_poolbuy_rate_window" value="{{ module_poolbuy_rate_window }}" id="input-rate-window" class="form-control"/>
+                <div class="form-text">{{ help_rate_window }}</div>
+              </div>
+            </div>
             <div class="row mb-3">
               <label for="input-cron-token" class="col-sm-3 col-form-label">{{ entry_cron_token }}</label>
               <div class="col-sm-9">

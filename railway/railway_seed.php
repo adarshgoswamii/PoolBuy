@@ -97,72 +97,54 @@ function adminPost($route, $fields, $token, $cookie) {
     return http("$BASE/admin/index.php?route=$route&user_token=$token", $fields, $cookie);
 }
 
-// --- 2. Install poolbuy schema directly (deterministic; avoids HTTP install-hook
+// --- 2. Install poolbuy schema (deterministic; avoids HTTP install-hook
 //        permission/timing flakiness) ---
-$suffix = ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
-$schema = [];
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_seller` (
-    `seller_id` int(11) NOT NULL AUTO_INCREMENT, `customer_id` int(11) NOT NULL DEFAULT '0',
-    `name` varchar(128) NOT NULL DEFAULT '', `slug` varchar(128) NOT NULL DEFAULT '',
-    `gst_number` varchar(32) NOT NULL DEFAULT '', `gst_verified` tinyint(1) NOT NULL DEFAULT '0',
-    `verified_seller` tinyint(1) NOT NULL DEFAULT '0', `rating` decimal(3,2) NOT NULL DEFAULT '0.00',
-    `rating_count` int(11) NOT NULL DEFAULT '0', `description` text, `logo` varchar(255) NOT NULL DEFAULT '',
-    `location` varchar(128) NOT NULL DEFAULT '', `images` text, `status` tinyint(1) NOT NULL DEFAULT '1',
-    `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL,
-    PRIMARY KEY (`seller_id`), UNIQUE KEY `uk_poolbuy_seller_slug` (`slug`),
-    KEY `idx_poolbuy_seller_customer` (`customer_id`), KEY `idx_poolbuy_seller_status` (`status`)
-)$suffix";
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_product_seller` (
-    `product_id` int(11) NOT NULL, `seller_id` int(11) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`product_id`), KEY `idx_poolbuy_product_seller_seller` (`seller_id`)
-)$suffix";
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_pool` (
-    `pool_id` int(11) NOT NULL AUTO_INCREMENT, `product_id` int(11) NOT NULL DEFAULT '0',
-    `seller_id` int(11) NOT NULL DEFAULT '0', `title` varchar(255) NOT NULL DEFAULT '',
-    `reference` varchar(32) NOT NULL DEFAULT '', `moq_target` int(11) NOT NULL DEFAULT '0',
-    `reserved_qty` int(11) NOT NULL DEFAULT '0', `unit_label` varchar(32) NOT NULL DEFAULT 'Units',
-    `currency_code` varchar(3) NOT NULL DEFAULT '',
-    `status` enum('draft','active','reached','closed','expired','fulfilled','cancelled') NOT NULL DEFAULT 'draft',
-    `date_start` datetime NOT NULL, `date_end` datetime NOT NULL,
-    `retro_pricing` tinyint(1) NOT NULL DEFAULT '1', `allow_full_moq_buy` tinyint(1) NOT NULL DEFAULT '1',
-    `min_qty_per_buyer` int(11) NOT NULL DEFAULT '1', `max_qty_per_buyer` int(11) NOT NULL DEFAULT '0',
-    `lead_time` varchar(64) NOT NULL DEFAULT '', `shipping_terms` varchar(64) NOT NULL DEFAULT '',
-    `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL,
-    PRIMARY KEY (`pool_id`), UNIQUE KEY `uk_poolbuy_pool_reference` (`reference`),
-    KEY `idx_poolbuy_pool_product` (`product_id`), KEY `idx_poolbuy_pool_seller` (`seller_id`),
-    KEY `idx_poolbuy_pool_status` (`status`), KEY `idx_poolbuy_pool_date_end` (`date_end`),
-    KEY `idx_poolbuy_pool_status_end` (`status`, `date_end`)
-)$suffix";
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_pool_tier` (
-    `tier_id` int(11) NOT NULL AUTO_INCREMENT, `pool_id` int(11) NOT NULL DEFAULT '0',
-    `min_qty` int(11) NOT NULL DEFAULT '0', `max_qty` int(11) DEFAULT NULL,
-    `price` decimal(15,4) NOT NULL DEFAULT '0.0000', `sort_order` int(3) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`tier_id`), KEY `idx_poolbuy_tier_pool` (`pool_id`),
-    KEY `idx_poolbuy_tier_pool_min` (`pool_id`, `min_qty`)
-)$suffix";
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_reservation` (
-    `reservation_id` int(11) NOT NULL AUTO_INCREMENT, `pool_id` int(11) NOT NULL DEFAULT '0',
-    `customer_id` int(11) NOT NULL DEFAULT '0', `quantity` int(11) NOT NULL DEFAULT '0',
-    `unit_price_locked` decimal(15,4) NOT NULL DEFAULT '0.0000',
-    `status` enum('pending','confirmed','cancelled','converted','released') NOT NULL DEFAULT 'pending',
-    `order_id` int(11) NOT NULL DEFAULT '0', `address_id` int(11) NOT NULL DEFAULT '0',
-    `shipping_method` text, `shipping_cost` decimal(15,4) NOT NULL DEFAULT '0.0000',
-    `reference` varchar(32) NOT NULL DEFAULT '', `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL,
-    `active_customer_id` int(11) GENERATED ALWAYS AS (CASE WHEN `status` IN ('pending','confirmed') THEN `customer_id` ELSE NULL END) STORED,
-    PRIMARY KEY (`reservation_id`), UNIQUE KEY `uk_poolbuy_reservation_reference` (`reference`),
-    UNIQUE KEY `uk_poolbuy_reservation_active` (`pool_id`, `active_customer_id`),
-    KEY `idx_poolbuy_reservation_pool` (`pool_id`), KEY `idx_poolbuy_reservation_customer` (`customer_id`),
-    KEY `idx_poolbuy_reservation_status` (`status`), KEY `idx_poolbuy_reservation_order` (`order_id`)
-)$suffix";
-$schema[] = "CREATE TABLE IF NOT EXISTS `oc_poolbuy_pool_event` (
-    `event_id` int(11) NOT NULL AUTO_INCREMENT, `pool_id` int(11) NOT NULL DEFAULT '0',
-    `customer_id` int(11) NOT NULL DEFAULT '0', `type` varchar(32) NOT NULL DEFAULT '', `payload` text,
-    `date_added` datetime NOT NULL, PRIMARY KEY (`event_id`),
-    KEY `idx_poolbuy_event_pool` (`pool_id`), KEY `idx_poolbuy_event_date` (`date_added`),
-    KEY `idx_poolbuy_event_pool_type` (`pool_id`, `type`)
-)$suffix";
+//
+// The DDL is read from the extension's own install model rather than duplicated
+// here. Keeping a second copy in this file is how the payment and settlement
+// tables came to be missing on cloud deploys: the extension gained tables and
+// this script silently did not. The model only needs the DB_PREFIX constant to
+// produce its DDL, so it can be loaded with a minimal stub for the OpenCart base
+// class instead of booting the framework.
+if (!defined('DB_PREFIX')) {
+    define('DB_PREFIX', 'oc_');
+}
+
+$installModel = __DIR__ . '/extension/poolbuy/admin/model/module/poolbuy.php';
+
+if (!is_file($installModel)) {
+    // Fall back to the deployed layout, where this script sits next to the
+    // OpenCart root rather than inside it.
+    $installModel = '/var/www/html/extension/poolbuy/admin/model/module/poolbuy.php';
+}
+
+if (!is_file($installModel)) {
+    fwrite(STDERR, "seed: cannot find the PoolBuy install model; schema not created\n");
+    exit(1);
+}
+
+// Minimal stand-in for the engine base class the model extends. Declared only if
+// the real one is absent, which it always is in this standalone CLI context.
+if (!class_exists('Opencart\System\Engine\Model')) {
+    eval('namespace Opencart\System\Engine; class Model { public function __construct($registry = null) {} }');
+}
+
+require_once $installModel;
+
+$poolbuyInstaller = new \Opencart\Admin\Model\Extension\Poolbuy\Module\Poolbuy();
+
+$schema = $poolbuyInstaller->getSchema();
+
 foreach ($schema as $ddl) { q($ddl); }
-echo "seed: schema created (" . (int)scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='" . esc($GLOBALS['DB_NAME']) . "' AND table_name LIKE 'oc_poolbuy%'") . " tables)\n";
+
+$expectedTables = count($poolbuyInstaller->getTables());
+$actualTables = (int)scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='" . esc($GLOBALS['DB_NAME']) . "' AND table_name LIKE 'oc_poolbuy%'");
+
+echo "seed: schema created ($actualTables of $expectedTables tables)\n";
+
+if ($actualTables < $expectedTables) {
+    fwrite(STDERR, "seed: WARNING only $actualTables of $expectedTables PoolBuy tables exist\n");
+}
 
 // Grant the admin user group access+modify on every poolbuy admin route so the
 // save endpoints below are authorised.
@@ -185,6 +167,15 @@ $settings = [
     'module_poolbuy_currency_symbol' => '₹', 'module_poolbuy_gst_rate' => '18',
     'module_poolbuy_platform_fee' => '2', 'module_poolbuy_pool_duration' => '7',
     'module_poolbuy_retro_pricing' => '1', 'module_poolbuy_cron_token' => $cronToken,
+    // Payments. The mock gateway is deliberate: it needs no credentials, so a
+    // cloud deploy is payable end to end out of the box. Set real Razorpay keys in
+    // Admin > Extensions > PoolBuy (or via the env vars below) to switch over.
+    'module_poolbuy_gateway' => getenv('POOLBUY_GATEWAY') ?: 'mock',
+    'module_poolbuy_razorpay_key' => getenv('POOLBUY_RAZORPAY_KEY') ?: '',
+    'module_poolbuy_razorpay_secret' => getenv('POOLBUY_RAZORPAY_SECRET') ?: '',
+    // Without a webhook secret the webhook fails closed and rejects everything, so
+    // a default is seeded to keep the endpoint testable. Override it in production.
+    'module_poolbuy_razorpay_webhook_secret' => getenv('POOLBUY_WEBHOOK_SECRET') ?: 'poolbuy-cloud-webhook-secret',
 ];
 q("DELETE FROM oc_setting WHERE code='module_poolbuy'");
 foreach ($settings as $key => $val) {
@@ -279,6 +270,37 @@ echo "seed: " . (int)scalar("SELECT COUNT(*) FROM oc_poolbuy_pool") . " pools\n"
 q("INSERT INTO oc_cron (code, description, cycle, action, status, date_added, date_modified)
    SELECT 'poolbuy','PoolBuy lifecycle','hour','extension/poolbuy/cron/poolbuy',1,NOW(),'2020-01-01 00:00:00'
    FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM oc_cron WHERE code='poolbuy')");
+
+// --- 6b. Strip OpenCart's demo modules off the home layout ---
+//
+// A stock OpenCart install decorates the home page with demo-data modules: an
+// iPhone/MacBook banner, a "featured" strip of the same demo products, and a
+// carousel of unrelated brand logos. On a B2B wholesale marketplace they read as
+// an unfinished deployment, and they sit either side of the PoolBuy landing page.
+//
+// Only layout_module rows are removed, and only on the Home layout. The modules
+// themselves are left installed, so an operator can put any of them back from
+// Design > Layouts without reinstalling anything. The PoolBuy landing itself is
+// rendered by the home controller, not by a layout module, so it is unaffected.
+$homeLayoutId = (int)scalar("SELECT layout_id FROM oc_layout WHERE name='Home' LIMIT 1");
+
+if ($homeLayoutId > 0) {
+    $demoBefore = (int)scalar("SELECT COUNT(*) FROM oc_layout_module WHERE layout_id=$homeLayoutId");
+
+    q("DELETE FROM oc_layout_module
+       WHERE layout_id = $homeLayoutId
+         AND (code LIKE 'opencart.banner.%'
+           OR code LIKE 'opencart.carousel.%'
+           OR code LIKE 'opencart.featured.%'
+           OR code LIKE 'opencart.slideshow.%'
+           OR code LIKE 'opencart.bestseller.%'
+           OR code LIKE 'opencart.latest.%'
+           OR code LIKE 'opencart.special.%')");
+
+    $demoAfter = (int)scalar("SELECT COUNT(*) FROM oc_layout_module WHERE layout_id=$homeLayoutId");
+
+    echo 'seed: home layout demo modules removed (' . ($demoBefore - $demoAfter) . " of $demoBefore)\n";
+}
 
 // --- 7. Demo storefront accounts (buyer + sellers) ---
 // OpenCart 4 stores customer passwords as bcrypt (password_hash / PASSWORD_DEFAULT),

@@ -192,6 +192,14 @@
                   <div class="form-text">{{ help_shipping_terms }}</div>
                 </div>
               </div>
+              <div class="row mb-3">
+                <label for="input-freight-total" class="col-sm-3 col-form-label">{{ entry_freight_total }}</label>
+                <div class="col-sm-9">
+                  <input type="text" name="freight_total" value="{{ freight_total }}" placeholder="0.00" id="input-freight-total" class="form-control"/>
+                  <div id="error-freight-total" class="invalid-feedback"></div>
+                  <div class="form-text">{{ help_freight_total }}</div>
+                </div>
+              </div>
             </div>
 
           </div>

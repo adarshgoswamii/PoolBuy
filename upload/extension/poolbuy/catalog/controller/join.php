@@ -67,6 +67,12 @@ class Join extends \Opencart\System\Engine\Controller {
 
 		$view = PoolPresenter::present($pool, $tiers, ['symbol' => $symbol]);
 
+		// Every figure this controller formats must use the POOL's currency, not the
+		// store default, so the join flow cannot show a price in a different currency
+		// from the marketplace listing the buyer arrived from.
+		$symbol = (string)$view['currency_symbol'];
+		$decimals = (int)$view['currency_decimals'];
+
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$data['pool'] = $view;
@@ -141,6 +147,12 @@ class Join extends \Opencart\System\Engine\Controller {
 		$pool_id = (int)$pool['pool_id'];
 		$customer_id = (int)$this->customer->getId();
 
+		// Take the currency from the presented pool rather than the store setting, so
+		// every figure this method formats is labelled in the currency the buyer is
+		// actually committing in.
+		$symbol = (string)$view['currency_symbol'];
+		$decimals = (int)$view['currency_decimals'];
+
 		$requested_step = (int)($this->request->post['step'] ?? 0);
 
 		// Quantity always comes from the request, never from a hidden total, and is
@@ -171,20 +183,111 @@ class Join extends \Opencart\System\Engine\Controller {
 		$unit_price = PoolCalculator::quoteUnitPrice($tiers, (int)$view['reserved_qty'], $quantity) ?? (float)$view['entry_price'];
 
 		$data['unit_price'] = $unit_price;
-		$data['unit_price_text'] = PoolPresenter::money($unit_price, $symbol);
+		$data['unit_price_text'] = PoolPresenter::money($unit_price, $symbol, $decimals);
 
-		$breakdown = PoolCalculator::priceBreakdown($quantity, $unit_price, $gst_rate, $fee_rate);
+		// ---- Promotion.
+		//
+		// The code travels with the form through the steps so a refresh or a back
+		// button does not silently drop a discount the buyer already applied. It is
+		// re-resolved from the database on EVERY step and again inside the commit,
+		// so the amount is never taken from the browser.
+		$this->load->model('extension/poolbuy/poolbuy/promotion');
+
+		$promo_code = trim((string)($this->request->post['promo_code'] ?? ''));
+		$subtotal_before_discount = round($quantity * $unit_price, PoolCalculator::SCALE);
+
+		$discount = 0.0;
+		$promotion_id = 0;
+
+		$data['promo'] = [
+			'code'          => $promo_code,
+			'applied'       => false,
+			'error'         => '',
+			'discount_text' => '',
+			'pool_level'    => false,
+			'name'          => ''
+		];
+
+		// A pool-level promotion applies to everyone automatically and outranks any
+		// code a buyer might type. Show it as already applied.
+		$pool_promotion = $this->model_extension_poolbuy_poolbuy_promotion->getPoolPromotion($pool_id);
+
+		if ($pool_promotion) {
+			$resolved = PoolCalculator::resolveDiscount($pool_promotion, $quantity, $subtotal_before_discount);
+
+			if ($resolved['valid']) {
+				$discount = $resolved['discount'];
+				$promotion_id = (int)$pool_promotion['promotion_id'];
+
+				$data['promo']['applied'] = true;
+				$data['promo']['pool_level'] = true;
+				$data['promo']['name'] = (string)$pool_promotion['name'];
+				$data['promo']['discount_text'] = PoolPresenter::money($discount, $symbol, $decimals);
+			}
+
+			// If the buyer also typed a code, tell them plainly why it was not used
+			// rather than dropping it without comment.
+			if ($promo_code !== '') {
+				$data['promo']['error'] = $this->language->get('error_promo_pool_promotion_applies');
+			}
+		} elseif ($promo_code !== '') {
+			$quote = $this->model_extension_poolbuy_poolbuy_promotion->quote($promo_code, $pool_id, $quantity, $subtotal_before_discount);
+
+			if ($quote['valid']) {
+				$discount = $quote['discount'];
+				$promotion_id = $quote['promotion_id'];
+
+				$data['promo']['applied'] = true;
+				$data['promo']['discount_text'] = PoolPresenter::money($discount, $symbol, $decimals);
+			} else {
+				// Specific, honest messaging per failure reason.
+				$message = $this->language->get('error_promo_' . $quote['reason']);
+
+				$data['promo']['error'] = $message !== 'error_promo_' . $quote['reason'] ? $message : $this->language->get('error_promo_not_found');
+			}
+		}
+
+		$breakdown = PoolCalculator::priceBreakdown($quantity, $unit_price, $gst_rate, $fee_rate, 0.0, $discount);
 
 		$data['breakdown'] = [
 			'quantity'        => $breakdown['quantity'],
-			'unit_price_text' => PoolPresenter::money($breakdown['unit_price'], $symbol),
-			'subtotal_text'   => PoolPresenter::money($breakdown['subtotal'], $symbol),
-			'gst_text'        => PoolPresenter::money($breakdown['gst'], $symbol),
-			'fee_text'        => PoolPresenter::money($breakdown['platform_fee'], $symbol),
-			'total_text'      => PoolPresenter::money($breakdown['total'], $symbol),
+			'unit_price_text' => PoolPresenter::money($breakdown['unit_price'], $symbol, $decimals),
+			'subtotal_text'   => PoolPresenter::money($breakdown['subtotal'], $symbol, $decimals),
+			'has_discount'    => $breakdown['discount'] > 0,
+			'discount_text'   => PoolPresenter::money($breakdown['discount'], $symbol, $decimals),
+			'gst_text'        => PoolPresenter::money($breakdown['gst'], $symbol, $decimals),
+			'fee_text'        => PoolPresenter::money($breakdown['platform_fee'], $symbol, $decimals),
+			'total_text'      => PoolPresenter::money($breakdown['total'], $symbol, $decimals),
 			'gst_rate'        => $gst_rate,
 			'fee_rate'        => $fee_rate
 		];
+
+		// ---- Freight estimate.
+		//
+		// Freight is quoted for the pool and only divided for real when the pool
+		// closes, so nothing is charged now and this figure is explicitly an
+		// estimate. Like the price quote above it looks FORWARD: it assumes this
+		// buyer's units join the pool, which is the number they can actually act
+		// on. Because the same pool charge is spread over more units as the pool
+		// fills, the estimate falls over time - that is the pooling benefit, and
+		// the template says so.
+		$freight_total = (float)$view['freight_total'];
+		$projected_qty = (int)$view['reserved_qty'] + $quantity;
+
+		$data['freight'] = ['has_freight' => false];
+
+		if ($freight_total > 0 && $projected_qty > 0) {
+			$per_unit = round($freight_total / $projected_qty, PoolCalculator::SCALE);
+			$estimate = round($per_unit * $quantity, PoolCalculator::SCALE);
+
+			$data['freight'] = [
+				'has_freight'     => true,
+				'pool_total_text' => PoolPresenter::money($freight_total, $symbol, $decimals),
+				'per_unit_text'   => PoolPresenter::money($per_unit, $symbol, $decimals),
+				'estimate_text'   => PoolPresenter::money($estimate, $symbol, $decimals),
+				'projected_qty'   => $projected_qty
+			];
+		}
 
 		// ---- Addresses for the shipping step. OpenCart 4.1 requires the customer id
 		// explicitly, and passing it keeps the query scoped to this buyer.
@@ -246,6 +349,8 @@ class Join extends \Opencart\System\Engine\Controller {
 					'address_id'      => $address_id,
 					'unit_price'      => $unit_price,
 					'shipping_cost'   => 0.0,
+					'promotion_id'    => $promotion_id,
+					'discount_total'  => $discount,
 					'shipping_method' => [
 						'code'  => 'poolbuy.pool_freight',
 						'title' => $this->language->get('text_freight_title'),
@@ -255,6 +360,31 @@ class Join extends \Opencart\System\Engine\Controller {
 				]);
 
 				if ($result['success']) {
+					// Take the redemption only now that a commitment actually exists.
+					// A buyer-scoped code consumes one of its limited uses; a
+					// pool-level code applies to everyone and is not rationed per
+					// buyer, so it is recorded without competing for a quota.
+					if ($promotion_id > 0 && $discount > 0 && !empty($result['reservation_id'])) {
+						$claimed = $this->model_extension_poolbuy_poolbuy_promotion->claim(
+							$promotion_id,
+							(int)$result['reservation_id'],
+							$customer_id,
+							$discount
+						);
+
+						// Lost the race for the last redemption between quoting and
+						// committing. The commitment stands - it is valid without the
+						// discount - but the buyer must not be charged as if the code
+						// had applied, so the discount is removed and said out loud.
+						if (!$claimed && !$pool_promotion) {
+							$this->model_extension_poolbuy_poolbuy_reservation->clearDiscount((int)$result['reservation_id']);
+
+							$discount = 0.0;
+							$data['promo']['applied'] = false;
+							$data['promo']['error'] = $this->language->get('error_promo_exhausted');
+						}
+					}
+
 					$data['step'] = self::STEP_CONFIRMED;
 					$data['reference'] = $result['reference'];
 					$data['confirmed_quantity'] = $quantity;

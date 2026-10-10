@@ -1,6 +1,7 @@
 <?php
 namespace Opencart\Catalog\Model\Extension\Poolbuy\Poolbuy;
 
+use Opencart\System\Library\Extension\Poolbuy\GatewayFactory;
 use Opencart\System\Library\Extension\Poolbuy\PoolCalculator;
 use Opencart\System\Library\Extension\Poolbuy\PoolLifecycle;
 
@@ -114,10 +115,15 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 
 			$released = $this->releaseReservations($pool_id);
 
+			// Refund anyone who had already paid into this pool before it expired.
+			// Unpaid commitments are a no-op: nobody was charged.
+			$refunded = $this->refundPoolPayments($pool_id);
+
 			$this->setStatus($pool_id, PoolLifecycle::EXPIRED, [
 				'reserved_qty' => (int)$row['reserved_qty'],
 				'moq_target'   => (int)$row['moq_target'],
-				'released'     => $released
+				'released'     => $released,
+				'refunded'     => $refunded
 			]);
 
 			$this->recalculateReserved($pool_id);
@@ -176,6 +182,16 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 
 			$repriced += count($this->repricePool($pool_id));
 
+			// A pool-level promotion applies to every participant. It is resolved
+			// here, after the final reprice, so the discount is taken against the
+			// price buyers actually ended up paying.
+			$this->applyPoolPromotion($pool_id);
+
+			// Freight is quoted for the pool and only divisible once the final
+			// volume is known, so it is allocated here - after the last reprice and
+			// before any order is raised, so every order carries its buyer's share.
+			$this->allocatePoolFreight($pool_id);
+
 			$created = $this->convertPoolReservations($pool_id);
 
 			$orders += $created;
@@ -186,6 +202,7 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 
 			if (!(int)$outstanding->row['total']) {
 				$this->setStatus($pool_id, PoolLifecycle::FULFILLED, ['orders_created' => $created]);
+				$this->writeSettlement($pool_id);
 				$this->notifyParticipants($pool_id, 'fulfilled');
 
 				$pools[] = (string)$row['reference'];
@@ -233,6 +250,155 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 		}
 
 		return $changes;
+	}
+
+	/**
+	 * Allocate Pool Freight
+	 *
+	 * Divides the pool's quoted freight across its participants in proportion to
+	 * the units each committed, and writes each share onto the reservation so the
+	 * order raised from it carries the right freight line.
+	 *
+	 * Two properties matter here.
+	 *
+	 * The allocation is computed over the pool's FINAL participant set - every
+	 * reservation that is confirmed or already converted - rather than only the
+	 * rows still awaiting an order. If a previous run invoiced some buyers and
+	 * then failed, recomputing over the remainder would hand them an inflated
+	 * share. Including the already-converted rows keeps every share identical on
+	 * a retry.
+	 *
+	 * The write is then restricted to rows that have NOT yet been invoiced
+	 * (`order_id` = 0), the same guard convertPoolReservations() uses, so a
+	 * second cron run cannot alter freight on an order that already exists.
+	 *
+	 * @param int $pool_id
+	 *
+	 * @return array<int, float> reservation_id => allocated share
+	 */
+	public function allocatePoolFreight(int $pool_id): array {
+		$pool = $this->db->query("SELECT `freight_total` FROM `" . DB_PREFIX . "poolbuy_pool` WHERE `pool_id` = '" . (int)$pool_id . "'");
+
+		if (!$pool->num_rows) {
+			return [];
+		}
+
+		$freight_total = (float)$pool->row['freight_total'];
+
+		// The participant set that freight is divided between.
+		$reservations = $this->db->query("SELECT `reservation_id`, `quantity`, `order_id` FROM `" . DB_PREFIX . "poolbuy_reservation` WHERE `pool_id` = '" . (int)$pool_id . "' AND `status` IN ('confirmed', 'converted') ORDER BY `reservation_id` ASC")->rows;
+
+		if (!$reservations) {
+			return [];
+		}
+
+		$shares = PoolCalculator::allocateFreight($reservations, $freight_total);
+
+		$written = 0;
+
+		foreach ($reservations as $reservation) {
+			$reservation_id = (int)$reservation['reservation_id'];
+
+			// Already invoiced: its order is fixed, so leave the row alone.
+			if ((int)$reservation['order_id'] !== 0) {
+				continue;
+			}
+
+			$share = (float)($shares[$reservation_id] ?? 0);
+
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_reservation` SET `shipping_cost` = '" . $share . "', `date_modified` = NOW() WHERE `reservation_id` = '" . $reservation_id . "' AND `order_id` = '0'");
+
+			$written++;
+		}
+
+		if ($freight_total > 0 && $written > 0) {
+			$this->addEvent($pool_id, 'freight_allocated', [
+				'freight_total' => $freight_total,
+				'participants'  => count($shares),
+				'allocated_to'  => $written
+			]);
+		}
+
+		return $shares;
+	}
+
+	/**
+	 * Apply Pool Promotion
+	 *
+	 * Applies the pool's own promotion, if it has one, to every commitment that has
+	 * not yet been invoiced.
+	 *
+	 * A pool-level promotion is the operator's or seller's decision and applies to
+	 * everybody, so it OVERRIDES whatever buyer code a participant may have entered
+	 * earlier - the precedence rule the join flow already tells buyers about. Any
+	 * superseded buyer redemption is handed back so a limited code is not consumed
+	 * by a commitment that ended up discounted by something else.
+	 *
+	 * Idempotent: the unique key on (promotion_id, reservation_id) means a second
+	 * run records nothing new, and rows already carrying this promotion are skipped.
+	 *
+	 * @param int $pool_id
+	 *
+	 * @return int commitments discounted
+	 */
+	public function applyPoolPromotion(int $pool_id): int {
+		$promotion = $this->db->query("SELECT * FROM `" . DB_PREFIX . "poolbuy_promotion` WHERE `scope` = 'pool' AND `pool_id` = '" . (int)$pool_id . "' AND `status` = '1' ORDER BY `promotion_id` ASC LIMIT 1");
+
+		if (!$promotion->num_rows) {
+			return 0;
+		}
+
+		$promotion_info = $promotion->row;
+		$promotion_id = (int)$promotion_info['promotion_id'];
+
+		// Only rows still awaiting an order; an invoiced order is not rewritten.
+		$reservations = $this->db->query("SELECT `reservation_id`, `customer_id`, `quantity`, `unit_price_locked`, `promotion_id` FROM `" . DB_PREFIX . "poolbuy_reservation` WHERE `pool_id` = '" . (int)$pool_id . "' AND `status` = 'confirmed' AND `order_id` = '0'")->rows;
+
+		$applied = 0;
+
+		foreach ($reservations as $reservation) {
+			$reservation_id = (int)$reservation['reservation_id'];
+			$quantity = (int)$reservation['quantity'];
+			$subtotal = round($quantity * (float)$reservation['unit_price_locked'], PoolCalculator::SCALE);
+
+			$resolved = PoolCalculator::resolveDiscount($promotion_info, $quantity, $subtotal);
+
+			if (!$resolved['valid']) {
+				continue;
+			}
+
+			// Already carrying this promotion: nothing to do.
+			if ((int)$reservation['promotion_id'] === $promotion_id) {
+				continue;
+			}
+
+			// Supersede any buyer-entered code and return its redemption.
+			$previous = (int)$reservation['promotion_id'];
+
+			if ($previous > 0 && $previous !== $promotion_id) {
+				$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_promotion` SET `redemptions_used` = GREATEST(0, `redemptions_used` - 1), `date_modified` = NOW() WHERE `promotion_id` = '" . $previous . "'");
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "poolbuy_promotion_redemption` WHERE `reservation_id` = '" . $reservation_id . "' AND `promotion_id` = '" . $previous . "'");
+			}
+
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_reservation` SET `promotion_id` = '" . $promotion_id . "', `discount_total` = '" . (float)$resolved['discount'] . "', `date_modified` = NOW() WHERE `reservation_id` = '" . $reservation_id . "' AND `order_id` = '0'");
+
+			// INSERT IGNORE leans on the unique key to make a re-run a no-op.
+			$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "poolbuy_promotion_redemption` SET `promotion_id` = '" . $promotion_id . "', `reservation_id` = '" . $reservation_id . "', `customer_id` = '" . (int)$reservation['customer_id'] . "', `discount_amount` = '" . (float)$resolved['discount'] . "', `date_added` = NOW()");
+
+			$applied++;
+		}
+
+		if ($applied > 0) {
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_promotion` SET `redemptions_used` = `redemptions_used` + " . (int)$applied . ", `date_modified` = NOW() WHERE `promotion_id` = '" . $promotion_id . "'");
+
+			$this->addEvent($pool_id, 'promotion_applied', [
+				'promotion_id' => $promotion_id,
+				'code'         => (string)$promotion_info['code'],
+				'applied_to'   => $applied
+			]);
+		}
+
+		return $applied;
 	}
 
 	/**
@@ -303,7 +469,13 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 		$gst_rate = (float)$this->config->get('module_poolbuy_gst_rate');
 		$fee_rate = (float)$this->config->get('module_poolbuy_platform_fee');
 
-		$breakdown = PoolCalculator::priceBreakdown($quantity, $unit_price, $gst_rate, $fee_rate, (float)$reservation['shipping_cost']);
+		// The discount was resolved and recorded when the promotion was claimed -
+		// either the buyer's own code at join, or the pool-level promotion applied
+		// at close. It is read from the row rather than recomputed so the invoice
+		// matches exactly what the buyer was shown and what was redeemed.
+		$discount = round(max(0.0, (float)($reservation['discount_total'] ?? 0)), PoolCalculator::SCALE);
+
+		$breakdown = PoolCalculator::priceBreakdown($quantity, $unit_price, $gst_rate, $fee_rate, (float)$reservation['shipping_cost'], $discount);
 
 		$currency_code = (string)($reservation['currency_code'] ?: $this->config->get('config_currency'));
 
@@ -414,6 +586,12 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "poolbuy_pool_event` SET `pool_id` = '" . (int)$reservation['pool_id'] . "', `customer_id` = '" . $customer_id . "', `type` = 'reservation_converted', `payload` = '" . $this->db->escape((string)json_encode(['order_id' => $order_id, 'reference' => $reservation['reference'], 'total' => $breakdown['total']])) . "', `date_added` = NOW()");
 
+			// Raise a pending payment for the freshly created order and generate a
+			// payable link through the configured gateway. Idempotent: the unique key
+			// on poolbuy_payment.order_id means a re-run inserts nothing. Kept inside
+			// the same transaction so an order never exists without its payment row.
+			$this->issuePayment($order_id, $reservation_id, (float)$breakdown['total'], $currency_code, (string)$customer_info['email'], (string)$customer_info['firstname']);
+
 			$this->db->query("COMMIT");
 
 			// Give the order a real status so it appears in admin Sales rather than
@@ -423,6 +601,9 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 			// to whatever status actually exists rather than leaving it at 0.
 			$this->model_checkout_order->addHistory($order_id, $this->initialOrderStatusId(), $order_data['comment'], false);
 
+			// Tell the buyer their order is ready to pay, with the payment link.
+			$this->notifyPaymentRequested($order_id, (string)$customer_info['email'], (string)$customer_info['firstname']);
+
 			return true;
 		} catch (\Throwable $e) {
 			$this->db->query("ROLLBACK");
@@ -430,6 +611,278 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 			$this->log->write('PoolBuy order conversion failed for reservation ' . $reservation_id . ': ' . $e->getMessage());
 
 			return false;
+		}
+	}
+
+	/**
+	 * Issue Payment
+	 *
+	 * Records a pending payment for a newly raised order and asks the configured
+	 * gateway for a payable link. Idempotent: the unique key on
+	 * poolbuy_payment.order_id means a second call for the same order inserts
+	 * nothing and leaves the existing row untouched.
+	 *
+	 * @param int    $order_id
+	 * @param int    $reservation_id
+	 * @param float  $amount
+	 * @param string $currency
+	 * @param string $email
+	 * @param string $name
+	 *
+	 * @return void
+	 */
+	private function issuePayment(int $order_id, int $reservation_id, float $amount, string $currency, string $email, string $name): void {
+		$existing = $this->db->query("SELECT `payment_id` FROM `" . DB_PREFIX . "poolbuy_payment` WHERE `order_id` = '" . (int)$order_id . "'");
+
+		if ($existing->num_rows) {
+			return;
+		}
+
+		$gateway = $this->gateway();
+
+		$link = $gateway->createPaymentLink([
+			'order_id'  => $order_id,
+			'reference' => 'PB-ORDER-' . $order_id,
+			'amount'    => $amount,
+			'currency'  => $currency,
+			'email'     => $email,
+			'name'      => $name
+		]);
+
+		$this->db->query(
+			"INSERT INTO `" . DB_PREFIX . "poolbuy_payment` SET "
+			. "`order_id` = '" . (int)$order_id . "', "
+			. "`reservation_id` = '" . (int)$reservation_id . "', "
+			. "`gateway` = '" . $this->db->escape($gateway->code()) . "', "
+			. "`gateway_ref` = '" . $this->db->escape((string)$link['reference']) . "', "
+			. "`link_url` = '" . $this->db->escape((string)$link['url']) . "', "
+			. "`amount` = '" . (float)$amount . "', "
+			. "`currency` = '" . $this->db->escape($currency) . "', "
+			. "`status` = 'pending', `date_added` = NOW(), `date_modified` = NOW()"
+		);
+	}
+
+	/**
+	 * Gateway
+	 *
+	 * Builds the payment gateway from module settings. Mock unless Razorpay is
+	 * selected with both a key and secret present.
+	 *
+	 * @return \Opencart\System\Library\Extension\Poolbuy\PaymentGatewayInterface
+	 */
+	private function gateway(): \Opencart\System\Library\Extension\Poolbuy\PaymentGatewayInterface {
+		return GatewayFactory::make([
+			'gateway'         => (string)$this->config->get('module_poolbuy_gateway'),
+			'razorpay_key'    => (string)$this->config->get('module_poolbuy_razorpay_key'),
+			'razorpay_secret' => (string)$this->config->get('module_poolbuy_razorpay_secret'),
+			'base_url'        => (string)$this->config->get('config_url') . 'index.php?route=extension/poolbuy/payment.pay'
+		]);
+	}
+
+	/**
+	 * Refund Pool Payments
+	 *
+	 * Refunds every paid payment behind a pool that is being expired or cancelled.
+	 * Idempotent: only payments still in 'paid' are touched, and the row is moved
+	 * to 'refunded' only once the gateway confirms, so a re-run refunds nothing
+	 * twice. Buyers with no paid payment are untouched - nobody was charged.
+	 *
+	 * @param int $pool_id
+	 *
+	 * @return int number of payments refunded
+	 */
+	public function refundPoolPayments(int $pool_id): int {
+		$sql = "SELECT pm.`payment_id`, pm.`gateway_ref`, pm.`amount`, pm.`order_id`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_payment` pm";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "poolbuy_reservation` r ON (pm.`reservation_id` = r.`reservation_id`)";
+		$sql .= " WHERE r.`pool_id` = '" . (int)$pool_id . "' AND pm.`status` = 'paid'";
+
+		$gateway = $this->gateway();
+
+		$refunded = 0;
+
+		foreach ($this->db->query($sql)->rows as $payment) {
+			$refund_ref = $gateway->refund((string)$payment['gateway_ref'], (float)$payment['amount'], (string)($payment['currency'] ?? ''));
+
+			if ($refund_ref === null) {
+				$this->log->write('PoolBuy refund failed for payment ' . (int)$payment['payment_id'] . ' on pool ' . $pool_id);
+
+				continue;
+			}
+
+			// Conditional update: only a still-paid row transitions, so two runs
+			// cannot both record a refund for the same payment.
+			$this->db->query("UPDATE `" . DB_PREFIX . "poolbuy_payment` SET `status` = 'refunded', `refund_ref` = '" . $this->db->escape($refund_ref) . "', `date_modified` = NOW() WHERE `payment_id` = '" . (int)$payment['payment_id'] . "' AND `status` = 'paid'");
+
+			if ($this->db->countAffected()) {
+				$refunded++;
+
+				$this->notifyBuyerPayment((int)$payment['order_id'], 'refund_issued');
+			}
+		}
+
+		return $refunded;
+	}
+
+	/**
+	 * Write Settlement
+	 *
+	 * Records what the seller is owed for a fulfilled pool: the gross of the pool's
+	 * order subtotals, the platform fee retained, and the net payable. Idempotent
+	 * via the unique key on poolbuy_settlement.pool_id, so a re-run of fulfilment
+	 * writes nothing new.
+	 *
+	 * Gross is taken from the order line subtotals of the pool's converted
+	 * reservations, so it reconciles exactly with what buyers were invoiced.
+	 *
+	 * @param int $pool_id
+	 *
+	 * @return void
+	 */
+	public function writeSettlement(int $pool_id): void {
+		$existing = $this->db->query("SELECT `settlement_id` FROM `" . DB_PREFIX . "poolbuy_settlement` WHERE `pool_id` = '" . (int)$pool_id . "'");
+
+		if ($existing->num_rows) {
+			return;
+		}
+
+		$pool = $this->db->query("SELECT `seller_id`, `currency_code` FROM `" . DB_PREFIX . "poolbuy_pool` WHERE `pool_id` = '" . (int)$pool_id . "'");
+
+		if (!$pool->num_rows) {
+			return;
+		}
+
+		// Gross from the order line subtotals of this pool's converted commitments.
+		$sql = "SELECT COALESCE(SUM(op.`total`), 0) AS `gross`, COUNT(DISTINCT r.`order_id`) AS `orders`";
+		$sql .= " FROM `" . DB_PREFIX . "poolbuy_reservation` r";
+		$sql .= " LEFT JOIN `" . DB_PREFIX . "order_product` op ON (op.`order_id` = r.`order_id`)";
+		$sql .= " WHERE r.`pool_id` = '" . (int)$pool_id . "' AND r.`status` = 'converted' AND r.`order_id` > 0";
+
+		$totals = $this->db->query($sql)->row;
+
+		$gross = round((float)$totals['gross'], 4);
+		$fee_rate = (float)$this->config->get('module_poolbuy_platform_fee');
+		$platform_fee = round($gross * (max(0.0, $fee_rate) / 100), 4);
+		$net = round($gross - $platform_fee, 4);
+
+		$currency = (string)($pool->row['currency_code'] ?: $this->config->get('config_currency'));
+
+		$this->db->query(
+			"INSERT INTO `" . DB_PREFIX . "poolbuy_settlement` SET "
+			. "`seller_id` = '" . (int)$pool->row['seller_id'] . "', "
+			. "`pool_id` = '" . (int)$pool_id . "', "
+			. "`gross` = '" . $gross . "', "
+			. "`platform_fee` = '" . $platform_fee . "', "
+			. "`net` = '" . $net . "', "
+			. "`currency` = '" . $this->db->escape($currency) . "', "
+			. "`order_count` = '" . (int)$totals['orders'] . "', "
+			. "`status` = 'pending', `date_added` = NOW(), `date_modified` = NOW() "
+			. "ON DUPLICATE KEY UPDATE `pool_id` = `pool_id`"
+		);
+
+		$this->addEvent($pool_id, 'settlement_recorded', [
+			'gross'        => $gross,
+			'platform_fee' => $platform_fee,
+			'net'          => $net,
+			'order_count'  => (int)$totals['orders']
+		]);
+	}
+
+	/**
+	 * Notify Payment Requested
+	 *
+	 * Emails the buyer that their pool order is ready to pay, including the payment
+	 * link stored on the payment row. Failure-tolerant like every other send here.
+	 *
+	 * @param int    $order_id
+	 * @param string $email
+	 * @param string $firstname
+	 *
+	 * @return void
+	 */
+	private function notifyPaymentRequested(int $order_id, string $email, string $firstname): void {
+		if (!$this->config->get('config_mail_engine')) {
+			return;
+		}
+
+		if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			return;
+		}
+
+		$payment = $this->db->query("SELECT `link_url` FROM `" . DB_PREFIX . "poolbuy_payment` WHERE `order_id` = '" . (int)$order_id . "'");
+
+		$link = $payment->num_rows ? (string)$payment->row['link_url'] : '';
+
+		$this->load->language('extension/poolbuy/poolbuy/mail');
+
+		$mail_option = [
+			'parameter'     => $this->config->get('config_mail_parameter'),
+			'smtp_hostname' => $this->config->get('config_mail_smtp_hostname'),
+			'smtp_username' => $this->config->get('config_mail_smtp_username'),
+			'smtp_password' => html_entity_decode((string)$this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8'),
+			'smtp_port'     => $this->config->get('config_mail_smtp_port'),
+			'smtp_timeout'  => $this->config->get('config_mail_smtp_timeout')
+		];
+
+		try {
+			$mail = new \Opencart\System\Library\Mail((string)$this->config->get('config_mail_engine'), $mail_option);
+
+			$mail->setTo($email);
+			$mail->setFrom((string)$this->config->get('config_email'));
+			$mail->setSender((string)$this->config->get('config_name'));
+			$mail->setSubject(sprintf($this->language->get('subject_payment_requested'), $order_id));
+			$mail->setText(sprintf($this->language->get('body_payment_requested'), $firstname, $order_id, $link));
+			$mail->send();
+		} catch (\Throwable $e) {
+			$this->log->write('PoolBuy payment_requested notification failed for order ' . $order_id . ': ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Notify Buyer Payment
+	 *
+	 * Emails the buyer behind an order about a payment event (payment_requested,
+	 * payment_received, refund_issued), reusing the same failure-tolerant
+	 * transport as notifyParticipants(). Never throws.
+	 *
+	 * @param int    $order_id
+	 * @param string $event
+	 *
+	 * @return void
+	 */
+	public function notifyBuyerPayment(int $order_id, string $event): void {
+		if (!$this->config->get('config_mail_engine')) {
+			return;
+		}
+
+		$this->load->language('extension/poolbuy/poolbuy/mail');
+
+		$query = $this->db->query("SELECT `email`, `firstname` FROM `" . DB_PREFIX . "order` WHERE `order_id` = '" . (int)$order_id . "'");
+
+		if (!$query->num_rows || empty($query->row['email']) || !filter_var($query->row['email'], FILTER_VALIDATE_EMAIL)) {
+			return;
+		}
+
+		$mail_option = [
+			'parameter'     => $this->config->get('config_mail_parameter'),
+			'smtp_hostname' => $this->config->get('config_mail_smtp_hostname'),
+			'smtp_username' => $this->config->get('config_mail_smtp_username'),
+			'smtp_password' => html_entity_decode((string)$this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8'),
+			'smtp_port'     => $this->config->get('config_mail_smtp_port'),
+			'smtp_timeout'  => $this->config->get('config_mail_smtp_timeout')
+		];
+
+		try {
+			$mail = new \Opencart\System\Library\Mail((string)$this->config->get('config_mail_engine'), $mail_option);
+
+			$mail->setTo((string)$query->row['email']);
+			$mail->setFrom((string)$this->config->get('config_email'));
+			$mail->setSender((string)$this->config->get('config_name'));
+			$mail->setSubject(sprintf($this->language->get('subject_' . $event), (int)$order_id));
+			$mail->setText(sprintf($this->language->get('body_' . $event), (string)$query->row['firstname'], (int)$order_id));
+			$mail->send();
+		} catch (\Throwable $e) {
+			$this->log->write('PoolBuy payment notification failed for order ' . $order_id . ': ' . $e->getMessage());
 		}
 	}
 
@@ -473,6 +926,14 @@ class Lifecycle extends \Opencart\System\Engine\Model {
 		$sort = 1;
 
 		$totals[] = ['extension' => 'opencart', 'code' => 'sub_total', 'title' => 'Sub-Total', 'value' => $breakdown['subtotal'], 'sort_order' => $sort++];
+
+		// A promotion discount sits immediately after the sub-total and BEFORE the
+		// fee and GST lines, because both of those are charged on the discounted
+		// base. Carried as a negative value, which is how OpenCart represents a
+		// reduction in an order total line.
+		if (!empty($breakdown['discount']) && $breakdown['discount'] > 0) {
+			$totals[] = ['extension' => 'poolbuy', 'code' => 'poolbuy_discount', 'title' => 'Discount', 'value' => -$breakdown['discount'], 'sort_order' => $sort++];
+		}
 
 		if ($breakdown['shipping'] > 0) {
 			$totals[] = ['extension' => 'opencart', 'code' => 'shipping', 'title' => 'Freight', 'value' => $breakdown['shipping'], 'sort_order' => $sort++];

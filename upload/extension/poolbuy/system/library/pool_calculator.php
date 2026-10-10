@@ -348,35 +348,182 @@ class PoolCalculator {
 	 * Price Breakdown
 	 *
 	 * The figures shown in the join flow and later written onto the order.
-	 * GST and the platform fee are both charged on the subtotal; shipping is
-	 * added afterwards and is not itself taxed here.
+	 *
+	 * The order of operations is deliberate and is the single place it is defined:
+	 *
+	 *     subtotal = quantity x unit price
+	 *     discounted subtotal = subtotal - promotion discount
+	 *     GST and platform fee are charged on the DISCOUNTED subtotal
+	 *     freight is added last and is not itself taxed
+	 *
+	 * A promotion therefore reduces the tax and the platform fee as well as the
+	 * goods value, which is what a buyer reasonably expects from a discount. The
+	 * discount is clamped to the subtotal, so no combination of inputs can produce
+	 * a negative line or a negative total.
+	 *
+	 * `subtotal` remains the GROSS goods value so that existing callers and the
+	 * order's sub-total line are unchanged; `discounted_subtotal` is the taxable
+	 * base. With the default zero discount the two are identical and every figure
+	 * matches the pre-promotion behaviour exactly.
 	 *
 	 * @param int   $quantity
 	 * @param float $unit_price
 	 * @param float $gst_rate          percentage, e.g. 18.0
 	 * @param float $platform_fee_rate percentage, e.g. 2.0
 	 * @param float $shipping_cost
+	 * @param float $discount          promotion discount against the subtotal
 	 *
-	 * @return array{quantity: int, unit_price: float, subtotal: float, gst: float, platform_fee: float, shipping: float, total: float}
+	 * @return array{quantity: int, unit_price: float, subtotal: float, discount: float, discounted_subtotal: float, gst: float, platform_fee: float, shipping: float, total: float}
 	 */
-	public static function priceBreakdown(int $quantity, float $unit_price, float $gst_rate, float $platform_fee_rate, float $shipping_cost = 0.0): array {
+	public static function priceBreakdown(int $quantity, float $unit_price, float $gst_rate, float $platform_fee_rate, float $shipping_cost = 0.0, float $discount = 0.0): array {
 		$quantity = (int)max(0, $quantity);
 		$unit_price = round(max(0.0, $unit_price), self::SCALE);
 
 		$subtotal = round($quantity * $unit_price, self::SCALE);
-		$gst = round($subtotal * (max(0.0, $gst_rate) / 100), self::SCALE);
-		$platform_fee = round($subtotal * (max(0.0, $platform_fee_rate) / 100), self::SCALE);
+
+		// Never more than the goods are worth, and never negative.
+		$discount = round(min(max(0.0, $discount), $subtotal), self::SCALE);
+
+		$discounted = round($subtotal - $discount, self::SCALE);
+
+		$gst = round($discounted * (max(0.0, $gst_rate) / 100), self::SCALE);
+		$platform_fee = round($discounted * (max(0.0, $platform_fee_rate) / 100), self::SCALE);
 		$shipping = round(max(0.0, $shipping_cost), self::SCALE);
 
 		return [
-			'quantity'     => $quantity,
-			'unit_price'   => $unit_price,
-			'subtotal'     => $subtotal,
-			'gst'          => $gst,
-			'platform_fee' => $platform_fee,
-			'shipping'     => $shipping,
-			'total'        => round($subtotal + $gst + $platform_fee + $shipping, self::SCALE)
+			'quantity'            => $quantity,
+			'unit_price'          => $unit_price,
+			'subtotal'            => $subtotal,
+			'discount'            => $discount,
+			'discounted_subtotal' => $discounted,
+			'gst'                 => $gst,
+			'platform_fee'        => $platform_fee,
+			'shipping'            => $shipping,
+			'total'               => round($discounted + $gst + $platform_fee + $shipping, self::SCALE)
 		];
+	}
+
+	/**
+	 * Allocate Freight
+	 *
+	 * Splits one pool-level freight charge across the pool's confirmed
+	 * commitments, pro rata by quantity.
+	 *
+	 * Freight is quoted for the pool as a whole because a single consolidated
+	 * shipment is what makes pooling worth doing: the cost is a property of the
+	 * pool, not of any one buyer. Splitting it by quantity means each buyer's
+	 * share FALLS as the pool fills, which is the same collective-volume logic
+	 * that drives the tier ladder.
+	 *
+	 * Allocation uses the largest-remainder method, working in integer units of
+	 * 10^-SCALE. Naive per-buyer rounding would let the shares drift from the
+	 * quoted total by a few paise in either direction - either silently
+	 * overcharging buyers or leaving the platform short. Here the shares are
+	 * guaranteed to sum to EXACTLY the quoted freight total: every unit is
+	 * accounted for, and the leftover units go to the buyers with the largest
+	 * fractional remainders.
+	 *
+	 * Ties are broken by larger quantity first, then by lower reservation id, so
+	 * the allocation is deterministic and a re-run produces identical figures.
+	 *
+	 * @param array<int, array<string, mixed>> $reservations  rows with reservation_id and quantity
+	 * @param float                            $freight_total the pool's quoted freight
+	 *
+	 * @return array<int, float> reservation_id => freight share
+	 */
+	public static function allocateFreight(array $reservations, float $freight_total): array {
+		$shares = [];
+		$rows = [];
+		$total_qty = 0;
+
+		foreach ($reservations as $reservation) {
+			$reservation_id = (int)($reservation['reservation_id'] ?? 0);
+
+			if ($reservation_id <= 0) {
+				continue;
+			}
+
+			$quantity = (int)max(0, (int)($reservation['quantity'] ?? 0));
+
+			$shares[$reservation_id] = 0.0;
+			$rows[] = ['reservation_id' => $reservation_id, 'quantity' => $quantity];
+			$total_qty += $quantity;
+		}
+
+		// Nothing to charge, or nothing to charge it against. Either way every
+		// share is zero rather than undefined, so callers can write the column
+		// unconditionally.
+		if (!$rows || $total_qty <= 0 || $freight_total <= 0) {
+			return $shares;
+		}
+
+		$factor = 10 ** self::SCALE;
+
+		// Work in whole minor units so the arithmetic is exact.
+		$total_units = (int)round($freight_total * $factor);
+
+		if ($total_units <= 0) {
+			return $shares;
+		}
+
+		$assigned = 0;
+
+		foreach ($rows as $index => $row) {
+			$exact = $total_units * $row['quantity'] / $total_qty;
+			$floor = (int)floor($exact);
+
+			$rows[$index]['units'] = $floor;
+			$rows[$index]['remainder'] = $exact - $floor;
+
+			$assigned += $floor;
+		}
+
+		// Hand out the units lost to flooring, largest fractional remainder first.
+		$leftover = $total_units - $assigned;
+
+		if ($leftover > 0) {
+			$order = $rows;
+
+			usort($order, static function(array $a, array $b): int {
+				// Largest fractional remainder first.
+				$compare = $b['remainder'] <=> $a['remainder'];
+
+				if ($compare !== 0) {
+					return $compare;
+				}
+
+				// Then the larger commitment, which is the fairer place to put a
+				// spare unit.
+				$compare = $b['quantity'] <=> $a['quantity'];
+
+				if ($compare !== 0) {
+					return $compare;
+				}
+
+				// Finally the lower id, purely so the result is deterministic.
+				return $a['reservation_id'] <=> $b['reservation_id'];
+			});
+
+			$positions = [];
+
+			foreach ($rows as $index => $row) {
+				$positions[$row['reservation_id']] = $index;
+			}
+
+			for ($i = 0; $i < $leftover; $i++) {
+				// More leftover units than rows cannot happen (leftover < row count),
+				// but wrapping keeps the loop total-preserving regardless.
+				$target = $order[$i % count($order)]['reservation_id'];
+
+				$rows[$positions[$target]]['units']++;
+			}
+		}
+
+		foreach ($rows as $row) {
+			$shares[$row['reservation_id']] = round($row['units'] / $factor, self::SCALE);
+		}
+
+		return $shares;
 	}
 
 	/**
@@ -431,6 +578,118 @@ class PoolCalculator {
 		}
 
 		return $changes;
+	}
+
+	/**
+	 * Resolve Discount
+	 *
+	 * Decides whether a promotion may be applied to a commitment, and what it is
+	 * worth. Every rule that could reject a code lives here, so the join flow,
+	 * the pool-close path and the admin preview all agree.
+	 *
+	 * The reason for a rejection is returned rather than a bare false, because a
+	 * buyer who typed a real code that has simply run out deserves to be told
+	 * that rather than "invalid code".
+	 *
+	 * A percentage is clamped to 0-100 and a fixed amount to the subtotal, so no
+	 * configuration - however wrong - can discount more than the goods are worth
+	 * or produce a negative line.
+	 *
+	 * @param array<string, mixed> $promotion a poolbuy_promotion row
+	 * @param int                  $quantity  units being committed
+	 * @param float                $subtotal  quantity x unit price
+	 * @param int|null             $now       unix time, for testability
+	 *
+	 * @return array{valid: bool, reason: string, discount: float}
+	 */
+	public static function resolveDiscount(array $promotion, int $quantity, float $subtotal, ?int $now = null): array {
+		$now ??= time();
+		$subtotal = round(max(0.0, $subtotal), self::SCALE);
+
+		$reject = static fn (string $reason): array => ['valid' => false, 'reason' => $reason, 'discount' => 0.0];
+
+		if (!$promotion) {
+			return $reject('not_found');
+		}
+
+		if (empty($promotion['status'])) {
+			return $reject('inactive');
+		}
+
+		// A blank or zero date means "no bound", so an open-ended promotion needs no
+		// sentinel value in the database.
+		$start = self::timestampOrNull($promotion['date_start'] ?? null);
+		$end = self::timestampOrNull($promotion['date_end'] ?? null);
+
+		if ($start !== null && $now < $start) {
+			return $reject('not_started');
+		}
+
+		if ($end !== null && $now > $end) {
+			return $reject('expired');
+		}
+
+		$min_qty = (int)($promotion['min_qty'] ?? 0);
+
+		if ($min_qty > 0 && $quantity < $min_qty) {
+			return $reject('min_qty');
+		}
+
+		// 0 means unlimited. Anything else is a hard ceiling.
+		$max = (int)($promotion['max_redemptions'] ?? 0);
+		$used = (int)($promotion['redemptions_used'] ?? 0);
+
+		if ($max > 0 && $used >= $max) {
+			return $reject('exhausted');
+		}
+
+		if ($subtotal <= 0) {
+			return $reject('nothing_to_discount');
+		}
+
+		$type = (string)($promotion['type'] ?? '');
+		$value = (float)($promotion['value'] ?? 0);
+
+		if ($value <= 0) {
+			return $reject('worthless');
+		}
+
+		if ($type === 'percent') {
+			$percent = min(100.0, max(0.0, $value));
+			$discount = round($subtotal * ($percent / 100), self::SCALE);
+		} elseif ($type === 'fixed') {
+			$discount = round(max(0.0, $value), self::SCALE);
+		} else {
+			return $reject('unknown_type');
+		}
+
+		// Never more than the goods are worth.
+		$discount = round(min($discount, $subtotal), self::SCALE);
+
+		if ($discount <= 0) {
+			return $reject('worthless');
+		}
+
+		return ['valid' => true, 'reason' => '', 'discount' => $discount];
+	}
+
+	/**
+	 * Timestamp Or Null
+	 *
+	 * Treats null, an empty string and MySQL's zero date as "no bound".
+	 *
+	 * @param mixed $value
+	 *
+	 * @return int|null
+	 */
+	private static function timestampOrNull($value): ?int {
+		if ($value === null || $value === '' || $value === '0000-00-00 00:00:00' || $value === '0000-00-00') {
+			return null;
+		}
+
+		$timestamp = strtotime((string)$value);
+
+		return $timestamp === false ? null : $timestamp;
 	}
 
 	/**

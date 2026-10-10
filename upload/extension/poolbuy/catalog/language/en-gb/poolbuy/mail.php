@@ -11,3 +11,14 @@ $_['body_expired']      = "Hello %s,\n\nThe pool \"%s\" closed without reaching 
 
 $_['subject_fulfilled'] = 'Your pool order for %s is confirmed';
 $_['body_fulfilled']    = "Hello %s,\n\nThe pool \"%s\" has been fulfilled and your order has been created.\n\nYour commitment: %d %s\nReference: %s\n\nYou can view the order in your account. The supplier ships directly to your delivery address.\n\nThank you for pooling with us.";
+
+// Payment notifications. payment_requested takes: firstname, order id, pay url.
+// payment_received and refund_issued take: firstname, order id.
+$_['subject_payment_requested'] = 'Payment due for your pool order %d';
+$_['body_payment_requested']    = "Hello %s,\n\nYour pool order #%d is ready for payment.\n\nPlease complete payment here:\n%s\n\nOnce paid, the supplier ships directly to your delivery address.\n\nThank you for pooling with us.";
+
+$_['subject_payment_received']  = 'Payment received for order %d';
+$_['body_payment_received']     = "Hello %s,\n\nWe have received payment for your pool order #%d. Thank you!\n\nThe supplier will now ship directly to your delivery address. You can track the order in your account.";
+
+$_['subject_refund_issued']     = 'Refund issued for order %d';
+$_['body_refund_issued']        = "Hello %s,\n\nThe pool behind your order #%d did not proceed, so the payment you made has been refunded in full.\n\nThe refund will appear on your original payment method according to your provider's timelines. You are welcome to join another pool at any time.";

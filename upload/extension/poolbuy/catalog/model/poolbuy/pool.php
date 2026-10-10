@@ -335,6 +335,30 @@ class Pool extends \Opencart\System\Engine\Model {
 			$conditions[] = "s.`gst_verified` = '1'";
 		}
 
+		// Climate Safety Protocol: strict warehouse storage safety
+		if (!isset($data['filter_climate_safe']) || !empty($data['filter_climate_safe'])) {
+			$conditions[] = "p.`climate_safe` = '1'";
+		}
+
+		// Campaign quick-filters
+		if (!empty($data['filter_campaign'])) {
+			if ($data['filter_campaign'] === 'near_moq') {
+				$conditions[] = "(p.`reserved_qty` / GREATEST(p.`moq_target`, 1)) >= 0.8";
+			} elseif ($data['filter_campaign'] === 'ending_soon') {
+				$conditions[] = "p.`date_end` <= DATE_ADD(NOW(), INTERVAL 3 DAY) AND p.`date_end` > NOW()";
+			} elseif ($data['filter_campaign'] === 'reached') {
+				$conditions[] = "p.`status` = 'reached'";
+			}
+		}
+
+		// Multi-attribute wholesale filters (Apparel, Electronics, Packaging)
+		foreach (['size', 'color', 'fabric', 'gsm', 'wattage', 'ports', 'box_ply'] as $attrKey) {
+			if (!empty($data['filter_' . $attrKey])) {
+				$val = $this->db->escape((string)$data['filter_' . $attrKey]);
+				$conditions[] = "(p.`attributes` LIKE '%\"" . $attrKey . "\":\"" . $val . "\"%' OR pd.`name` LIKE '%" . $val . "%')";
+			}
+		}
+
 		return ' WHERE ' . implode(' AND ', $conditions);
 	}
 }

@@ -35,7 +35,35 @@ $_['text_price_note']    = 'Your final unit price can only improve. If more buye
 $_['text_destination']   = 'Destination address';
 $_['text_add_address']   = 'Add a new address';
 $_['text_freight_title'] = 'Direct manufacturer freight';
+
+// Promotions
+$_['entry_promo_code']        = 'Discount code';
+$_['button_apply_promo']      = 'Apply';
+$_['text_promo_placeholder']  = 'Enter a code';
+$_['text_promo_applied']      = 'Discount applied';
+$_['text_promo_pool_level']   = 'This pool has a discount applied for every participant.';
+$_['text_promo_discount']     = 'Discount';
+$_['text_promo_optional']     = 'Optional. Leave blank if you do not have a code.';
+
+// One message per rejection reason, so a buyer who typed a real code that has
+// simply run out is not told it was invalid.
+$_['error_promo_not_found']             = 'That discount code was not recognised.';
+$_['error_promo_inactive']              = 'That discount code is no longer active.';
+$_['error_promo_not_started']           = 'That discount code is not valid yet.';
+$_['error_promo_expired']               = 'That discount code has expired.';
+$_['error_promo_min_qty']               = 'That discount code needs a larger commitment to apply.';
+$_['error_promo_exhausted']             = 'That discount code has been fully redeemed.';
+$_['error_promo_worthless']             = 'That discount code has no value against this commitment.';
+$_['error_promo_nothing_to_discount']   = 'There is nothing to discount yet.';
+$_['error_promo_unknown_type']          = 'That discount code cannot be applied.';
+$_['error_promo_not_a_buyer_code']      = 'That code is not one buyers can enter.';
+$_['error_promo_wrong_pool']            = 'That discount code does not apply to this pool.';
+$_['error_promo_pool_promotion_applies'] = 'This pool already has a discount for every participant, so your code was not applied.';
 $_['text_freight_note']  = 'Freight is quoted when the pool closes, because cost depends on the final pooled volume. Nothing is charged now.';
+$_['text_freight_estimate']      = 'Estimated freight for your %d units';
+$_['text_freight_per_unit']      = '%s per unit at the pool\'s current volume';
+$_['text_freight_pool_total']    = 'Freight quoted for the whole pool';
+$_['text_freight_estimate_note'] = 'An estimate, not a charge. This pool freight is divided between participants by the units each commits, so your share falls as more buyers join. The final figure is set when the pool closes.';
 $_['text_lead_time']     = 'Lead time';
 $_['text_shipping_terms'] = 'Shipping terms';
 $_['text_not_specified'] = 'Not specified';

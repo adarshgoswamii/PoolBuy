@@ -32,12 +32,18 @@ DOMAIN="${RAILWAY_PUBLIC_DOMAIN:-localhost}"
 BASE_URL="https://${DOMAIN}/"
 if [ "$DOMAIN" = "localhost" ]; then BASE_URL="http://localhost/"; fi
 
-PORT="${PORT:-80}"
+PORT="${PORT:-8080}"
 
 echo "[entrypoint] DB=${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}  BASE=${BASE_URL}  PORT=${PORT}"
 
-# ---- Apache: listen on $PORT (Railway assigns the port; must match exactly) ----
+# ---- Apache: listen on $PORT and exposed port 8080 ----
 echo "Listen ${PORT}" > /etc/apache2/ports.conf
+if [ "${PORT}" != "8080" ]; then
+  echo "Listen 8080" >> /etc/apache2/ports.conf
+fi
+if [ "${PORT}" != "80" ]; then
+  echo "Listen 80" >> /etc/apache2/ports.conf
+fi
 sed -i "s#<VirtualHost \*:[0-9]*>#<VirtualHost *:${PORT}>#" /etc/apache2/sites-available/000-default.conf
 # Silence the "could not determine FQDN" warning
 echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf
@@ -109,14 +115,18 @@ define('CACHE_ENGINE', 'file');
 define('OPENCART_SERVER', 'https://www.opencart.com/');
 PHP
 
-# ---- Wait for MySQL ----
-echo "[entrypoint] waiting for MySQL..."
-for i in $(seq 1 60); do
+# ---- Wait for MySQL (non-blocking if not reached) ----
+echo "[entrypoint] probing MySQL connection at ${DB_HOST}:${DB_PORT}..."
+MYSQL_UP="false"
+for i in $(seq 1 5); do
   if H="$DB_HOST" U="$DB_USER" P="$DB_PASS" PT="$DB_PORT" php -r '$c=@mysqli_connect(getenv("H"),getenv("U"),getenv("P"),"",intval(getenv("PT")));exit($c?0:1);' 2>/dev/null; then
-    echo "[entrypoint] MySQL is up"; break
+    echo "[entrypoint] MySQL is up"; MYSQL_UP="true"; break
   fi
-  sleep 3
+  sleep 1
 done
+if [ "$MYSQL_UP" != "true" ]; then
+  echo "[entrypoint] MySQL not reachable yet; proceeding to start web server immediately."
+fi
 
 # ---- One-time install (guarded) ----
 if [ -f "${OC}/install/cli_install.php" ]; then

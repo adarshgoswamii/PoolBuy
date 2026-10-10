@@ -23,7 +23,7 @@ $admin = Connect-OcAdmin
 Invoke-OcAdmin $admin 'extension/module.install' @{ extension = 'poolbuy'; code = 'poolbuy' } | Out-Null
 $tables = Get-OcSqlInt "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='opencart' AND table_name LIKE 'oc_poolbuy%';"
 Write-Host "  $tables PoolBuy tables present"
-if ($tables -lt 6) { throw "Expected 6 PoolBuy tables, found $tables" }
+if ($tables -lt 12) { throw "Expected 12 PoolBuy tables, found $tables" }
 
 Step 'Configuring PoolBuy settings'
 # save() replaces the whole setting group, so every field must be supplied.
@@ -42,6 +42,12 @@ Invoke-OcAdmin $admin 'extension/poolbuy/module/poolbuy.save' @{} @{
     module_poolbuy_platform_fee    = '2'
     module_poolbuy_pool_duration   = '7'
     module_poolbuy_retro_pricing   = '1'
+    module_poolbuy_gateway                 = 'mock'
+    module_poolbuy_razorpay_key            = ''
+    module_poolbuy_razorpay_secret         = ''
+    module_poolbuy_razorpay_webhook_secret = 'whsec_poolbuy_dev'
+    module_poolbuy_rate_limit      = '120'
+    module_poolbuy_rate_window     = '60'
     module_poolbuy_cron_token      = $cronToken
 } | Out-Null
 
@@ -50,10 +56,46 @@ Write-Host "  module_poolbuy_status = $status (MUST be 1 or the storefront silen
 if ($status -ne '1') { throw 'PoolBuy is not enabled; the landing page and widget will not render.' }
 Write-Host "  cron token = $cronToken"
 
+Step 'Enabling Indian Rupee on the storefront'
+& "$PSScriptRoot\seed_currency.ps1"
+
 Step 'Registering the lifecycle cron job'
 Get-Content "$PSScriptRoot\register_cron.sql" -Raw |
     docker compose exec -T -e MYSQL_PWD=opencart mysql mysql -uroot opencart
 Write-Host "  oc_cron rows for poolbuy: $(Get-OcSqlInt "SELECT COUNT(*) FROM oc_cron WHERE code='poolbuy';")"
+
+Step 'Stripping OpenCart demo modules off the home layout'
+# A stock OpenCart install decorates the home page with demo-data modules: an
+# iPhone/MacBook banner, a "featured" strip of the same demo products, and a
+# carousel of unrelated brand logos. On a B2B wholesale marketplace they read as an
+# unfinished deployment, and they sit either side of the PoolBuy landing page.
+#
+# Only layout_module rows are removed, and only on the Home layout: the modules
+# stay installed, so any of them can be restored from Design > Layouts. The
+# PoolBuy landing is rendered by the home controller, not a layout module, so it is
+# unaffected. Mirrors the same step in railway/railway_seed.php.
+$homeLayoutId = Get-OcSqlInt "SELECT layout_id FROM oc_layout WHERE name='Home' LIMIT 1;"
+
+if ($homeLayoutId -gt 0) {
+    $demoBefore = Get-OcSqlInt "SELECT COUNT(*) FROM oc_layout_module WHERE layout_id=$homeLayoutId;"
+
+    Invoke-OcSql @"
+DELETE FROM oc_layout_module
+WHERE layout_id = $homeLayoutId
+  AND (code LIKE 'opencart.banner.%'
+    OR code LIKE 'opencart.carousel.%'
+    OR code LIKE 'opencart.featured.%'
+    OR code LIKE 'opencart.slideshow.%'
+    OR code LIKE 'opencart.bestseller.%'
+    OR code LIKE 'opencart.latest.%'
+    OR code LIKE 'opencart.special.%');
+"@
+
+    $demoAfter = Get-OcSqlInt "SELECT COUNT(*) FROM oc_layout_module WHERE layout_id=$homeLayoutId;"
+    Write-Host "  removed $($demoBefore - $demoAfter) of $demoBefore home layout module(s)"
+} else {
+    Write-Host '  no Home layout found; nothing to strip' -ForegroundColor DarkYellow
+}
 
 Step 'Seeding sellers'
 & "$PSScriptRoot\seed_sellers.ps1"

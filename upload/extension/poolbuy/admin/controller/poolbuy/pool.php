@@ -207,7 +207,8 @@ class Pool extends \Opencart\System\Engine\Controller {
 			'min_qty_per_buyer'  => 1,
 			'max_qty_per_buyer'  => 0,
 			'lead_time'          => '',
-			'shipping_terms'     => ''
+			'shipping_terms'     => '',
+			'freight_total'      => '0.00'
 		];
 
 		foreach ($defaults as $key => $default) {
@@ -306,6 +307,7 @@ class Pool extends \Opencart\System\Engine\Controller {
 			'min_qty_per_buyer' => 1,
 			'max_qty_per_buyer' => 0,
 			'currency_code'     => '',
+			'freight_total'     => 0,
 			'pool_tier'         => []
 		];
 
@@ -361,8 +363,34 @@ class Pool extends \Opencart\System\Engine\Controller {
 			$json['error']['max_qty_per_buyer'] = $this->language->get('error_max_qty');
 		}
 
+		// Freight is a pool-level charge split across participants at close. A
+		// negative or non-numeric value would corrupt every allocated share, so it
+		// is refused here rather than silently clamped.
+		$freight_raw = $post_info['freight_total'];
+
+		if ($freight_raw !== '' && (!is_numeric($freight_raw) || (float)$freight_raw < 0)) {
+			$json['error']['freight_total'] = $this->language->get('error_freight_total');
+		}
+
 		if (!PoolLifecycle::isStatus($status)) {
 			$json['error']['status'] = $this->language->get('error_status');
+		}
+
+		// A pool's currency is immutable once anyone has committed. Changing it would
+		// silently relabel money that buyers already agreed to pay, and would make
+		// the payment and settlement rows disagree with the pool.
+		if ($pool_id) {
+			$existing_pool = $this->model_extension_poolbuy_poolbuy_pool->getPool($pool_id);
+			$posted_currency = strtoupper(trim((string)$post_info['currency_code']));
+			$current_currency = strtoupper(trim((string)($existing_pool['currency_code'] ?? '')));
+
+			if ($existing_pool && $posted_currency !== '' && $posted_currency !== $current_currency) {
+				$committed = $this->db->query("SELECT COUNT(*) AS `total` FROM `" . DB_PREFIX . "poolbuy_reservation` WHERE `pool_id` = '" . (int)$pool_id . "' AND `status` IN ('pending','confirmed','converted')");
+
+				if ((int)$committed->row['total'] > 0) {
+					$json['error']['currency_code'] = $this->language->get('error_currency_locked');
+				}
+			}
 		}
 
 		// Status transitions are checked against the state machine, not merely
@@ -546,6 +574,7 @@ class Pool extends \Opencart\System\Engine\Controller {
 			'location'       => $seller_info['location'] ?? '',
 			'lead_time'      => $pool_info['lead_time'],
 			'shipping_terms' => $pool_info['shipping_terms'],
+			'freight_total'  => (float)($pool_info['freight_total'] ?? 0),
 			'edit'           => $this->url->link(self::ROUTE . '.form', 'user_token=' . $this->session->data['user_token'] . '&pool_id=' . $pool_id)
 		];
 
@@ -555,6 +584,7 @@ class Pool extends \Opencart\System\Engine\Controller {
 		$next_tier = PoolCalculator::nextTier($tiers, $reserved);
 
 		$data['pool']['unit_price_text'] = $active_tier ? $this->formatMoney((float)$active_tier['price']) : $this->language->get('text_no_tier');
+		$data['pool']['freight_total_text'] = $this->formatMoney((float)($pool_info['freight_total'] ?? 0));
 		$data['pool']['units_to_next'] = $units_to_next;
 		$data['pool']['next_tier_text'] = $next_tier ? $this->formatMoney((float)$next_tier['price']) : '';
 
@@ -623,6 +653,23 @@ class Pool extends \Opencart\System\Engine\Controller {
 		// ---- Readiness callout
 		$data['is_ready'] = $data['pool']['fill'] >= 80.0;
 
+		// ---- Settlement (read only): what the seller is owed once this pool is
+		// fulfilled. Present only after a settlement row has been written.
+		$data['settlement'] = null;
+
+		$settlement = $this->db->query("SELECT * FROM `" . DB_PREFIX . "poolbuy_settlement` WHERE `pool_id` = '" . (int)$pool_id . "'");
+
+		if ($settlement->num_rows) {
+			$data['settlement'] = [
+				'gross_text'  => $this->formatMoney((float)$settlement->row['gross']),
+				'fee_text'    => $this->formatMoney((float)$settlement->row['platform_fee']),
+				'net_text'    => $this->formatMoney((float)$settlement->row['net']),
+				'order_count' => (int)$settlement->row['order_count'],
+				'status'      => (string)$settlement->row['status'],
+				'status_text' => $this->language->get('text_settlement_' . $settlement->row['status'])
+			];
+		}
+
 		$data['user_token'] = $this->session->data['user_token'];
 
 		return $this->load->view('extension/poolbuy/poolbuy/pool_detail', $data);
@@ -677,6 +724,8 @@ class Pool extends \Opencart\System\Engine\Controller {
 				if ($target === PoolLifecycle::EXPIRED) {
 					$this->model_extension_poolbuy_poolbuy_pool->releaseReservations($pool_id);
 					$this->model_extension_poolbuy_poolbuy_pool->recalculateReservedQty($pool_id);
+					// Refund anyone who had already paid in. No-op for unpaid buyers.
+					$this->model_extension_poolbuy_poolbuy_pool->refundPoolPayments($pool_id);
 				}
 
 				$json['success'] = sprintf($this->language->get('text_closed_' . $target), $reserved, $moq);

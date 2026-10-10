@@ -1,0 +1,24 @@
+{# Seller portal tab strip. Shared by the pools, products and orders screens.
+   The current tab is marked with aria-current so it is announced, not just coloured. #}
+<nav aria-label="{{ text_portal }}" class="pb-mb-lg">
+  <ul class="pb-flex pb-gap-sm pb-wrap" style="list-style: none; padding: 0; margin: 0;">
+    <li>
+      <a class="pb-btn pb-btn--sm {{ pb_active == 'pools' ? 'pb-btn--primary' : 'pb-btn--light' }}"
+         href="{{ pools }}"{% if pb_active == 'pools' %} aria-current="page"{% endif %}>
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i> {{ tab_pools }}
+      </a>
+    </li>
+    <li>
+      <a class="pb-btn pb-btn--sm {{ pb_active == 'products' ? 'pb-btn--primary' : 'pb-btn--light' }}"
+         href="{{ products_link }}"{% if pb_active == 'products' %} aria-current="page"{% endif %}>
+        <i class="fa-solid fa-box" aria-hidden="true"></i> {{ tab_products }}
+      </a>
+    </li>
+    <li>
+      <a class="pb-btn pb-btn--sm {{ pb_active == 'orders' ? 'pb-btn--primary' : 'pb-btn--light' }}"
+         href="{{ orders }}"{% if pb_active == 'orders' %} aria-current="page"{% endif %}>
+        <i class="fa-solid fa-receipt" aria-hidden="true"></i> {{ tab_orders }}
+      </a>
+    </li>
+  </ul>
+</nav>

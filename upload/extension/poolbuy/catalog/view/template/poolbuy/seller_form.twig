@@ -38,7 +38,7 @@
   {% endif %}
 
   <form id="pb-pool-form" action="{{ save }}" method="post">
-    <div class="pb-grid" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--pb-gutter); align-items: start;">
+    <div class="pb-grid pb-grid-main-aside" style="gap: var(--pb-gutter);">
       <div>
         {# ---- Pool details ---- #}
         <div class="pb-card pb-mb-lg">
@@ -195,9 +195,14 @@
               <label class="pb-label" for="pb-lead">{{ entry_lead_time }}</label>
               <input class="pb-input" type="text" id="pb-lead" name="lead_time" value="{{ lead_time|escape }}" placeholder="15-20 Days"{% if locked %} disabled{% endif %}/>
             </div>
-            <div class="pb-field pb-mb-0">
+            <div class="pb-field">
               <label class="pb-label" for="pb-terms">{{ entry_shipping_terms }}</label>
               <input class="pb-input" type="text" id="pb-terms" name="shipping_terms" value="{{ shipping_terms|escape }}" placeholder="FOB Shanghai"{% if locked %} disabled{% endif %}/>
+            </div>
+            <div class="pb-field pb-mb-0">
+              <label class="pb-label" for="pb-freight">{{ entry_freight_total }}</label>
+              <input class="pb-input" type="text" id="pb-freight" name="freight_total" value="{{ freight_total }}" placeholder="0.00" aria-describedby="pb-freight-help"{% if locked %} disabled{% endif %}/>
+              <p class="pb-body-sm pb-muted pb-mb-0" id="pb-freight-help">{{ help_freight_total }}</p>
             </div>
           </div>
         </div>

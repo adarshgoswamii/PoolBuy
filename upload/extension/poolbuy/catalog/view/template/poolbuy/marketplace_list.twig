@@ -3,10 +3,17 @@
     {% for pool in pools %}
       <article class="pb-card pb-card--interactive">
         <div class="pb-card__media">
-          <img src="{{ pool.thumb }}" alt="{{ pool.title|escape }}" width="600" height="440" loading="lazy"/>
+          {# The first row of cards is above the fold, so those images are fetched
+             eagerly and given fetchpriority; lazy-loading them would delay the
+             largest contentful paint rather than help it. #}
+          <img src="{{ pool.thumb }}" alt="{{ pool.title|escape }}" width="600" height="440"
+               {% if loop.index <= 3 %}loading="eager" fetchpriority="high"{% else %}loading="lazy" decoding="async"{% endif %}/>
           <div class="pb-card__badges">
             {% if pool.verified_seller %}
               <span class="pb-badge pb-badge--verified"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> {{ text_verified }}</span>
+            {% endif %}
+            {% if pool.climate_safe %}
+              <span class="pb-badge" style="background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE;"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Climate Safe</span>
             {% endif %}
             {% if pool.gst_verified %}
               <span class="pb-badge pb-badge--gst">{{ text_gst }}</span>
@@ -40,10 +47,10 @@
             </div>
           </div>
 
-          <div class="pb-pool-status pb-mb-md">
+          <div class="pb-pool-status pb-mb-md" data-pb-progress="{{ pool.pool_id }}">
             <div class="pb-pool-meta">
               <span class="pb-label-md pb-uppercase">{{ text_pool_status }}</span>
-              <span class="pb-mono-sm pb-primary-text pb-tnum">{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}</span>
+              <span class="pb-mono-sm pb-primary-text pb-tnum" data-pb-progress-filled>{{ text_filled|format(pool.reserved_qty, pool.moq_target, pool.unit_label|escape) }}</span>
             </div>
             <div class="pb-progress pb-progress--sm{% if pool.is_open %} pb-progress--pulse{% endif %}"
                  role="progressbar"

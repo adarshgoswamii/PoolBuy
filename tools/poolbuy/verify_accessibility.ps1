@@ -41,6 +41,18 @@ function Count-ImagesWithoutAlt([string] $Html) {
     return $n
 }
 
+# Counts <img> tags that do not declare both width and height.
+#
+# Without intrinsic dimensions the browser cannot reserve space before the image
+# arrives, which is the usual cause of layout shift (CLS) as a page settles.
+function Count-ImagesWithoutDimensions([string] $Html) {
+    $n = 0
+    foreach ($m in [regex]::Matches($Html, '<img\b[^>]*>')) {
+        if ($m.Value -notmatch '\bwidth\s*=' -or $m.Value -notmatch '\bheight\s*=') { $n++ }
+    }
+    return $n
+}
+
 # Counts <input> controls that are neither labelled nor hidden//button-like.
 #
 # $Ignore lists control identifiers that belong to stock OpenCart templates rather
@@ -198,6 +210,80 @@ Assert ($filtered -match 'CrystalPure') 'filtering works over plain GET with no 
 $join = Get-Html "$base/index.php?route=extension/poolbuy/join&pool_id=$poolId" $buyer
 Assert ($join -match '<form[^>]*method\s*=\s*["'']post["'']') 'the join flow is a real POST form'
 Assert ($join -match 'type\s*=\s*["'']submit["'']') 'the join flow has a real submit button'
+
+Write-Host "`n=== LAYOUT STABILITY: IMAGES DECLARE THEIR DIMENSIONS (CLS) ==="
+# An <img> without width and height cannot have space reserved for it, which is
+# the usual cause of content jumping as a page loads.
+#
+# PoolBuy resizes its imagery to a known set of dimensions, so its cached files
+# carry a recognisable suffix. Landing and product pages also host stock OpenCart
+# demo modules (banners, the manufacturer carousel, related products) whose
+# templates PoolBuy does not own; those are reported separately rather than
+# silently failing this suite.
+$pbSuffixes = '-(600x440|320x200|160x160|120x120|400x260|640x400)\.'
+
+function Count-PoolbuyImagesWithoutDimensions([string] $Html) {
+    $n = 0
+    foreach ($m in [regex]::Matches($Html, '<img\b[^>]*>')) {
+        if ($m.Value -notmatch $pbSuffixes) { continue }
+        if ($m.Value -notmatch '\bwidth\s*=' -or $m.Value -notmatch '\bheight\s*=') { $n++ }
+    }
+    return $n
+}
+
+$clsProductId = Get-OcSqlInt "SELECT product_id FROM oc_poolbuy_pool WHERE pool_id=$poolId;"
+
+$clsPages = @(
+    @{ Name = 'Landing';     Url = "$base/"; Session = $null },
+    @{ Name = 'Marketplace'; Url = "$base/index.php?route=extension/poolbuy/pool"; Session = $null },
+    @{ Name = 'Product';     Url = "$base/index.php?route=product/product&product_id=$clsProductId"; Session = $null },
+    @{ Name = 'Dashboard';   Url = "$base/index.php?route=extension/poolbuy/account"; Session = $buyer }
+)
+
+foreach ($page in $clsPages) {
+    $html = Get-Html $page.Url $page.Session
+    $missing = Count-PoolbuyImagesWithoutDimensions $html
+    Assert ($missing -eq 0) "$($page.Name): every PoolBuy <img> declares width and height (missing: $missing)"
+
+    # Report stock OpenCart imagery without dimensions as information, not failure.
+    $stock = (Count-ImagesWithoutDimensions $html)
+    if ($stock -gt 0) {
+        Write-Host "        note: $stock stock OpenCart image(s) on this page lack dimensions (demo modules / core templates)" -ForegroundColor DarkYellow
+    }
+}
+
+# The first marketplace cards are above the fold, so they must not be lazy-loaded.
+$marketHtml = Get-Html "$base/index.php?route=extension/poolbuy/pool"
+Assert ($marketHtml -match 'loading="eager"') 'above-the-fold marketplace imagery is eager-loaded'
+Assert ($marketHtml -match 'loading="lazy"') 'below-the-fold marketplace imagery is still lazy-loaded'
+
+Write-Host "`n=== RESPONSIVE LAYOUT (SMALL WIDTHS) ==="
+Assert ($css -match 'meta|@media \(max-width') 'stylesheet uses width-based media queries'
+Assert ($css -match '\.pb-grid-main-aside') 'main+aside layout is a class, so it can collapse on mobile'
+Assert ($css -match 'pointer:\s*coarse') 'touch devices get an enlarged tap target'
+Assert ($css -match '\.pb-table-wrap\s*\{[^}]*overflow-x:\s*auto') 'wide tables scroll horizontally instead of overflowing the page'
+
+# The viewport meta tag is what makes every media query above take effect.
+$landingHtml = Get-Html "$base/"
+Assert ($landingHtml -match 'name="viewport"[^>]*width=device-width') 'viewport meta tag is present'
+
+# Regression guard: an inline grid-template-columns with more than one column
+# cannot be overridden by a media query, so it strands phones in a cramped
+# multi-column layout. This is exactly the defect pb-grid-main-aside replaced.
+$multiColInline = 0
+foreach ($page in @("$base/index.php?route=extension/poolbuy/pool", "$base/index.php?route=extension/poolbuy/account")) {
+    $html = if ($page -match 'account') { Get-Html $page $buyer } else { Get-Html $page }
+    foreach ($m in [regex]::Matches($html, 'style="[^"]*grid-template-columns:\s*([^;"]+)')) {
+        $tracks = $m.Groups[1].Value
+        # Count declared tracks. A single "minmax(0, 1fr)" contains both "minmax("
+        # and "fr", so take the larger of the two counts rather than their sum.
+        $byMinmax = ([regex]::Matches($tracks, 'minmax\(')).Count
+        $byFr = ([regex]::Matches($tracks, '\dfr\b')).Count
+        $count = [math]::Max($byMinmax, $byFr)
+        if ($count -gt 1) { $multiColInline++ }
+    }
+}
+Assert ($multiColInline -eq 0) "no hardcoded multi-column inline grids remain (found $multiColInline)"
 
 Write-Host ""
 if ($failures.Count -eq 0) {
