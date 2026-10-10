@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 const ROUTE_ALIASES = {
   '/': 'index.html',
+  '/index.php': 'stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html',
   '/landing': 'stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html',
   '/marketplace': 'stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html',
   '/b2b-marketplace': 'stitch_cobuy_wholesale_marketplace/poolbuy_wholesale_b2b_marketplace/code.html',
@@ -20,6 +21,16 @@ const ROUTE_ALIASES = {
   '/admin': 'stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html',
   '/admin/dashboard': 'stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html',
   '/protocol': 'stitch_cobuy_wholesale_marketplace/executive_wholesale_protocol/code.html',
+};
+
+// Map OpenCart ?route= query routes to corresponding prototypes
+const OPENCART_ROUTE_MAP = {
+  'extension/poolbuy/pool': 'stitch_cobuy_wholesale_marketplace/poolbuy_marketplace/code.html',
+  'extension/poolbuy/join': 'stitch_cobuy_wholesale_marketplace/join_pool_checkout_flow/code.html',
+  'extension/poolbuy/account': 'stitch_cobuy_wholesale_marketplace/buyer_dashboard/code.html',
+  'extension/poolbuy/seller': 'stitch_cobuy_wholesale_marketplace/seller_pool_management/code.html',
+  'extension/poolbuy/admin': 'stitch_cobuy_wholesale_marketplace/admin_dashboard/code.html',
+  'common/home': 'stitch_cobuy_wholesale_marketplace/poolbuy_landing_page/code.html',
 };
 
 const MIME_TYPES = {
@@ -38,10 +49,15 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  let reqPath = decodeURI(req.url.split('?')[0]);
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const routeParam = parsedUrl.searchParams.get('route');
 
-  // Check aliases first
-  if (ROUTE_ALIASES[reqPath]) {
+  let reqPath = decodeURI(parsedUrl.pathname);
+
+  // Check OpenCart ?route= first
+  if (routeParam && OPENCART_ROUTE_MAP[routeParam]) {
+    reqPath = '/' + OPENCART_ROUTE_MAP[routeParam];
+  } else if (ROUTE_ALIASES[reqPath]) {
     reqPath = '/' + ROUTE_ALIASES[reqPath];
   } else if (reqPath.endsWith('/') && ROUTE_ALIASES[reqPath.slice(0, -1)]) {
     reqPath = '/' + ROUTE_ALIASES[reqPath.slice(0, -1)];
