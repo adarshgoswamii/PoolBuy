@@ -63,6 +63,35 @@ const server = http.createServer((req, res) => {
     reqPath = '/' + ROUTE_ALIASES[reqPath.slice(0, -1)];
   }
 
+  // Handle internal documentation service proxy when DAUXIO_URL binding is active
+  if ((reqPath === '/docs' || reqPath.startsWith('/docs/')) && process.env.DAUXIO_URL) {
+    try {
+      const docPath = reqPath.replace(/^\/docs/, '') || '/';
+      const targetUrl = new URL(docPath + parsedUrl.search, process.env.DAUXIO_URL);
+      const client = targetUrl.protocol === 'https:' ? require('https') : http;
+      const proxyReq = client.request(targetUrl, {
+        method: req.method,
+        headers: {
+          ...req.headers,
+          host: targetUrl.host,
+        },
+      }, (proxyRes) => {
+        res.writeHead(proxyRes.statusCode, proxyRes.headers);
+        proxyRes.pipe(res);
+      });
+      proxyReq.on('error', (err) => {
+        res.writeHead(502, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(`502 Bad Gateway: Could not reach internal Daux.io service at ${process.env.DAUXIO_URL}: ${err.message}`);
+      });
+      req.pipe(proxyReq);
+      return;
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end(`500 Internal Error proxying to DAUXIO_URL: ${e.message}`);
+      return;
+    }
+  }
+
   let filePath = path.join(__dirname, reqPath);
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
