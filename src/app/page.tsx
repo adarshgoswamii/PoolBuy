@@ -146,16 +146,16 @@ export default function HomePage() {
 
       {/* 4. Strict Electronics Safety Guarantee */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0F1D36] to-[#1A2D4F] p-8 md:p-12 text-white border border-slate-800 shadow-elevated flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="rounded-3xl bg-gradient-to-r from-[#F5EFEB] via-[#FAF5EE] to-[#F5EFEB] p-8 md:p-12 border border-[#E2E6ED] shadow-[0_4px_20px_rgba(15,29,54,0.04)] flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 text-xs text-amber-300 font-bold bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/30">
-              <span className="material-symbols-outlined text-[16px]">shield</span>
+            <div className="inline-flex items-center gap-1.5 text-xs text-amber-900 font-bold bg-amber-100/90 px-3 py-1 rounded-full border border-amber-300">
+              <span className="material-symbols-outlined text-[16px] text-amber-700">shield</span>
               Warehouse Climate Safety Protocol
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black font-display">
+            <h3 className="text-2xl sm:text-3xl font-black font-display text-[#0F1D36]">
               Zero Heat-Degradable Electronics. Guaranteed.
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
               We strictly forbid temperature-sensitive raw battery pouches, perishable liquid-electrolyte cells, and hazardous components subject to non-climate warehouse decay. Only durable GaN chargers, braided cables, and industrial hardware allowed.
             </p>
           </div>
