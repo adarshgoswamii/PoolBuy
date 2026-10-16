@@ -134,7 +134,7 @@ if [ -f "${OC}/install/cli_install.php" ]; then
   if [ "$ALREADY" != "yes" ]; then
     echo "[entrypoint] running OpenCart CLI install..."
     php "${OC}/install/cli_install.php" install \
-      --username admin --password admin --email admin@poolbuy.test \
+      --username admin --password admin --email adarshgoswami76@gmail.com \
       --http_server "${BASE_URL}" \
       --db_driver mysqli --db_hostname "${DB_HOST}" --db_username "${DB_USER}" \
       --db_password "${DB_PASS}" --db_database "${DB_NAME}" --db_port "${DB_PORT}" --db_prefix oc_ || echo "[entrypoint] install returned non-zero (may already exist)"
