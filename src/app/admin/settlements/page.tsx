@@ -54,7 +54,7 @@ export default function AdminSettlementsPage() {
           <h1 className="text-2xl font-black text-slate-900 tracking-tight font-display">
             Escrow &amp; Financial Settlement Ledger
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-700 font-semibold mt-1">
             Reconciliation of wholesale group commitment conversion, 2.0% platform facilitation commissions, and 18.0% GST tax ledgers.
           </p>
         </div>
@@ -71,27 +71,27 @@ export default function AdminSettlementsPage() {
       {/* Financial Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Gross Merchandise Value (GMV)</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Gross Merchandise Value (GMV)</div>
           <div className="text-2xl font-black text-slate-900 font-mono">₹{totalGMV.toLocaleString()}</div>
-          <div className="text-[11px] text-slate-400 mt-1">{totalVolume} units contracted</div>
+          <div className="text-[11px] text-slate-700 font-semibold mt-1">{totalVolume} units contracted</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Platform Commission (2%)</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Platform Commission (2%)</div>
           <div className="text-2xl font-black text-emerald-600 font-mono">₹{totalPlatformFees.toLocaleString()}</div>
-          <div className="text-[11px] text-emerald-700 font-semibold mt-1">Direct platform revenue</div>
+          <div className="text-[11px] text-emerald-800 font-bold mt-1">Direct platform revenue</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Total GST Invoiced (18%)</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Total GST Invoiced (18%)</div>
           <div className="text-2xl font-black text-accent font-mono">₹{totalGST.toLocaleString()}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Statutory tax liability</div>
+          <div className="text-[11px] text-slate-700 font-semibold mt-1">Statutory tax liability</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Total Escrow Capital Under Custody</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Total Escrow Capital Under Custody</div>
           <div className="text-2xl font-black text-amber-600 font-mono">₹{totalSettlement.toLocaleString()}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Guaranteed in smart custody</div>
+          <div className="text-[11px] text-slate-700 font-semibold mt-1">Guaranteed in smart custody</div>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export default function AdminSettlementsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+            <thead className="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold">
               <tr>
                 <th className="py-3 px-3">Reference</th>
                 <th className="py-3 px-3">Pool</th>
@@ -127,14 +127,14 @@ export default function AdminSettlementsPage() {
 
                 return (
                   <tr key={c.id} className="hover:bg-slate-50/60">
-                    <td className="py-3 px-3 text-slate-700 font-bold">{c.id}</td>
+                    <td className="py-3 px-3 text-slate-800 font-bold">{c.id}</td>
                     <td className="py-3 px-3 text-accent font-bold">{pool?.pool_code || c.pool_id}</td>
-                    <td className="py-3 px-3 text-slate-900">{c.quantity} pcs</td>
-                    <td className="py-3 px-3 text-slate-900">₹{unitPrice}</td>
-                    <td className="py-3 px-3 text-slate-900">₹{subtotal.toLocaleString()}</td>
+                    <td className="py-3 px-3 text-slate-900 font-bold">{c.quantity} pcs</td>
+                    <td className="py-3 px-3 text-slate-900 font-bold">₹{unitPrice}</td>
+                    <td className="py-3 px-3 text-slate-900 font-bold">₹{subtotal.toLocaleString()}</td>
                     <td className="py-3 px-3 text-emerald-600 font-bold">₹{fee.toLocaleString()}</td>
-                    <td className="py-3 px-3 text-slate-500">₹{gst.toLocaleString()}</td>
-                    <td className="py-3 px-3 text-slate-900 font-black">₹{total.toLocaleString()}</td>
+                    <td className="py-3 px-3 text-slate-800 font-semibold">₹{gst.toLocaleString()}</td>
+                    <td className="py-3 px-3 text-slate-950 font-black">₹{total.toLocaleString()}</td>
                     <td className="py-3 px-3 font-sans">
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
                         Escrow Hold

@@ -55,8 +55,8 @@ export default function AdminTaxonomyPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Taxonomy &amp; Dynamic Filter Schema Builder</h1>
-        <p className="text-xs text-slate-500 mt-1">
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight font-display">Taxonomy &amp; Dynamic Filter Schema Builder</h1>
+        <p className="text-xs text-slate-700 font-semibold mt-1">
           Define wholesale categories and configure dynamic JSONB filter schemas (attributes, palettes, GSM weights, certifications) without code deployments.
         </p>
       </div>
@@ -65,7 +65,7 @@ export default function AdminTaxonomyPage() {
         {/* Left: Category Hierarchy */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 font-display">
               Active Category Hierarchy
             </h2>
 
@@ -77,11 +77,11 @@ export default function AdminTaxonomyPage() {
                       <span className="material-symbols-outlined text-accent text-[18px]">{cat.icon || 'folder'}</span>
                       {cat.name}
                     </span>
-                    <span className="font-mono text-[10px] text-slate-400">/{cat.slug}</span>
+                    <span className="font-mono text-[11px] text-slate-700 font-bold">/{cat.slug}</span>
                   </div>
 
                   {cat.subcategories && cat.subcategories.length > 0 && (
-                    <div className="space-y-1.5 pl-6 border-l-2 border-accent/30">
+                    <div className="space-y-1.5 pl-6 border-l-2 border-accent/40">
                       {cat.subcategories.map((sub) => (
                         <button
                           key={sub.id}
@@ -89,11 +89,11 @@ export default function AdminTaxonomyPage() {
                           className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition flex items-center justify-between ${
                             selectedSubcategory === sub.id
                               ? 'bg-accent text-white font-bold'
-                              : 'text-slate-600 hover:bg-slate-200'
+                              : 'text-slate-800 font-semibold hover:bg-slate-200'
                           }`}
                         >
                           <span className="truncate">{sub.name}</span>
-                          <span className="text-[10px] opacity-70">
+                          <span className={`text-[10px] font-bold ${selectedSubcategory === sub.id ? 'text-white' : 'text-slate-700'}`}>
                             {sub.filter_schema?.filters?.length || 0} filters
                           </span>
                         </button>
@@ -107,30 +107,30 @@ export default function AdminTaxonomyPage() {
 
           {/* Quick Add Category */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-display">
               Add New Wholesale Category
             </h3>
             <form onSubmit={handleAddCategory} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Category Title</label>
+                <label className="block text-slate-800 font-bold mb-1">Category Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Industrial Adhesives & Sealants"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">URL Slug</label>
+                <label className="block text-slate-800 font-bold mb-1">URL Slug</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. industrial-adhesives"
                   value={newCatSlug}
                   onChange={(e) => setNewCatSlug(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                 />
               </div>
               <button
@@ -148,10 +148,10 @@ export default function AdminTaxonomyPage() {
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4 sticky top-20">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-display">
                   JSONB Filter Schema Editor
                 </h2>
-                <div className="text-xs text-accent font-semibold mt-0.5">
+                <div className="text-xs text-accent font-bold mt-0.5">
                   Subcategory: {activeSubcategory?.name || 'Selected Subcategory'}
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function AdminTaxonomyPage() {
             )}
 
             <div>
-              <label className="block text-xs font-mono text-slate-500 mb-1">
+              <label className="block text-xs font-mono font-bold text-slate-800 mb-1">
                 PostgreSQL JSONB filter_schema definition:
               </label>
               <textarea
@@ -184,7 +184,7 @@ export default function AdminTaxonomyPage() {
               />
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 leading-relaxed">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 leading-relaxed">
               <strong>Schema Rule:</strong> Each filter item requires <code>key</code>, <code>label</code>, <code>type</code> (<code>single_select</code>, <code>multi_select</code>, <code>badge_select</code>, <code>color_palette</code>), and an <code>options</code> array.
             </div>
           </div>

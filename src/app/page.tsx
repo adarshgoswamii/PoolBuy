@@ -51,22 +51,22 @@ export default function HomePage() {
         </div>
 
         {/* Live Metrics Ticker */}
-        <div className="max-w-5xl mx-auto mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-center text-xs">
+        <div className="max-w-5xl mx-auto mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md text-center text-xs">
           <div>
             <div className="text-2xl font-black text-amber-300 font-mono">100%</div>
-            <div className="text-slate-400 mt-1">Escrow Protected</div>
+            <div className="text-slate-200 font-medium mt-1">Escrow Protected</div>
           </div>
           <div>
             <div className="text-2xl font-black text-white font-mono">2.0%</div>
-            <div className="text-slate-400 mt-1">Transparent Platform Fee</div>
+            <div className="text-slate-200 font-medium mt-1">Transparent Platform Fee</div>
           </div>
           <div>
             <div className="text-2xl font-black text-emerald-400 font-mono">18% GST</div>
-            <div className="text-slate-400 mt-1">Tax Credit Invoicing</div>
+            <div className="text-slate-200 font-medium mt-1">Tax Credit Invoicing</div>
           </div>
           <div>
             <div className="text-2xl font-black text-amber-300 font-mono">0% Risk</div>
-            <div className="text-slate-400 mt-1">Warehouse Climate-Safe</div>
+            <div className="text-slate-200 font-medium mt-1">Warehouse Climate-Safe</div>
           </div>
         </div>
       </section>
@@ -83,7 +83,7 @@ export default function HomePage() {
             <span className="orn-diamond">&#9670;</span>
             <span className="orn-line"></span>
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-sm text-slate-600 mt-2 font-medium">
             No single buyer needs to fund an entire 500-unit factory MOQ alone. Group-buying distributes capacity safely.
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function HomePage() {
               1
             </div>
             <h3 className="font-bold text-base text-slate-900">Verified Seller Lists Pool</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
               Audited manufacturers set the factory MOQ, pool duration, and a tiered ladder (e.g. 100 pcs @ ₹420, 300 pcs @ ₹380, 500 pcs @ ₹295).
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function HomePage() {
               2
             </div>
             <h3 className="font-bold text-base text-slate-900">Bulk Buyers Commit Volume</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
               Wholesale buyers commit parts of the batch (e.g. 30, 50, 100 pcs). Capital is securely locked in escrow with zero overselling risk.
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function HomePage() {
               3
             </div>
             <h3 className="font-bold text-base text-slate-900">MOQ Locks &amp; Every Buyer Reprices</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
               Once MOQ is fulfilled, the deal closes. <strong>All buyers are automatically rewritten to the lowest unlocked tier price</strong> before shipping.
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function HomePage() {
             <span className="orn-diamond">&#9670;</span>
             <span className="orn-line"></span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Direct access to audited manufacturer supply pipelines.</p>
+          <p className="text-sm text-slate-700 mt-1 font-medium">Direct access to audited manufacturer supply pipelines.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -191,7 +191,7 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-xl bg-accent-50 text-accent flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition">
                 <span className="material-symbols-outlined text-2xl">{cat.icon || 'category'}</span>
               </div>
-              <h4 className="font-bold text-xs text-slate-800 group-hover:text-accent transition">
+              <h4 className="font-bold text-xs text-slate-900 group-hover:text-accent transition">
                 {cat.name}
               </h4>
             </Link>

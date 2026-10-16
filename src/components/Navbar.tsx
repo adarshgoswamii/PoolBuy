@@ -12,42 +12,42 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full shadow-md">
       {/* Top Protocol Status Notice */}
-      <div className="bg-[#091224] text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-white/10 flex items-center justify-between">
+      <div className="bg-[#091224] text-slate-200 text-xs py-1.5 px-4 sm:px-8 border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 text-amber-400 font-medium">
+          <span className="inline-flex items-center gap-1.5 text-amber-300 font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             Protocol Active: Tiered MOQ Aggregation
           </span>
-          <span className="hidden md:inline text-slate-500">|</span>
-          <span className="hidden md:inline text-slate-400">
+          <span className="hidden md:inline text-slate-400">|</span>
+          <span className="hidden md:inline text-slate-200 font-medium">
             Escrow Custody &amp; Repricing Ladder Enabled
           </span>
         </div>
 
         {/* 1-Click Interactive Role Switcher for Testing RBAC */}
         <div className="flex items-center gap-2">
-          <span className="text-slate-400 hidden sm:inline">Active Role:</span>
+          <span className="text-slate-300 font-medium hidden sm:inline">Active Role:</span>
           <div className="inline-flex rounded-lg bg-slate-800/80 p-0.5 border border-slate-700 text-[11px]">
             <button
               onClick={() => switchRole('buyer')}
-              className={`px-2.5 py-0.5 rounded-md transition font-medium ${
-                role === 'buyer' ? 'bg-accent text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-2.5 py-0.5 rounded-md transition font-semibold ${
+                role === 'buyer' ? 'bg-accent text-white shadow-sm' : 'text-slate-300 hover:text-white'
               }`}
             >
               Buyer
             </button>
             <button
               onClick={() => switchRole('seller')}
-              className={`px-2.5 py-0.5 rounded-md transition font-medium ${
-                role === 'seller' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-2.5 py-0.5 rounded-md transition font-semibold ${
+                role === 'seller' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-300 hover:text-white'
               }`}
             >
               Seller
             </button>
             <button
               onClick={() => switchRole('admin')}
-              className={`px-2.5 py-0.5 rounded-md transition font-medium ${
-                role === 'admin' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`px-2.5 py-0.5 rounded-md transition font-semibold ${
+                role === 'admin' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white'
               }`}
             >
               Super Admin
@@ -67,12 +67,12 @@ export default function Navbar() {
               <span className="text-xl font-bold tracking-tight text-[#0F172A] flex items-center gap-1.5 font-display">
                 Pool<span className="text-accent">Buy</span> <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent-light text-accent border border-accent/20 font-sans font-semibold">B2B Wholesale</span>
               </span>
-              <p className="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">Tiered Co-Buying Protocol</p>
+              <p className="text-[10px] text-slate-600 tracking-wider uppercase font-bold">Tiered Co-Buying Protocol</p>
             </div>
           </Link>
 
           {/* Primary Navigation Links */}
-          <div className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">
+          <div className="hidden lg:flex items-center gap-7 text-sm font-semibold text-slate-700">
             <Link href="/marketplace" className="hover:text-accent transition flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[18px]">storefront</span>
               Marketplace
@@ -133,7 +133,7 @@ export default function Navbar() {
             </div>
             <div className="hidden xl:block text-left text-xs">
               <div className="font-semibold text-slate-900 leading-tight">{user?.contact_name || 'Guest'}</div>
-              <div className="text-[10px] text-slate-500 capitalize">{role} Account</div>
+              <div className="text-[11px] text-slate-600 capitalize font-medium">{role} Account</div>
             </div>
           </div>
         </div>

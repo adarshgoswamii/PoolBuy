@@ -42,12 +42,12 @@ export default function LoginPage() {
             PB
           </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight font-display">Wholesale Portal Access</h1>
-          <p className="text-xs text-slate-500">Sign in to your wholesale buyer or manufacturer account</p>
+          <p className="text-xs text-slate-700 font-semibold">Sign in to your wholesale buyer or manufacturer account</p>
         </div>
 
         {/* 1-Click Demo Profiles */}
         <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-          <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+          <div className="text-[11px] font-bold text-slate-800 uppercase tracking-wider">
             1-Click Demo Account Logins:
           </div>
           <div className="grid grid-cols-3 gap-1.5 text-xs">
@@ -74,26 +74,26 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-600 font-semibold mb-1">Corporate Email Address</label>
+            <label className="block text-slate-800 font-bold mb-1">Corporate Email Address</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. procurement@company.com"
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
             />
           </div>
 
           <div>
-            <label className="block text-slate-600 font-semibold mb-1">Account Password</label>
+            <label className="block text-slate-800 font-bold mb-1">Account Password</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
             />
           </div>
 
@@ -106,7 +106,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500">
+        <div className="text-center text-xs text-slate-700 font-semibold">
           New to PoolBuy?{' '}
           <Link href="/register" className="text-accent font-bold hover:underline">
             Register Wholesale Account

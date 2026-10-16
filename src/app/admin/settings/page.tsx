@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Platform Operational Settings</h1>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-slate-700 font-semibold mt-1">
           Configure financial margins, statutory tax parameters, warehouse safety compliance rules, and scheduled lifecycle cron triggers.
         </p>
       </div>
@@ -50,13 +50,13 @@ export default function AdminSettingsPage() {
       <form onSubmit={handleSave} className="space-y-6">
         {/* 1. Commercial Margin & Tax Rates */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 font-display">
             Commercial Parameters
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-600 font-semibold mb-1">Platform Facilitation Fee (%)</label>
+              <label className="block text-slate-800 font-bold mb-1">Platform Facilitation Fee (%)</label>
               <input
                 type="number"
                 step="0.1"
@@ -64,13 +64,13 @@ export default function AdminSettingsPage() {
                 max="20"
                 value={platformFeePercent}
                 onChange={(e) => setPlatformFeePercent(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold"
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
               />
-              <span className="text-[11px] text-slate-400 mt-1 block">Applied to buyer subtotal upon pool closure.</span>
+              <span className="text-[11px] text-slate-700 font-semibold mt-1 block">Applied to buyer subtotal upon pool closure.</span>
             </div>
 
             <div>
-              <label className="block text-slate-600 font-semibold mb-1">Standard GST Invoicing Rate (%)</label>
+              <label className="block text-slate-800 font-bold mb-1">Standard GST Invoicing Rate (%)</label>
               <input
                 type="number"
                 step="0.5"
@@ -78,9 +78,9 @@ export default function AdminSettingsPage() {
                 max="28"
                 value={gstRatePercent}
                 onChange={(e) => setGstRatePercent(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold"
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
               />
-              <span className="text-[11px] text-slate-400 mt-1 block">Statutory GST rate for wholesale invoicing.</span>
+              <span className="text-[11px] text-slate-700 font-semibold mt-1 block">Statutory GST rate for wholesale invoicing.</span>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function AdminSettingsPage() {
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center justify-between font-display">
             <span>Warehouse Climate Safety Enforcement</span>
-            <span className="text-xs text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+            <span className="text-xs text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">ACTIVE</span>
           </h2>
 
           <div className="space-y-3 text-xs">
@@ -102,7 +102,7 @@ export default function AdminSettingsPage() {
               />
               <div>
                 <span className="font-bold text-slate-900">Enforce Heat-Sensitive Electronics Ban</span>
-                <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
+                <p className="text-slate-700 text-[11px] mt-0.5 leading-relaxed font-medium">
                   Strictly prevents listing of bare lithium-polymer pouch cells, perishable chemical batteries, or temperature-degrading components in non-climate warehouses.
                 </p>
               </div>
@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
               />
               <div>
                 <span className="font-bold text-slate-900">Mandatory GSTIN Validation on Seller Onboarding</span>
-                <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
+                <p className="text-slate-700 text-[11px] mt-0.5 leading-relaxed font-medium">
                   Requires 15-digit GSTIN format verification and physical mill audit before seller pool publishing rights are granted.
                 </p>
               </div>
@@ -133,19 +133,19 @@ export default function AdminSettingsPage() {
 
           <div className="space-y-3 text-xs">
             <div>
-              <label className="block text-slate-600 font-semibold mb-1">Secure Cron Authorization Token</label>
+              <label className="block text-slate-800 font-bold mb-1">Secure Cron Authorization Token</label>
               <input
                 type="text"
                 value={cronToken}
                 onChange={(e) => setCronToken(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 font-mono text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-mono text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-semibold"
               />
             </div>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
               <div>
                 <div className="font-bold text-slate-900">Manual State Machine Trigger</div>
-                <div className="text-[11px] text-slate-500">Run retroactive repricing ladder &amp; close-out verification immediately.</div>
+                <div className="text-[11px] text-slate-700 font-medium">Run retroactive repricing ladder &amp; close-out verification immediately.</div>
               </div>
 
               <button

@@ -126,10 +126,10 @@ export default function MarketplacePage() {
           {/* Left Column: Editorial Headline & Value Props */}
           <div className="lg:col-span-7 space-y-4">
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <div className="flex items-center gap-2 text-xs text-slate-700 font-bold">
               <Link href="/" className="hover:text-accent transition">Home</Link>
               <span>/</span>
-              <span className="text-accent font-semibold">Wholesale Marketplace</span>
+              <span className="text-accent font-bold">Wholesale Marketplace</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#0F172A] font-display leading-[1.15]">
@@ -143,20 +143,20 @@ export default function MarketplacePage() {
               <span className="orn-line"></span>
             </div>
 
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
+            <p className="text-sm sm:text-base text-slate-800 leading-relaxed max-w-xl font-normal">
               Collaborative B2B procurement connecting bulk retail buyers directly with verified apparel mills, durable electronics manufacturers, and commercial suppliers across India.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-700 font-medium">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-slate-200/80 shadow-sm backdrop-blur-sm">
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-800 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
                 <span className="material-symbols-outlined text-accent text-[16px]">verified</span>
                 Audited GSTIN Factories
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-slate-200/80 shadow-sm backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
                 <span className="material-symbols-outlined text-emerald-600 text-[16px]">lock</span>
                 100% Escrow Protection
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-slate-200/80 shadow-sm backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
                 <span className="material-symbols-outlined text-amber-600 text-[16px]">trending_down</span>
                 Auto Price Repricing
               </span>
@@ -206,7 +206,7 @@ export default function MarketplacePage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-3.5 sm:p-4 rounded-2xl border border-[#E2E6ED] shadow-sm">
               {/* Search Pill Input */}
               <div className="relative w-full sm:w-96">
-                <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-slate-400 text-[18px]">
+                <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-slate-600 text-[18px]">
                   search
                 </span>
                 <input
@@ -214,19 +214,19 @@ export default function MarketplacePage() {
                   placeholder="Search products, pool codes, fabric..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent transition shadow-inner"
+                  className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 text-xs text-slate-900 placeholder:text-slate-500 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent transition shadow-inner font-medium"
                 />
               </div>
 
               {/* Sorting Controls */}
               <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                <span className="text-xs text-slate-500 font-medium">
-                  Showing <strong className="text-slate-900">{filteredPools.length}</strong> active pools
+                <span className="text-xs text-slate-700 font-semibold">
+                  Showing <strong className="text-slate-950 font-bold">{filteredPools.length}</strong> active pools
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-3.5 py-2 rounded-full border border-slate-200 text-xs bg-white text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-accent shadow-sm"
+                  className="px-3.5 py-2 rounded-full border border-slate-300 text-xs bg-white text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-accent shadow-sm"
                 >
                   <option value="fill">Highest Fill Rate</option>
                   <option value="price">Lowest Unit Price</option>
@@ -244,11 +244,11 @@ export default function MarketplacePage() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-4">
                   <span className="material-symbols-outlined text-3xl">filter_list_off</span>
                 </div>
-                <h3 className="text-base font-bold text-slate-800 mb-1">No pools match your filter criteria</h3>
-                <p className="text-xs text-slate-500 mb-4 max-w-sm mx-auto">
+                <h3 className="text-base font-bold text-slate-900 mb-1">No pools match your filter criteria</h3>
+                <p className="text-xs text-slate-700 mb-4 max-w-sm mx-auto font-medium">
                   Try clearing selected sizes, colors, or wattage filters to view other wholesale pools.
                 </p>
                 <button

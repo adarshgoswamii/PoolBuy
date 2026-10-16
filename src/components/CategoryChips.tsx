@@ -29,10 +29,10 @@ export default function CategoryChips({
         {/* All Categories Chip */}
         <button
           onClick={() => onSelectCategory('')}
-          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shadow-sm ${
+          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 shadow-sm ${
             selectedCategorySlug === ''
               ? 'bg-[#0F1D36] text-white border-2 border-[#0F1D36] shadow-md'
-              : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
+              : 'bg-white text-slate-800 border-2 border-slate-300 hover:border-slate-500 hover:bg-slate-50'
           }`}
         >
           <span className="material-symbols-outlined text-[18px]">storefront</span>
@@ -47,13 +47,13 @@ export default function CategoryChips({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.slug)}
-              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shadow-sm ${
+              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 shadow-sm ${
                 isSelected
                   ? 'bg-accent text-white border-2 border-accent shadow-md scale-105'
-                  : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
+                  : 'bg-white text-slate-800 border-2 border-slate-300 hover:border-slate-500 hover:bg-slate-50'
               }`}
             >
-              <span className={`material-symbols-outlined text-[18px] ${isSelected ? 'text-white' : 'text-slate-500'}`}>
+              <span className={`material-symbols-outlined text-[18px] ${isSelected ? 'text-white' : 'text-slate-600'}`}>
                 {icon}
               </span>
               <span>{cat.name}</span>

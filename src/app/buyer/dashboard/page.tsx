@@ -28,14 +28,14 @@ export default function BuyerDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs text-accent font-semibold mb-1">
+          <div className="inline-flex items-center gap-1.5 text-xs text-accent font-bold mb-1">
             <span className="material-symbols-outlined text-[16px]">verified</span>
             <span>Verified Wholesale Buyer Account</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
             Buyer Procurement Dashboard
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-700 font-semibold">
             {user?.company_name || 'UrbanStreet Apparel Retail'} &bull; GSTIN: {user?.gstin || '29AABCU9012K1ZX'}
           </p>
         </div>
@@ -52,21 +52,21 @@ export default function BuyerDashboardPage() {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Total Procurement Volume</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Total Procurement Volume</div>
           <div className="text-2xl font-black text-slate-900 font-mono">{totalUnits} units</div>
-          <div className="text-[11px] text-slate-400 mt-1">Across {commitments.length} group pools</div>
+          <div className="text-[11px] text-slate-700 font-semibold mt-1">Across {commitments.length} group pools</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Total Escrow Capital Committed</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Total Escrow Capital Committed</div>
           <div className="text-2xl font-black text-slate-900 font-mono">₹{totalSpent.toLocaleString()}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Secured in platform escrow</div>
+          <div className="text-[11px] text-slate-700 font-semibold mt-1">Secured in platform escrow</div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
-          <div className="text-xs text-slate-500 font-medium mb-1">Volume Repricing Savings</div>
+          <div className="text-xs text-slate-700 font-bold mb-1">Volume Repricing Savings</div>
           <div className="text-2xl font-black text-emerald-600 font-mono">₹{totalSaved.toLocaleString()}</div>
-          <div className="text-[11px] text-emerald-700 font-semibold mt-1">
+          <div className="text-[11px] text-emerald-800 font-bold mt-1">
             Retroactive ladder discounts unlocked
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function BuyerDashboardPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                        <div className="w-full h-full flex items-center justify-center text-slate-500">
                           <span className="material-symbols-outlined">inventory</span>
                         </div>
                       )}
@@ -115,16 +115,16 @@ export default function BuyerDashboardPage() {
                       <h3 className="font-bold text-sm text-slate-900">
                         {pool?.product?.title || 'Wholesale Group Pool Item'}
                       </h3>
-                      <div className="text-xs text-slate-500 mt-1">
-                        Quantity: <strong>{com.quantity} units</strong> &bull; Locked: ₹{com.locked_unit_price}/unit &bull; Repriced: <strong className="text-emerald-600">₹{com.final_unit_price || com.locked_unit_price}/unit</strong>
+                      <div className="text-xs text-slate-700 mt-1 font-medium">
+                        Quantity: <strong className="text-slate-900">{com.quantity} units</strong> &bull; Locked: ₹{com.locked_unit_price}/unit &bull; Repriced: <strong className="text-emerald-700">₹{com.final_unit_price || com.locked_unit_price}/unit</strong>
                       </div>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <div className="text-xs text-slate-500">Commercial Total (incl. GST)</div>
+                    <div className="text-xs text-slate-800 font-bold">Commercial Total (incl. GST)</div>
                     <div className="text-lg font-black font-mono text-slate-900">₹{total.toLocaleString()}</div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-[11px] text-slate-700 font-medium">
                       Subtotal: ₹{subtotal.toLocaleString()} | Fee (2%): ₹{fee} | GST (18%): ₹{gst}
                     </div>
                   </div>
@@ -134,8 +134,8 @@ export default function BuyerDashboardPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <span className="material-symbols-outlined text-4xl text-slate-300">shopping_bag</span>
-            <p className="text-xs text-slate-500 mt-2">You haven&apos;t joined any group-buying pools yet.</p>
+            <span className="material-symbols-outlined text-4xl text-slate-400">shopping_bag</span>
+            <p className="text-xs text-slate-700 mt-2 font-medium">You haven&apos;t joined any group-buying pools yet.</p>
             <Link href="/marketplace" className="inline-block mt-4 px-4 py-2 rounded-xl bg-accent hover:bg-accent-dark text-white font-bold text-xs transition shadow-sm">
               Explore Marketplace
             </Link>

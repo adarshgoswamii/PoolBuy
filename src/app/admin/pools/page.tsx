@@ -11,20 +11,20 @@ export default function AdminPoolsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pool State Machine Governance</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-700 font-semibold mt-1">
             Super-admin operational controls: force close early, execute retroactive repricing cycles, and review capacity reservations.
           </p>
         </div>
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
           All Active Wholesale Pools ({pools.length})
         </h2>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+            <thead className="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold">
               <tr>
                 <th className="py-3 px-3">Pool Code</th>
                 <th className="py-3 px-3">Product Name</th>
@@ -46,14 +46,14 @@ export default function AdminPoolsPage() {
                     <td className="py-3.5 px-3 font-semibold text-slate-900 max-w-xs truncate">
                       {p.product?.title}
                     </td>
-                    <td className="py-3.5 px-3 text-slate-600">
+                    <td className="py-3.5 px-3 text-slate-800 font-semibold">
                       {p.seller?.company_name}
                     </td>
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">{p.reserved_qty}</span>
-                        <span className="text-slate-400">/ {p.moq}</span>
-                        <span className="text-[11px] font-mono text-emerald-600">({pct}%)</span>
+                        <span className="font-bold text-slate-950">{p.reserved_qty}</span>
+                        <span className="text-slate-700 font-semibold">/ {p.moq}</span>
+                        <span className="text-[11px] font-mono text-emerald-700 font-bold">({pct}%)</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-3 font-mono font-bold text-slate-900">
