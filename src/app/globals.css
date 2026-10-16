@@ -7,7 +7,9 @@
     --primary: #0F1D36;
     --primary-dark: #091224;
     --primary-light: #EEF3F9;
-    --accent: #E06214;
+    --accent: #DC2626;
+    --accent-dark: #B91C1C;
+    --accent-light: #FEF2F2;
     --gold: #C89D46;
     --gold-dark: #B98A32;
     --bg-page: #FAF8F5;
@@ -64,5 +66,57 @@
 .glass-nav {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(15, 29, 54, 0.95);
+  background-color: rgba(15, 29, 54, 0.96);
 }
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Rabreez Luxury Ornament */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px auto;
+  width: fit-content;
+}
+
+.orn-line {
+  width: 40px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.orn-diamond {
+  color: var(--gold);
+  font-size: 10px;
+}
+
+.ornament.left {
+  margin: 10px 0;
+  justify-content: flex-start;
+}
+
+/* Luxury Shop Hero */
+.shop-hero-bg {
+  background: linear-gradient(110deg, #F5EFEB 0%, #ECE5DC 60%, #FAF5EE 100%);
+}
+
+.btn-pill {
+  border-radius: 30px;
+}
+
+.card-luxury {
+  border-radius: 14px;
+}
+
+/* Custom scrollbars for chip rows and sidebar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

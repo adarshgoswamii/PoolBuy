@@ -31,7 +31,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <h2 className="text-xl font-bold text-slate-800 mb-2">Pool Unavailable</h2>
         <p className="text-sm text-slate-500 mb-6">The requested commitment pool could not be found.</p>
-        <Link href="/marketplace" className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">
+        <Link href="/marketplace" className="px-4 py-2 rounded-xl bg-accent hover:bg-accent-dark text-white text-xs font-semibold">
           Return to Marketplace
         </Link>
       </div>
@@ -68,14 +68,14 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
             <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-4xl">check_circle</span>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Commitment Locked!</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2 font-display">Commitment Locked!</h2>
             <p className="text-xs text-slate-600 mb-6 leading-relaxed">
               You have successfully reserved <strong>{quantity} units</strong> in pool <strong>{pool.pool_code}</strong>. If the pool unlocks lower price tiers, your order will automatically be repriced down!
             </p>
             <div className="space-y-2">
               <button
                 onClick={() => router.push('/buyer/dashboard')}
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition"
+                className="w-full py-3 rounded-xl bg-accent hover:bg-accent-dark text-white font-bold text-xs transition shadow-md"
               >
                 Go to Buyer Dashboard
               </button>
@@ -92,11 +92,11 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
 
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 text-xs text-blue-600 font-semibold mb-2">
+        <div className="inline-flex items-center gap-1.5 text-xs text-accent font-semibold mb-2">
           <span className="material-symbols-outlined text-[16px]">lock</span>
           <span>Escrow-Guaranteed Wholesale Commitment Flow</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
           Join Commitment Pool: {pool.pool_code}
         </h1>
         <p className="text-xs text-slate-500 mt-1">
@@ -178,7 +178,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     required
                     value={address.companyName}
                     onChange={(e) => setAddress({ ...address, companyName: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     required
                     value={address.gstin}
                     onChange={(e) => setAddress({ ...address, gstin: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                   />
                 </div>
                 <div className="col-span-2">
@@ -198,7 +198,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     required
                     value={address.addressLine}
                     onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -208,7 +208,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     required
                     value={address.city}
                     onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -218,7 +218,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     required
                     value={address.postalCode}
                     onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                   />
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 rounded-2xl bg-blue-600 text-white font-extrabold text-sm hover:bg-blue-700 transition shadow-elevated flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-full bg-accent text-white font-extrabold text-sm hover:bg-accent-dark transition-all duration-200 shadow-elevated flex items-center justify-center gap-2 hover:scale-[1.01]"
             >
               <span className="material-symbols-outlined text-[20px]">verified</span>
               <span>{isSubmitting ? 'Confirming Atomic Lock...' : `Lock Commitment (₹${totalAmount.toLocaleString()})`}</span>
@@ -239,7 +239,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
         {/* Right: Commercial Ledger Summary */}
         <div className="lg:col-span-5">
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-5 sticky top-24">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
               Commercial Order Breakdown
             </h3>
 
@@ -253,7 +253,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
               <div className="text-xs">
                 <div className="font-bold text-slate-900 line-clamp-1">{pool.product.title}</div>
                 <div className="text-slate-500 font-mono mt-0.5">{pool.pool_code}</div>
-                <div className="text-emerald-600 font-medium">₹{unitPrice} / unit</div>
+                <div className="text-accent font-medium">₹{unitPrice} / unit</div>
               </div>
             </div>
 
@@ -273,7 +273,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
               </div>
               <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-sm font-extrabold text-slate-900">
                 <span>Total Commitment Payable</span>
-                <span className="text-base text-blue-700 font-mono">₹{totalAmount.toLocaleString()}</span>
+                <span className="text-base text-accent font-mono font-black">₹{totalAmount.toLocaleString()}</span>
               </div>
             </div>
 

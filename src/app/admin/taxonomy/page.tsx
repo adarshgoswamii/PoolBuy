@@ -74,21 +74,21 @@ export default function AdminTaxonomyPage() {
                 <div key={cat.id} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-blue-600 text-[18px]">{cat.icon || 'folder'}</span>
+                      <span className="material-symbols-outlined text-accent text-[18px]">{cat.icon || 'folder'}</span>
                       {cat.name}
                     </span>
                     <span className="font-mono text-[10px] text-slate-400">/{cat.slug}</span>
                   </div>
 
                   {cat.subcategories && cat.subcategories.length > 0 && (
-                    <div className="space-y-1.5 pl-6 border-l-2 border-blue-200">
+                    <div className="space-y-1.5 pl-6 border-l-2 border-accent/30">
                       {cat.subcategories.map((sub) => (
                         <button
                           key={sub.id}
                           onClick={() => handleSelectSubcategory(sub.id)}
                           className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition flex items-center justify-between ${
                             selectedSubcategory === sub.id
-                              ? 'bg-blue-600 text-white font-bold'
+                              ? 'bg-accent text-white font-bold'
                               : 'text-slate-600 hover:bg-slate-200'
                           }`}
                         >
@@ -119,7 +119,7 @@ export default function AdminTaxonomyPage() {
                   placeholder="e.g. Industrial Adhesives & Sealants"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               <div>
@@ -130,12 +130,12 @@ export default function AdminTaxonomyPage() {
                   placeholder="e.g. industrial-adhesives"
                   value={newCatSlug}
                   onChange={(e) => setNewCatSlug(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-[#0F1D36] text-amber-300 font-bold hover:bg-blue-600 hover:text-white transition shadow-sm"
+                className="w-full py-2.5 rounded-xl bg-[#0F1D36] text-amber-300 font-bold hover:bg-accent hover:text-white transition shadow-sm"
               >
                 Create Category
               </button>
@@ -151,14 +151,14 @@ export default function AdminTaxonomyPage() {
                 <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   JSONB Filter Schema Editor
                 </h2>
-                <div className="text-xs text-blue-600 font-semibold mt-0.5">
+                <div className="text-xs text-accent font-semibold mt-0.5">
                   Subcategory: {activeSubcategory?.name || 'Selected Subcategory'}
                 </div>
               </div>
 
               <button
                 onClick={handleSaveSchema}
-                className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-sm flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[16px]">save</span>
                 <span>Save Schema Changes</span>
@@ -180,7 +180,7 @@ export default function AdminTaxonomyPage() {
                 rows={16}
                 value={jsonSchemaText || (activeSubcategory ? JSON.stringify(activeSubcategory.filter_schema, null, 2) : '')}
                 onChange={(e) => setJsonSchemaText(e.target.value)}
-                className="w-full font-mono text-xs p-4 rounded-2xl bg-slate-950 text-emerald-400 border border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full font-mono text-xs p-4 rounded-2xl bg-slate-950 text-emerald-400 border border-slate-800 focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 

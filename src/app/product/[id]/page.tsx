@@ -16,7 +16,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-xl font-bold text-slate-800 mb-2">Product Not Found</h2>
         <p className="text-sm text-slate-500 mb-6">The requested product pool could not be located.</p>
-        <Link href="/marketplace" className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">
+        <Link href="/marketplace" className="px-4 py-2 rounded-xl bg-accent hover:bg-accent-dark text-white text-xs font-semibold">
           Return to Marketplace
         </Link>
       </div>
@@ -31,9 +31,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 text-xs text-slate-500 mb-6">
-        <Link href="/" className="hover:text-blue-600">Home</Link>
+        <Link href="/" className="hover:text-accent">Home</Link>
         <span>/</span>
-        <Link href="/marketplace" className="hover:text-blue-600">Marketplace</Link>
+        <Link href="/marketplace" className="hover:text-accent">Marketplace</Link>
         <span>/</span>
         <span className="text-slate-800 font-medium truncate max-w-xs">{product.title}</span>
       </div>
@@ -53,7 +53,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Description & Technical Specs */}
           <div className="rounded-3xl bg-white border border-slate-200 p-6 shadow-card space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Product Overview</h3>
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-display">Product Overview</h3>
             <p className="text-xs text-slate-600 leading-relaxed">{product.description}</p>
 
             {product.specifications && (
@@ -80,7 +80,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             {/* Seller Info */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-accent-50 text-accent flex items-center justify-center font-bold">
                   <span className="material-symbols-outlined text-2xl">factory</span>
                 </div>
                 <div>
@@ -97,14 +97,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Title & Current Price */}
             <div>
-              <h1 className="text-xl font-extrabold text-slate-900 leading-snug mb-3">
+              <h1 className="text-xl font-extrabold text-slate-900 leading-snug mb-3 font-display">
                 {product.title}
               </h1>
 
               <div className="p-4 rounded-2xl bg-[#0F1D36] text-white">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-slate-300 font-medium">Current Unlocked Price</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 font-mono font-bold">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-accent/20 text-amber-300 font-mono font-bold">
                     {percentFilled}% OF MOQ
                   </span>
                 </div>
@@ -124,7 +124,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="w-full h-3 rounded-full bg-slate-100 border border-slate-200 overflow-hidden">
                 <div
                   className={`h-full pool-progress-pulse transition-all duration-700 ${
-                    isReached ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-blue-600 to-indigo-600'
+                    isReached ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-accent to-rose-600'
                   }`}
                   style={{ width: `${percentFilled}%` }}
                 ></div>
@@ -139,7 +139,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Tiered Price Ladder Table */}
             <div>
-              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-display">
                 Wholesale Tier Pricing Ladder
               </h4>
               <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
@@ -179,7 +179,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             {/* CTA Button */}
             <Link
               href={`/join/${pool.id}`}
-              className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition shadow-md flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-full bg-accent text-white font-bold text-sm hover:bg-accent-dark transition-all duration-200 shadow-md flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.01]"
             >
               <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
               <span>Join Group Commitment Pool</span>

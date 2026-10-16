@@ -12,7 +12,7 @@ export default function ProtocolPage() {
           <span className="material-symbols-outlined text-[16px]">verified</span>
           Institutional Wholesale Protocol Architecture
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight font-display">
           Executive Wholesale Protocol &amp; Enterprise Governance
         </h1>
         <p className="text-sm text-slate-600 leading-relaxed">
@@ -23,14 +23,14 @@ export default function ProtocolPage() {
       {/* Protocol Pillars Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="p-8 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-accent-50 text-accent flex items-center justify-center">
             <span className="material-symbols-outlined text-3xl">currency_rupee</span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Deterministic Repricing Ladder</h3>
+          <h3 className="text-lg font-bold text-slate-900 font-display">Deterministic Repricing Ladder</h3>
           <p className="text-xs text-slate-600 leading-relaxed">
             Every commitment records the maximum unit price locked at entry. When collective reservation crosses the factory MOQ threshold, the PostgreSQL transaction engine retroactively reprices 100% of confirmed commitments to the lowest unlocked tier before invoicing.
           </p>
-          <div className="pt-2 border-t border-slate-100 text-[11px] font-mono text-blue-600 font-bold">
+          <div className="pt-2 border-t border-slate-100 text-[11px] font-mono text-accent font-bold">
             PostgreSQL Function: recalculate_pool_pricing()
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function ProtocolPage() {
           <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
             <span className="material-symbols-outlined text-3xl">lock</span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Atomic Row-Level Concurrency</h3>
+          <h3 className="text-lg font-bold text-slate-900 font-display">Atomic Row-Level Concurrency</h3>
           <p className="text-xs text-slate-600 leading-relaxed">
             Capacity is never over-committed. Each buyer commitment executes inside a serializable transaction with <code>SELECT ... FOR UPDATE</code> locking on the pool record. Per-buyer minimums and maximums are strictly clamped server-side.
           </p>
@@ -52,7 +52,7 @@ export default function ProtocolPage() {
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <span className="material-symbols-outlined text-3xl">shield</span>
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Warehouse Climate Safety Standard</h3>
+          <h3 className="text-lg font-bold text-slate-900 font-display">Warehouse Climate Safety Standard</h3>
           <p className="text-xs text-slate-600 leading-relaxed">
             Strict catalog governance: thermal-sensitive raw lithium battery cells, volatile electrolyte items, and temperature-perishable electronics are prohibited to prevent inventory degradation in non-climate-controlled storage.
           </p>
@@ -66,7 +66,7 @@ export default function ProtocolPage() {
       <div className="rounded-3xl bg-[#0F1D36] text-white p-8 md:p-12 border border-slate-800 shadow-elevated space-y-6">
         <div className="max-w-2xl">
           <div className="text-xs font-bold text-amber-300 uppercase tracking-wider mb-2">Statutory Transparency</div>
-          <h2 className="text-2xl font-bold">Standard Commercial Fee &amp; Tax Structure</h2>
+          <h2 className="text-2xl font-bold font-display">Standard Commercial Fee &amp; Tax Structure</h2>
           <p className="text-xs text-slate-300 mt-1">
             Standardized commercial settlement applied to all closed pool orders.
           </p>
@@ -90,7 +90,7 @@ export default function ProtocolPage() {
           </div>
 
           <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-            <div className="text-2xl font-black font-mono text-blue-400 mb-1">Zero Markup</div>
+            <div className="text-2xl font-black font-mono text-accent mb-1 font-bold">Zero Markup</div>
             <div className="font-bold text-white text-sm mb-1">Direct Factory Pricing</div>
             <p className="text-slate-400 leading-relaxed text-[11px]">
               Buyers transact directly at manufacturer volume tier prices without distributors or middlemen margins.

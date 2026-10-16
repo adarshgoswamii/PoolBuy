@@ -50,7 +50,7 @@ export default function RegisterPage() {
               onClick={() => setRole('buyer')}
               className={`p-3 rounded-2xl border text-left transition ${
                 role === 'buyer'
-                  ? 'border-blue-600 bg-blue-50/70 text-blue-900 ring-2 ring-blue-600/20'
+                  ? 'border-accent bg-accent-light text-accent-dark ring-2 ring-accent/20'
                   : 'border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
@@ -89,7 +89,7 @@ export default function RegisterPage() {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="e.g. Acme Textiles Ltd."
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                 value={gstin}
                 onChange={(e) => setGstin(e.target.value)}
                 placeholder="27AABCA1234F1Z8"
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
               />
             </div>
           </div>
@@ -114,7 +114,7 @@ export default function RegisterPage() {
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
                 placeholder="e.g. Ramesh Kumar"
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div>
@@ -125,7 +125,7 @@ export default function RegisterPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. procure@acme.com"
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
@@ -150,14 +150,14 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-md"
+            className="w-full py-3.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-md"
           >
             {isLoading ? 'Creating Wholesale Profile...' : 'Complete Wholesale Registration'}
           </button>
@@ -165,7 +165,7 @@ export default function RegisterPage() {
 
         <div className="text-center text-xs text-slate-500">
           Already registered?{' '}
-          <Link href="/login" className="text-blue-600 font-bold hover:underline">
+          <Link href="/login" className="text-accent font-bold hover:underline">
             Sign In Here
           </Link>
         </div>

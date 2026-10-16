@@ -38,10 +38,10 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-md w-full shadow-card space-y-6">
         <div className="text-center space-y-1">
-          <div className="h-12 w-12 rounded-2xl bg-[#0F1D36] text-amber-300 font-black text-xl flex items-center justify-center mx-auto mb-3 shadow-md">
+          <div className="h-12 w-12 rounded-2xl bg-[#0F1D36] text-accent border border-accent/30 font-black text-xl flex items-center justify-center mx-auto mb-3 shadow-md">
             PB
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Wholesale Portal Access</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-display">Wholesale Portal Access</h1>
           <p className="text-xs text-slate-500">Sign in to your wholesale buyer or manufacturer account</p>
         </div>
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
           <div className="grid grid-cols-3 gap-1.5 text-xs">
             <button
               onClick={() => handleQuickDemo('procure@urbanstreet.in')}
-              className="py-1.5 px-2 rounded-lg bg-blue-50 text-blue-700 font-bold border border-blue-200 hover:bg-blue-100 transition text-[11px]"
+              className="py-1.5 px-2 rounded-lg bg-accent-50 text-accent font-bold border border-accent/20 hover:bg-accent-100 transition text-[11px]"
             >
               Buyer
             </button>
@@ -81,7 +81,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. procurement@company.com"
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
@@ -93,14 +93,14 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-md"
+            className="w-full py-3.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-md"
           >
             {isLoading ? 'Verifying Credentials...' : 'Sign In with Supabase Auth'}
           </button>
@@ -108,7 +108,7 @@ export default function LoginPage() {
 
         <div className="text-center text-xs text-slate-500">
           New to PoolBuy?{' '}
-          <Link href="/register" className="text-blue-600 font-bold hover:underline">
+          <Link href="/register" className="text-accent font-bold hover:underline">
             Register Wholesale Account
           </Link>
         </div>

@@ -24,7 +24,7 @@ export default function AdminOverviewPage() {
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Executive Platform Overview</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight font-display">Executive Platform Overview</h1>
           <p className="text-xs text-slate-500 mt-1">
             Real-time pool state machine monitoring, escrow liquidity, seller KYC status, and settlement ledgers.
           </p>
@@ -33,7 +33,7 @@ export default function AdminOverviewPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => pools.forEach((p) => repricePool(p.id))}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-sm flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-sm flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-[16px]">sync</span>
             <span>Run Repricing Lifecycle</span>
@@ -46,7 +46,7 @@ export default function AdminOverviewPage() {
         <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-card">
           <div className="flex items-center justify-between text-xs text-slate-500 mb-2 font-medium">
             <span>Total Wholesale GMV</span>
-            <span className="material-symbols-outlined text-blue-600">payments</span>
+            <span className="material-symbols-outlined text-accent">payments</span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">₹{totalGMV.toLocaleString()}</div>
           <div className="text-[11px] text-emerald-600 font-semibold mt-1">
@@ -60,7 +60,7 @@ export default function AdminOverviewPage() {
             <span className="material-symbols-outlined text-amber-600">hub</span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{activePools.length}</div>
-          <div className="text-[11px] text-blue-600 font-semibold mt-1">
+          <div className="text-[11px] text-accent font-semibold mt-1">
             {reachedPools.length} pools reached MOQ target
           </div>
         </div>
@@ -92,12 +92,12 @@ export default function AdminOverviewPage() {
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-display">
               Pool State Machine Pipeline
             </h2>
             <p className="text-xs text-slate-500">Live lifecycle tracking of group commitments</p>
           </div>
-          <Link href="/admin/pools" className="text-xs text-blue-600 font-bold hover:underline">
+          <Link href="/admin/pools" className="text-xs text-accent font-bold hover:underline">
             Manage All Pools &rarr;
           </Link>
         </div>
@@ -114,7 +114,7 @@ export default function AdminOverviewPage() {
                       pool.status === 'reached'
                         ? 'bg-emerald-100 text-emerald-800'
                         : pool.status === 'active'
-                        ? 'bg-blue-100 text-blue-800'
+                        ? 'bg-accent-50 text-accent font-bold'
                         : 'bg-slate-200 text-slate-700'
                     }`}
                   >
@@ -133,7 +133,7 @@ export default function AdminOverviewPage() {
                   </div>
                   <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
                     <div
-                      className={`h-full ${pct >= 100 ? 'bg-emerald-500' : 'bg-blue-600'}`}
+                      className={`h-full ${pct >= 100 ? 'bg-emerald-500' : 'bg-accent'}`}
                       style={{ width: `${pct}%` }}
                     ></div>
                   </div>
@@ -151,7 +151,7 @@ export default function AdminOverviewPage() {
 
       {/* Recent Commitments Table */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-display">
           Recent Atomic Reservations Ledger
         </h2>
         <div className="overflow-x-auto">
@@ -170,7 +170,7 @@ export default function AdminOverviewPage() {
               {commitments.map((c) => (
                 <tr key={c.id} className="hover:bg-slate-50/50">
                   <td className="py-2.5 px-3 text-slate-700">{c.id}</td>
-                  <td className="py-2.5 px-3 font-bold text-blue-600">{c.pool_id}</td>
+                  <td className="py-2.5 px-3 font-bold text-accent">{c.pool_id}</td>
                   <td className="py-2.5 px-3 text-slate-900">{c.quantity} pcs</td>
                   <td className="py-2.5 px-3 text-slate-500">₹{c.locked_unit_price}</td>
                   <td className="py-2.5 px-3 font-bold text-emerald-600">₹{c.final_unit_price || c.locked_unit_price}</td>

@@ -28,11 +28,11 @@ export default function BuyerDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs text-blue-600 font-semibold mb-1">
+          <div className="inline-flex items-center gap-1.5 text-xs text-accent font-semibold mb-1">
             <span className="material-symbols-outlined text-[16px]">verified</span>
             <span>Verified Wholesale Buyer Account</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
             Buyer Procurement Dashboard
           </h1>
           <p className="text-xs text-slate-500">
@@ -42,7 +42,7 @@ export default function BuyerDashboardPage() {
 
         <Link
           href="/marketplace"
-          className="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-sm flex items-center gap-1.5 self-start"
+          className="px-4 py-2.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-sm flex items-center gap-1.5 self-start"
         >
           <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
           <span>Browse Active Pools</span>
@@ -74,7 +74,7 @@ export default function BuyerDashboardPage() {
 
       {/* Active Commitments Table */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
           My Active Group-Buying Commitments ({commitments.length})
         </h2>
 
@@ -105,7 +105,7 @@ export default function BuyerDashboardPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                        <span className="font-mono text-xs font-bold text-accent bg-accent-50 px-2 py-0.5 rounded">
                           {pool?.pool_code || com.pool_id}
                         </span>
                         <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
@@ -136,7 +136,7 @@ export default function BuyerDashboardPage() {
           <div className="text-center py-12">
             <span className="material-symbols-outlined text-4xl text-slate-300">shopping_bag</span>
             <p className="text-xs text-slate-500 mt-2">You haven&apos;t joined any group-buying pools yet.</p>
-            <Link href="/marketplace" className="inline-block mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">
+            <Link href="/marketplace" className="inline-block mt-4 px-4 py-2 rounded-xl bg-accent hover:bg-accent-dark text-white font-bold text-xs transition shadow-sm">
               Explore Marketplace
             </Link>
           </div>

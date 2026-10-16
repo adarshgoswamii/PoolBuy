@@ -64,7 +64,7 @@ export default function AdminSettingsPage() {
                 max="20"
                 value={platformFeePercent}
                 onChange={(e) => setPlatformFeePercent(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono font-bold"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold"
               />
               <span className="text-[11px] text-slate-400 mt-1 block">Applied to buyer subtotal upon pool closure.</span>
             </div>
@@ -78,7 +78,7 @@ export default function AdminSettingsPage() {
                 max="28"
                 value={gstRatePercent}
                 onChange={(e) => setGstRatePercent(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono font-bold"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold"
               />
               <span className="text-[11px] text-slate-400 mt-1 block">Statutory GST rate for wholesale invoicing.</span>
             </div>
@@ -87,7 +87,7 @@ export default function AdminSettingsPage() {
 
         {/* 2. Warehouse Safety Enforcement */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center justify-between font-display">
             <span>Warehouse Climate Safety Enforcement</span>
             <span className="text-xs text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
           </h2>
@@ -98,7 +98,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 defaultChecked
                 disabled
-                className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                className="mt-0.5 rounded text-accent focus:ring-accent h-4 w-4"
               />
               <div>
                 <span className="font-bold text-slate-900">Enforce Heat-Sensitive Electronics Ban</span>
@@ -113,7 +113,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 defaultChecked
                 disabled
-                className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                className="mt-0.5 rounded text-accent focus:ring-accent h-4 w-4"
               />
               <div>
                 <span className="font-bold text-slate-900">Mandatory GSTIN Validation on Seller Onboarding</span>
@@ -127,7 +127,7 @@ export default function AdminSettingsPage() {
 
         {/* 3. Lifecycle Cron Engine & Manual Run */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 font-display">
             Pool Lifecycle State Machine Cron
           </h2>
 
@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={cronToken}
                 onChange={(e) => setCronToken(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 font-mono text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 font-mono text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
@@ -151,7 +151,7 @@ export default function AdminSettingsPage() {
               <button
                 type="button"
                 onClick={handleTriggerLifecycle}
-                className="px-4 py-2 rounded-xl bg-[#0F1D36] text-amber-300 font-bold hover:bg-blue-600 hover:text-white transition shadow-sm whitespace-nowrap text-xs"
+                className="px-4 py-2 rounded-xl bg-accent text-white font-bold hover:bg-accent-dark transition shadow-sm whitespace-nowrap text-xs"
               >
                 Run Lifecycle Now
               </button>
@@ -161,7 +161,7 @@ export default function AdminSettingsPage() {
 
         <button
           type="submit"
-          className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition shadow-md"
+          className="px-6 py-3 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-md"
         >
           Save Platform Settings
         </button>

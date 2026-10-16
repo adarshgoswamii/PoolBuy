@@ -5,9 +5,12 @@
   --pb-navy: #0F1D36;
   --pb-navy-dark: #091224;
   --pb-navy-light: #EEF3F9;
-  --pb-orange: #E06214;
-  --pb-orange-dark: #C4510D;
-  --pb-orange-light: #FFF4ED;
+  --pb-red: #DC2626;
+  --pb-red-dark: #B91C1C;
+  --pb-red-light: #FEF2F2;
+  --pb-orange: #DC2626;
+  --pb-orange-dark: #B91C1C;
+  --pb-orange-light: #FEF2F2;
   --pb-gold: #C89D46;
   --pb-gold-light: #FBF6EB;
   --pb-slate: #0F172A;
@@ -71,8 +74,8 @@
 }
 #column-left a:hover, #column-left li.active > a {
   color: #FFFFFF !important;
-  background: rgba(224, 98, 20, 0.15) !important;
-  border-left: 3px solid #E06214;
+  background: rgba(220, 38, 38, 0.15) !important;
+  border-left: 3px solid #DC2626;
 }
 
 /* Hide default OpenCart page header */
@@ -342,7 +345,7 @@
 }
 .pb-progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #E06214, #F97316);
+  background: linear-gradient(90deg, #DC2626, #E11D48);
   border-radius: 3px;
 }
 
@@ -469,7 +472,7 @@
     <div class="pb-panel">
       <div class="pb-panel-head">
         <h2 class="pb-panel-title">
-          <i class="fa-solid fa-list-check" style="color: #E06214;"></i>
+          <i class="fa-solid fa-list-check" style="color: #DC2626;"></i>
           Real-Time Pool Governance &amp; State Machine
         </h2>
         <span style="font-size: 12px; color: #64748B;">Showing Live OpenCart Pools</span>
@@ -507,7 +510,7 @@
                 <td style="min-width: 140px;">
                   <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600;">
                     <span>{{ pool.reserved_qty }} / {{ pool.moq_target }} {{ pool.unit_label }}</span>
-                    <span style="color: #E06214;">{{ pool.progress_pct }}%</span>
+                    <span style="color: #DC2626;">{{ pool.progress_pct }}%</span>
                   </div>
                   <div class="pb-progress-mini">
                     <div class="pb-progress-bar-fill" style="width: {{ pool.progress_pct }}%;"></div>

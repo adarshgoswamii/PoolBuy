@@ -45,12 +45,12 @@ export default function CategoryFilterSidebar({
       {/* Header & Reset Button */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-600 text-xl">tune</span>
+          <span className="material-symbols-outlined text-accent text-xl">tune</span>
           <h2 className="font-bold text-slate-900 text-sm">Wholesale Filters</h2>
         </div>
         <button
           onClick={onReset}
-          className="text-xs text-blue-600 hover:text-blue-800 font-semibold"
+          className="text-xs text-accent hover:text-accent-dark font-semibold"
         >
           Reset All
         </button>
@@ -65,7 +65,7 @@ export default function CategoryFilterSidebar({
           <button
             onClick={() => onFilterChange({ ...filters, categorySlug: '', subcategoryId: '' })}
             className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between ${
-              filters.categorySlug === '' ? 'bg-[#0F1D36] text-amber-300 font-bold' : 'text-slate-600 hover:bg-slate-100'
+              filters.categorySlug === '' ? 'bg-accent text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             <span>All Categories</span>
@@ -77,7 +77,7 @@ export default function CategoryFilterSidebar({
               onClick={() => onFilterChange({ ...filters, categorySlug: cat.slug, subcategoryId: '' })}
               className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between ${
                 filters.categorySlug === cat.slug
-                  ? 'bg-[#0F1D36] text-amber-300 font-bold'
+                  ? 'bg-accent text-white font-bold shadow-sm'
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
@@ -118,7 +118,7 @@ export default function CategoryFilterSidebar({
                     onClick={() => toggleArrayItem('size', s)}
                     className={`py-1.5 rounded-lg text-xs font-semibold border transition ${
                       isSelected
-                        ? 'bg-blue-600 border-blue-600 text-white'
+                        ? 'bg-accent border-accent text-white shadow-sm'
                         : 'border-slate-200 text-slate-700 hover:border-slate-300 bg-white'
                     }`}
                   >
@@ -150,7 +150,7 @@ export default function CategoryFilterSidebar({
                     onClick={() => toggleArrayItem('color', c.name)}
                     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition ${
                       isSelected
-                        ? 'border-blue-600 bg-blue-50 text-blue-900 ring-2 ring-blue-600/20'
+                        ? 'border-accent bg-accent-50 text-accent-700 ring-2 ring-accent/20 font-bold'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
@@ -179,7 +179,7 @@ export default function CategoryFilterSidebar({
                     onClick={() => toggleArrayItem('gsm', gsm)}
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium border text-center transition ${
                       isSelected
-                        ? 'bg-amber-600 border-amber-600 text-white font-bold'
+                        ? 'bg-accent border-accent text-white font-bold shadow-sm'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
@@ -198,7 +198,7 @@ export default function CategoryFilterSidebar({
             <select
               value={filters.fabric}
               onChange={(e) => onFilterChange({ ...filters, fabric: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="">All Fabrics</option>
               <option value="100% Combed Cotton">100% Combed Cotton</option>
@@ -227,7 +227,7 @@ export default function CategoryFilterSidebar({
                     onClick={() => toggleArrayItem('wattage', w)}
                     className={`py-1.5 rounded-lg text-xs font-semibold border transition ${
                       isSelected
-                        ? 'bg-blue-600 border-blue-600 text-white'
+                        ? 'bg-accent border-accent text-white shadow-sm'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
@@ -255,7 +255,7 @@ export default function CategoryFilterSidebar({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleArrayItem('certification', cert)}
-                      className="rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                      className="rounded text-accent focus:ring-accent h-4 w-4"
                     />
                     <span>{cert}</span>
                   </label>
@@ -273,7 +273,7 @@ export default function CategoryFilterSidebar({
             type="checkbox"
             checked={filters.nearMoqOnly}
             onChange={(e) => onFilterChange({ ...filters, nearMoqOnly: e.target.checked })}
-            className="rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+            className="rounded text-accent focus:ring-accent h-4 w-4"
           />
           <span>Near MOQ Target (&gt; 70% filled)</span>
         </label>

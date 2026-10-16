@@ -26,10 +26,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="h-8 w-8 rounded-lg bg-blue-600 text-white font-black flex items-center justify-center text-sm">
+            <div className="h-8 w-8 rounded-lg bg-accent text-white font-black flex items-center justify-center text-sm shadow-sm">
               PB
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">PoolBuy Wholesale</span>
+            <span className="text-lg font-bold text-white tracking-tight font-display">Pool<span className="text-accent">Buy</span> Wholesale</span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed mb-4">
             The decentralized wholesale co-buying protocol connecting verified apparel mills, industrial manufacturers, and commercial distributors with bulk retail buyers.

@@ -40,8 +40,8 @@ export default function PoolCard({ pool }: PoolCardProps) {
               MOQ Reached &bull; Locked
             </span>
           ) : (
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#0F1D36]/90 text-amber-300 backdrop-blur-md shadow-md border border-white/10 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0F1D36]/90 text-white backdrop-blur-md shadow-md border border-white/10 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               {percentFilled}% Filled
             </span>
           )}
@@ -69,7 +69,7 @@ export default function PoolCard({ pool }: PoolCardProps) {
 
           {/* Title */}
           <Link href={`/product/${pool.product_id}`} className="block">
-            <h3 className="font-bold text-base text-slate-900 group-hover:text-blue-600 transition leading-snug line-clamp-2 mb-2">
+            <h3 className="font-bold text-base text-slate-900 group-hover:text-accent transition leading-snug line-clamp-2 mb-2">
               {pool.product?.title || 'Wholesale Group Pool Item'}
             </h3>
           </Link>
@@ -103,7 +103,7 @@ export default function PoolCard({ pool }: PoolCardProps) {
           <div className="w-full h-2.5 rounded-full bg-slate-100 border border-slate-200/80 overflow-hidden">
             <div
               className={`h-full rounded-full pool-progress-pulse transition-all duration-700 ${
-                isReached ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-blue-600 to-indigo-600'
+                isReached ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-accent to-rose-600'
               }`}
               style={{ width: `${percentFilled}%` }}
             ></div>
@@ -129,7 +129,7 @@ export default function PoolCard({ pool }: PoolCardProps) {
 
           <Link
             href={`/join/${pool.id}`}
-            className="px-4 py-2 rounded-xl bg-[#0F1D36] text-amber-300 font-bold text-xs hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center gap-1 group-hover:scale-105"
+            className="px-5 py-2.5 rounded-full bg-accent hover:bg-accent-dark text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 hover:shadow-md hover:scale-105"
           >
             <span>Join Pool</span>
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>

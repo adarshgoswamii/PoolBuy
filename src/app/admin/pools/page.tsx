@@ -40,7 +40,7 @@ export default function AdminPoolsPage() {
                 const pct = Math.min(100, Math.round((p.reserved_qty / p.moq) * 100));
                 return (
                   <tr key={p.id} className="hover:bg-slate-50/60">
-                    <td className="py-3.5 px-3 font-mono font-bold text-blue-600">
+                    <td className="py-3.5 px-3 font-mono font-bold text-accent">
                       {p.pool_code}
                     </td>
                     <td className="py-3.5 px-3 font-semibold text-slate-900 max-w-xs truncate">
@@ -75,7 +75,7 @@ export default function AdminPoolsPage() {
                     <td className="py-3.5 px-3 text-right space-x-2">
                       <button
                         onClick={() => repricePool(p.id)}
-                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-semibold text-[11px] hover:bg-blue-100 transition border border-blue-200"
+                        className="px-2.5 py-1 rounded-lg bg-accent-light text-accent-dark font-semibold text-[11px] hover:bg-accent/20 transition border border-accent/30"
                         title="Recalculate unlocked tiers for this pool"
                       >
                         Reprice

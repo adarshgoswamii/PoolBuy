@@ -60,7 +60,7 @@ export default function SellerPoolsPage() {
             <span className="material-symbols-outlined text-[16px]">factory</span>
             <span>Manufacturer Pool Operations</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
             Seller Pool Management
           </h1>
           <p className="text-xs text-slate-500">
@@ -70,7 +70,7 @@ export default function SellerPoolsPage() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-[#0F1D36] text-amber-300 font-bold text-xs hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center gap-1.5 self-start"
+          className="px-4 py-2.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-sm flex items-center gap-1.5 self-start"
         >
           <span className="material-symbols-outlined text-[18px]">add_circle</span>
           <span>Launch New Group Pool</span>
@@ -82,7 +82,7 @@ export default function SellerPoolsPage() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-base font-bold text-slate-900">Launch New Wholesale Pool</h3>
+              <h3 className="text-base font-bold text-slate-900 font-display">Launch New Wholesale Pool</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold">
                 ✕
               </button>
@@ -96,7 +96,7 @@ export default function SellerPoolsPage() {
                   required
                   value={productTitle}
                   onChange={(e) => setProductTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
 
@@ -109,7 +109,7 @@ export default function SellerPoolsPage() {
                     min={10}
                     value={moq}
                     onChange={(e) => setMoq(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                   />
                 </div>
                 <div>
@@ -120,7 +120,7 @@ export default function SellerPoolsPage() {
                     min={1}
                     value={minBuyer}
                     onChange={(e) => setMinBuyer(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                   />
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default function SellerPoolsPage() {
                   min={1}
                   value={basePrice}
                   onChange={(e) => setBasePrice(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono"
                 />
               </div>
 
@@ -148,7 +148,7 @@ export default function SellerPoolsPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition shadow-md"
+                className="w-full py-3 rounded-xl bg-accent text-white font-bold hover:bg-accent-dark transition shadow-md"
               >
                 Publish Pool to Marketplace
               </button>
@@ -159,7 +159,7 @@ export default function SellerPoolsPage() {
 
       {/* Pools Table */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
           My Active Group Pools ({myPools.length})
         </h2>
 
@@ -180,7 +180,7 @@ export default function SellerPoolsPage() {
                 const pct = Math.min(100, Math.round((p.reserved_qty / p.moq) * 100));
                 return (
                   <tr key={p.id} className="hover:bg-slate-50/60">
-                    <td className="py-3.5 px-3 font-mono font-bold text-blue-600">
+                    <td className="py-3.5 px-3 font-mono font-bold text-accent">
                       {p.pool_code}
                     </td>
                     <td className="py-3.5 px-3 font-semibold text-slate-900 max-w-xs truncate">
@@ -200,7 +200,7 @@ export default function SellerPoolsPage() {
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                           p.status === 'reached'
                             ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-blue-100 text-blue-800'
+                            : 'bg-amber-100 text-amber-800'
                         }`}
                       >
                         {p.status}
