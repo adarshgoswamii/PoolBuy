@@ -11,9 +11,9 @@
     --primary: #0F1D36;
     --primary-dark: #091224;
     --primary-light: #EEF3F9;
-    --accent: #E06214;
-    --accent-dark: #C4510D;
-    --accent-light: #FFF4ED;
+    --accent: #DC2626;
+    --accent-dark: #B91C1C;
+    --accent-light: #FEF2F2;
     --gold: #C89D46;
     --gold-dark: #B98A32;
     --gold-light: #FBF6EB;
@@ -76,15 +76,15 @@
     --pb-on-secondary-fixed: #1e293b;
     --pb-on-secondary-fixed-variant: #3f465c;
 
-    /* Tertiary - Accent Orange, used for pool urgency */
-    --pb-tertiary: #943700;
+    /* Tertiary - True Red Accent, used for pool urgency and key CTAs */
+    --pb-tertiary: #DC2626;
     --pb-on-tertiary: #ffffff;
-    --pb-tertiary-container: #bc4800;
-    --pb-on-tertiary-container: #ffede6;
-    --pb-tertiary-fixed: #ffdbcd;
-    --pb-tertiary-fixed-dim: #ffb596;
-    --pb-on-tertiary-fixed: #360f00;
-    --pb-on-tertiary-fixed-variant: #7d2d00;
+    --pb-tertiary-container: #B91C1C;
+    --pb-on-tertiary-container: #FEF2F2;
+    --pb-tertiary-fixed: #FEE2E2;
+    --pb-tertiary-fixed-dim: #FECACA;
+    --pb-on-tertiary-fixed: #7F1D1D;
+    --pb-on-tertiary-fixed-variant: #991B1B;
 
     /* Error */
     --pb-error: #ba1a1a;
@@ -508,7 +508,7 @@ body.pb {
     gap: var(--pb-sm);
     padding: 12px 24px;
     border: 1px solid transparent;
-    border-radius: var(--pb-radius);
+    border-radius: var(--pb-radius-full);
     font-family: inherit;
     font-size: 14px;
     font-weight: 600;

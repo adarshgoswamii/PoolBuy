@@ -29,9 +29,9 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
   if (!pool || !pool.product) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Pool Unavailable</h2>
-        <p className="text-sm text-slate-500 mb-6">The requested commitment pool could not be found.</p>
-        <Link href="/marketplace" className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">
+        <h2 className="text-xl font-bold text-slate-900 mb-2 font-display">Pool Unavailable</h2>
+        <p className="text-sm text-slate-700 mb-6 font-medium">The requested commitment pool could not be found.</p>
+        <Link href="/marketplace" className="px-5 py-2.5 rounded-full bg-accent hover:bg-accent-dark text-white text-xs font-bold transition shadow-sm">
           Return to Marketplace
         </Link>
       </div>
@@ -68,14 +68,14 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
             <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-4xl">check_circle</span>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Commitment Locked!</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-2 font-display">Commitment Locked!</h2>
             <p className="text-xs text-slate-600 mb-6 leading-relaxed">
               You have successfully reserved <strong>{quantity} units</strong> in pool <strong>{pool.pool_code}</strong>. If the pool unlocks lower price tiers, your order will automatically be repriced down!
             </p>
             <div className="space-y-2">
               <button
                 onClick={() => router.push('/buyer/dashboard')}
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition"
+                className="w-full py-3 rounded-xl bg-accent hover:bg-accent-dark text-white font-bold text-xs transition shadow-md"
               >
                 Go to Buyer Dashboard
               </button>
@@ -92,14 +92,14 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
 
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 text-xs text-blue-600 font-semibold mb-2">
+        <div className="inline-flex items-center gap-1.5 text-xs text-accent font-bold mb-2">
           <span className="material-symbols-outlined text-[16px]">lock</span>
           <span>Escrow-Guaranteed Wholesale Commitment Flow</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
           Join Commitment Pool: {pool.pool_code}
         </h1>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs sm:text-sm text-slate-700 font-semibold mt-1">
           Lock your order volume to push this pool towards its {pool.moq} MOQ target.
         </p>
       </div>
@@ -111,20 +111,20 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
             {/* 1. Quantity Selection */}
             <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-display">
                   1. Order Quantity (Units)
                 </h3>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-[11px] text-slate-700 font-bold">
                   Min: {pool.min_per_buyer} &bull; Max: {pool.max_per_buyer || 500}
                 </span>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                <div className="flex items-center border border-slate-300 rounded-xl overflow-hidden bg-slate-50">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(pool.min_per_buyer, q - 10))}
-                    className="px-3 py-2 text-slate-600 hover:bg-slate-200 font-bold"
+                    className="px-3 py-2 text-slate-800 hover:bg-slate-200 font-bold"
                   >
                     -
                   </button>
@@ -134,12 +134,12 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                     max={pool.max_per_buyer || 1000}
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-24 text-center py-2 bg-transparent text-sm font-bold text-slate-900 focus:outline-none"
+                    className="w-24 text-center py-2 bg-transparent text-sm font-bold text-slate-950 focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => q + 10)}
-                    className="px-3 py-2 text-slate-600 hover:bg-slate-200 font-bold"
+                    className="px-3 py-2 text-slate-800 hover:bg-slate-200 font-bold"
                   >
                     +
                   </button>
@@ -151,10 +151,10 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
                       key={preset}
                       type="button"
                       onClick={() => setQuantity(preset)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                         quantity === preset
                           ? 'bg-[#0F1D36] border-[#0F1D36] text-amber-300'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          : 'border-slate-300 text-slate-800 hover:bg-slate-100'
                       }`}
                     >
                       {preset} pcs
@@ -166,59 +166,59 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
 
             {/* 2. Destination Details */}
             <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-display">
                 2. Commercial Dispatch &amp; GST Details
               </h3>
 
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Company / Trade Name</label>
+                  <label className="block text-slate-800 font-bold mb-1">Company / Trade Name</label>
                   <input
                     type="text"
                     required
                     value={address.companyName}
                     onChange={(e) => setAddress({ ...address, companyName: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">GSTIN Number</label>
+                  <label className="block text-slate-800 font-bold mb-1">GSTIN Number</label>
                   <input
                     type="text"
                     required
                     value={address.gstin}
                     onChange={(e) => setAddress({ ...address, gstin: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-slate-600 font-semibold mb-1">Warehouse Address Line</label>
+                  <label className="block text-slate-800 font-bold mb-1">Warehouse Address Line</label>
                   <input
                     type="text"
                     required
                     value={address.addressLine}
                     onChange={(e) => setAddress({ ...address, addressLine: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">City</label>
+                  <label className="block text-slate-800 font-bold mb-1">City</label>
                   <input
                     type="text"
                     required
                     value={address.city}
                     onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Postal Code</label>
+                  <label className="block text-slate-800 font-bold mb-1">Postal Code</label>
                   <input
                     type="text"
                     required
                     value={address.postalCode}
                     onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                   />
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 rounded-2xl bg-blue-600 text-white font-extrabold text-sm hover:bg-blue-700 transition shadow-elevated flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-full bg-accent text-white font-extrabold text-sm hover:bg-accent-dark transition-all duration-200 shadow-elevated flex items-center justify-center gap-2 hover:scale-[1.01]"
             >
               <span className="material-symbols-outlined text-[20px]">verified</span>
               <span>{isSubmitting ? 'Confirming Atomic Lock...' : `Lock Commitment (₹${totalAmount.toLocaleString()})`}</span>
@@ -239,7 +239,7 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
         {/* Right: Commercial Ledger Summary */}
         <div className="lg:col-span-5">
           <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-5 sticky top-24">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
               Commercial Order Breakdown
             </h3>
 
@@ -252,28 +252,28 @@ export default function JoinPoolPage({ params }: { params: Promise<{ poolId: str
               />
               <div className="text-xs">
                 <div className="font-bold text-slate-900 line-clamp-1">{pool.product.title}</div>
-                <div className="text-slate-500 font-mono mt-0.5">{pool.pool_code}</div>
-                <div className="text-emerald-600 font-medium">₹{unitPrice} / unit</div>
+                <div className="text-slate-700 font-mono font-bold mt-0.5">{pool.pool_code}</div>
+                <div className="text-accent font-bold">₹{unitPrice} / unit</div>
               </div>
             </div>
 
             {/* Line items */}
-            <div className="space-y-2.5 text-xs text-slate-600 pt-3 border-t border-slate-100">
+            <div className="space-y-2.5 text-xs text-slate-800 font-medium pt-3 border-t border-slate-200">
               <div className="flex items-center justify-between">
                 <span>Subtotal ({quantity} pcs &times; ₹{unitPrice})</span>
-                <span className="font-mono font-medium text-slate-900">₹{subtotal.toLocaleString()}</span>
+                <span className="font-mono font-bold text-slate-950">₹{subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between text-slate-500">
+              <div className="flex items-center justify-between text-slate-700 font-semibold">
                 <span>Platform Facilitation Fee (2%)</span>
-                <span className="font-mono">₹{platformFee.toLocaleString()}</span>
+                <span className="font-mono font-bold text-slate-900">₹{platformFee.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between text-slate-500">
+              <div className="flex items-center justify-between text-slate-700 font-semibold">
                 <span>GST (18% Input Tax Credit Eligible)</span>
-                <span className="font-mono">₹{gst.toLocaleString()}</span>
+                <span className="font-mono font-bold text-slate-900">₹{gst.toLocaleString()}</span>
               </div>
-              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-sm font-extrabold text-slate-900">
+              <div className="pt-3 border-t border-slate-300 flex items-center justify-between text-sm font-extrabold text-slate-900">
                 <span>Total Commitment Payable</span>
-                <span className="text-base text-blue-700 font-mono">₹{totalAmount.toLocaleString()}</span>
+                <span className="text-base text-accent font-mono font-black">₹{totalAmount.toLocaleString()}</span>
               </div>
             </div>
 

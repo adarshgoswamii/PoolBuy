@@ -3,7 +3,9 @@
 import React, { useMemo, useState } from 'react';
 import { useMarketplace } from '@/context/MarketplaceContext';
 import PoolCard from '@/components/PoolCard';
+import CategoryChips from '@/components/CategoryChips';
 import CategoryFilterSidebar from '@/components/CategoryFilterSidebar';
+import Link from 'next/link';
 
 export default function MarketplacePage() {
   const { categories, pools } = useMarketplace();
@@ -40,6 +42,14 @@ export default function MarketplacePage() {
       maxPrice: 5000,
     });
     setSearchQuery('');
+  };
+
+  const handleSelectCategory = (slug: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      categorySlug: slug,
+      subcategoryId: '',
+    }));
   };
 
   const filteredPools = useMemo(() => {
@@ -109,97 +119,147 @@ export default function MarketplacePage() {
   }, [pools, categories, filters, searchQuery, sortBy]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
-      {/* Marketplace Banner */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#0F1D36] via-[#162B4D] to-[#0A1426] text-white p-8 mb-8 border border-slate-800 shadow-elevated relative overflow-hidden">
-        <div className="max-w-2xl relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-semibold mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Verified Wholesale Factory Pools Active
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
-            PoolBuy Wholesale Marketplace
-          </h1>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Co-buy with bulk retailers and manufacturers worldwide. Reach factory MOQ thresholds to unlock the lowest tier prices. Every buyer reprices retroactively.
-          </p>
-        </div>
+    <div className="bg-[#FAF8F5] min-h-screen">
+      {/* 1. Warm Luxury Cashmere Shop Hero */}
+      <section className="shop-hero-bg border-b border-[#E2E6ED] px-4 sm:px-8 py-10 sm:py-14">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: Editorial Headline & Value Props */}
+          <div className="lg:col-span-7 space-y-4">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-xs text-slate-700 font-bold">
+              <Link href="/" className="hover:text-accent transition">Home</Link>
+              <span>/</span>
+              <span className="text-accent font-bold">Wholesale Marketplace</span>
+            </div>
 
-        {/* Decorative Watermark */}
-        <div className="absolute right-4 -bottom-10 opacity-10 pointer-events-none text-9xl font-black font-mono text-white select-none">
-          POOLBUY
-        </div>
-      </div>
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#0F172A] font-display leading-[1.15]">
+              Wholesale <em className="text-accent not-italic font-serif italic">Buying Pools</em>
+            </h1>
 
-      {/* Main Layout: Sidebar & Product Grid */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        {/* Dynamic Filter Sidebar */}
-        <CategoryFilterSidebar
-          categories={categories}
-          filters={filters}
-          onFilterChange={setFilters}
-          onReset={handleReset}
-        />
+            {/* Gold Ornament Line */}
+            <div className="ornament left">
+              <span className="orn-line"></span>
+              <span className="orn-diamond">◆</span>
+              <span className="orn-line"></span>
+            </div>
 
-        {/* Product Cards Grid Area */}
-        <div className="flex-1 w-full space-y-6">
-          {/* Controls Bar: Search & Sorting */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-            {/* Search Input */}
-            <div className="relative w-full sm:w-96">
-              <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">
-                search
+            <p className="text-sm sm:text-base text-slate-800 leading-relaxed max-w-xl font-normal">
+              Collaborative B2B procurement connecting bulk retail buyers directly with verified apparel mills, durable electronics manufacturers, and commercial suppliers across India.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-800 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
+                <span className="material-symbols-outlined text-accent text-[16px]">verified</span>
+                Audited GSTIN Factories
               </span>
-              <input
-                type="text"
-                placeholder="Search products, pool codes, fabric, wattage..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
+                <span className="material-symbols-outlined text-emerald-600 text-[16px]">lock</span>
+                100% Escrow Protection
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-300 shadow-sm backdrop-blur-sm">
+                <span className="material-symbols-outlined text-amber-600 text-[16px]">trending_down</span>
+                Auto Price Repricing
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column: Editorial Wholesale Photography Card */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-elevated border-2 border-white aspect-[16/10] group">
+              <img
+                src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800"
+                alt="Wholesale manufacturing warehouse textiles"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-            </div>
-
-            {/* Sorting Controls */}
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-              <span className="text-xs text-slate-500 font-medium">
-                Showing <strong className="text-slate-900">{filteredPools.length}</strong> active pools
-              </span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"
-              >
-                <option value="fill">Highest Fill Rate</option>
-                <option value="price">Lowest Unit Price</option>
-                <option value="moq">Lowest MOQ</option>
-              </select>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F1D36]/80 via-transparent to-transparent flex items-end p-5">
+                <div className="text-white space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">Direct From Mill</span>
+                  <div className="text-sm font-bold">Apex TexFab Mills &amp; NovaVolt GaN Supply</div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Pools Grid */}
-          {filteredPools.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredPools.map((pool) => (
-                <PoolCard key={pool.id} pool={pool} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-              <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-3xl">filter_list_off</span>
+      {/* 2. Category Chips Bar */}
+      <CategoryChips
+        categories={categories}
+        selectedCategorySlug={filters.categorySlug}
+        onSelectCategory={handleSelectCategory}
+      />
+
+      {/* 3. Main Catalog Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Dynamic Filter Sidebar */}
+          <CategoryFilterSidebar
+            categories={categories}
+            filters={filters}
+            onFilterChange={setFilters}
+            onReset={handleReset}
+          />
+
+          {/* Product Cards Grid Area */}
+          <div className="flex-1 w-full space-y-6">
+            {/* Controls Bar: Search & Sorting */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-3.5 sm:p-4 rounded-2xl border border-[#E2E6ED] shadow-sm">
+              {/* Search Pill Input */}
+              <div className="relative w-full sm:w-96">
+                <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-slate-600 text-[18px]">
+                  search
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search products, pool codes, fabric..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 text-xs text-slate-900 placeholder:text-slate-500 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent transition shadow-inner font-medium"
+                />
               </div>
-              <h3 className="text-base font-bold text-slate-800 mb-1">No pools match your filter criteria</h3>
-              <p className="text-xs text-slate-500 mb-4 max-w-sm mx-auto">
-                Try clearing selected sizes, colors, or wattage filters to view other wholesale pools.
-              </p>
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition"
-              >
-                Reset All Filters
-              </button>
+
+              {/* Sorting Controls */}
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <span className="text-xs text-slate-700 font-semibold">
+                  Showing <strong className="text-slate-950 font-bold">{filteredPools.length}</strong> active pools
+                </span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="px-3.5 py-2 rounded-full border border-slate-300 text-xs bg-white text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-accent shadow-sm"
+                >
+                  <option value="fill">Highest Fill Rate</option>
+                  <option value="price">Lowest Unit Price</option>
+                  <option value="moq">Lowest MOQ</option>
+                </select>
+              </div>
             </div>
-          )}
+
+            {/* Pools Grid */}
+            {filteredPools.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredPools.map((pool) => (
+                  <PoolCard key={pool.id} pool={pool} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-3xl">filter_list_off</span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 mb-1">No pools match your filter criteria</h3>
+                <p className="text-xs text-slate-700 mb-4 max-w-sm mx-auto font-medium">
+                  Try clearing selected sizes, colors, or wattage filters to view other wholesale pools.
+                </p>
+                <button
+                  onClick={handleReset}
+                  className="px-6 py-2.5 rounded-full bg-accent text-white text-xs font-bold hover:bg-accent-dark transition shadow-sm"
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

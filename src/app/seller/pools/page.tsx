@@ -60,17 +60,17 @@ export default function SellerPoolsPage() {
             <span className="material-symbols-outlined text-[16px]">factory</span>
             <span>Manufacturer Pool Operations</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
             Seller Pool Management
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-700 font-semibold">
             {user?.company_name || 'Apex TexFab Mills Ltd.'} &bull; Verified Manufacturer
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-[#0F1D36] text-amber-300 font-bold text-xs hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center gap-1.5 self-start"
+          className="px-4 py-2.5 rounded-xl bg-accent text-white font-bold text-xs hover:bg-accent-dark transition shadow-sm flex items-center gap-1.5 self-start"
         >
           <span className="material-symbols-outlined text-[18px]">add_circle</span>
           <span>Launch New Group Pool</span>
@@ -82,73 +82,73 @@ export default function SellerPoolsPage() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-base font-bold text-slate-900">Launch New Wholesale Pool</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold">
+              <h3 className="text-base font-bold text-slate-900 font-display">Launch New Wholesale Pool</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-600 hover:text-slate-900 font-bold text-base">
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleCreatePool} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Product Title</label>
+                <label className="block text-slate-800 font-bold mb-1">Product Title</label>
                 <input
                   type="text"
                   required
                   value={productTitle}
                   onChange={(e) => setProductTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-medium text-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Minimum Order Qty (MOQ)</label>
+                  <label className="block text-slate-800 font-bold mb-1">Minimum Order Qty (MOQ)</label>
                   <input
                     type="number"
                     required
                     min={10}
                     value={moq}
                     onChange={(e) => setMoq(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Min Per Buyer (pcs)</label>
+                  <label className="block text-slate-800 font-bold mb-1">Min Per Buyer (pcs)</label>
                   <input
                     type="number"
                     required
                     min={1}
                     value={minBuyer}
                     onChange={(e) => setMinBuyer(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Base Starting Unit Price (₹)</label>
+                <label className="block text-slate-800 font-bold mb-1">Base Starting Unit Price (₹)</label>
                 <input
                   type="number"
                   required
                   min={1}
                   value={basePrice}
                   onChange={(e) => setBasePrice(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent font-mono font-bold text-slate-900"
                 />
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-                <div className="font-bold text-slate-800 mb-1">Automatic Tier Ladder Generated:</div>
-                <div className="space-y-0.5 text-[11px] font-mono">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800">
+                <div className="font-bold text-slate-900 mb-1">Automatic Tier Ladder Generated:</div>
+                <div className="space-y-0.5 text-[11px] font-mono font-semibold">
                   <div>Tier 1: 0 - {Math.round(moq * 0.4)} pcs &rarr; ₹{basePrice}</div>
                   <div>Tier 2: {Math.round(moq * 0.4)} - {moq - 1} pcs &rarr; ₹{Math.round(basePrice * 0.9)}</div>
-                  <div className="text-emerald-700 font-bold">Tier 3 (MOQ): {moq}+ pcs &rarr; ₹{Math.round(basePrice * 0.8)}</div>
+                  <div className="text-emerald-800 font-bold">Tier 3 (MOQ): {moq}+ pcs &rarr; ₹{Math.round(basePrice * 0.8)}</div>
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition shadow-md"
+                className="w-full py-3 rounded-xl bg-accent text-white font-bold hover:bg-accent-dark transition shadow-md"
               >
                 Publish Pool to Marketplace
               </button>
@@ -159,13 +159,13 @@ export default function SellerPoolsPage() {
 
       {/* Pools Table */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-card space-y-4">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 font-display">
           My Active Group Pools ({myPools.length})
         </h2>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+            <thead className="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold">
               <tr>
                 <th className="py-3 px-3">Pool Reference</th>
                 <th className="py-3 px-3">Product Name</th>
@@ -180,7 +180,7 @@ export default function SellerPoolsPage() {
                 const pct = Math.min(100, Math.round((p.reserved_qty / p.moq) * 100));
                 return (
                   <tr key={p.id} className="hover:bg-slate-50/60">
-                    <td className="py-3.5 px-3 font-mono font-bold text-blue-600">
+                    <td className="py-3.5 px-3 font-mono font-bold text-accent">
                       {p.pool_code}
                     </td>
                     <td className="py-3.5 px-3 font-semibold text-slate-900 max-w-xs truncate">
@@ -200,7 +200,7 @@ export default function SellerPoolsPage() {
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                           p.status === 'reached'
                             ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-blue-100 text-blue-800'
+                            : 'bg-amber-100 text-amber-800'
                         }`}
                       >
                         {p.status}

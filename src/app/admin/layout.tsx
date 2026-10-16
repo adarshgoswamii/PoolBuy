@@ -25,10 +25,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-bold text-amber-300">SUPER ADMIN CONTROL CENTER</span>
-          <span className="text-slate-400 hidden sm:inline">&bull; Role-Based Governance Active</span>
+          <span className="text-slate-200 font-medium hidden sm:inline">&bull; Role-Based Governance Active</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-slate-400">Current Role: <strong className="text-emerald-400 uppercase">{role}</strong></span>
+          <span className="text-slate-200 font-medium">Current Role: <strong className="text-emerald-400 uppercase font-bold">{role}</strong></span>
           {role !== 'admin' && (
             <button
               onClick={() => switchRole('admin')}
@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex-1 flex">
         {/* Admin Sidebar Navigation */}
-        <aside className="w-64 bg-[#0F1D36] text-slate-300 border-r border-slate-800 p-5 hidden md:flex flex-col justify-between">
+        <aside className="w-64 bg-[#0F1D36] text-slate-200 border-r border-slate-800 p-5 hidden md:flex flex-col justify-between">
           <div className="space-y-6">
             <div className="flex items-center gap-3 px-2">
               <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black flex items-center justify-center text-sm shadow-md">
@@ -63,8 +63,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
+                        ? 'bg-accent text-white shadow-md'
+                        : 'text-slate-200 hover:bg-slate-800/80 hover:text-white font-semibold'
                     }`}
                   >
                     <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
@@ -75,11 +75,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </nav>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400">
-            <div className="text-slate-300 font-bold mb-1">Escrow Custody</div>
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 font-medium">
+            <div className="text-white font-bold mb-1">Escrow Custody</div>
             <div>Platform Fee: 2.0%</div>
             <div>GST Audit: 18.0%</div>
-            <div className="text-[10px] text-emerald-400 mt-1">● Supabase RLS Protected</div>
+            <div className="text-[10px] text-emerald-400 mt-1 font-bold">● Supabase RLS Protected</div>
           </div>
         </aside>
 
